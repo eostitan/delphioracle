@@ -47,7 +47,7 @@ class TitanDocs : public eosio::contract {
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
 
-    EOSLIB_SERIALIZE( eosusdstore, (id)(owner)(value)(average)(timestamp))
+    EOSLIB_SERIALIZE( eosusdstore, (id)(owner)(value)(accumulator)(average)(timestamp))
 
   };
 

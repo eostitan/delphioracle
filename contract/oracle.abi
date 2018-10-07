@@ -37,6 +37,10 @@
                     "type": "uint64"
                 },
                 {
+                    "name": "accumulator",
+                    "type": "uint64"
+                },
+                {
                     "name": "average",
                     "type": "uint64"
                 },
