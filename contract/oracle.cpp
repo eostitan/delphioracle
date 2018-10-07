@@ -40,6 +40,7 @@ class TitanDocs : public eosio::contract {
     uint64_t id;
     account_name owner; 
     uint64_t value;
+    uint64_t accumulator;
     uint64_t average;
     uint64_t timestamp;
 
@@ -124,9 +125,11 @@ class TitanDocs : public eosio::contract {
     //print("value ", value, "\n");
 
     uint64_t avg;
+    uint64_t accumulated;
 
     //Calculate approximative rolling average
     if (size>0){
+
 
       auto last = usdstore.end();
       last--;
@@ -137,26 +140,32 @@ class TitanDocs : public eosio::contract {
       //print("average: ", last->average, "\n");
       //print("last timestamp: ", last->timestamp, "\n");
 
-      uint64_t p_avg = last->average;
+      avg = (last->accumulated + value) / (size + 1);
 
-      p_avg -= p_avg / (size + 1);
-      avg = p_avg + value / (size + 1);
+      accumulated+=value;
 
     }
-    else avg = value;
+    else {
+      accumulated = value;
+      avg = value;
+    }
 
     //Pop oldest point
     if (size>X){
       auto first = usdstore.begin();
       usdstore.erase(first);
+
+      accumulated-=first->value;
+
       print("pop", "\n");
     }
-    
+
     //Push new point at the end of the queue
     usdstore.emplace(get_self(), [&](auto& s) {
       s.id = usdstore.available_primary_key();
       s.owner = owner;
       s.value = value;
+      s.accumulator = accumulated;
       s.average = avg;
       s.timestamp = current_time();
     });
