@@ -151,7 +151,7 @@ class TitanDocs : public eosio::contract {
     }
 
     //Pop oldest point
-    if (size>X){
+    if (size>X-1){
       auto first = usdstore.begin();
       usdstore.erase(first);
 
