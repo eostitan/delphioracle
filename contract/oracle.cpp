@@ -142,7 +142,7 @@ class TitanDocs : public eosio::contract {
 
       avg = (last->accumulator + value) / (size + 1);
 
-      accumulated+=last->accumulator+value;
+      accumulated = last->accumulator+value;
 
     }
     else {
