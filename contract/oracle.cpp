@@ -145,6 +145,13 @@ class TitanDocs : public eosio::contract {
     }
     else avg = value;
 
+    //Pop oldest point
+    if (size>X){
+      auto first = usdstore.begin();
+      usdstore.erase(first);
+      print("pop", "\n");
+    }
+    
     //Push new point at the end of the queue
     usdstore.emplace(get_self(), [&](auto& s) {
       s.id = usdstore.available_primary_key();
@@ -154,13 +161,6 @@ class TitanDocs : public eosio::contract {
       s.timestamp = current_time();
     });
 
-
-    //Pop oldest point
-    if (size>X){
-      auto first = usdstore.begin();
-      usdstore.erase(first);
-      print("pop", "\n");
-    }
 
   }
 
