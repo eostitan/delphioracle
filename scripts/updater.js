@@ -37,7 +37,7 @@ function write(){
 							},
 							{
 								scope: oracleContract,
-								authorization: ['acryptotitan'] 
+								authorization: [owner] 
 							})
 							.then(results=>{
 								console.log("results:", results);
