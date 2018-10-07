@@ -17,3 +17,28 @@ As more block producers and oracles will begin pushing the value at a 1 minute i
 This repository provides the code to the contract, as well as updating and fetching scripts written in node.js.
 
 The fetching script use cryptocompare.com's api to retrieve the EOS/USD price.
+
+# Compile and deploy oracle.cpp
+
+Clone repository
+
+```
+cd delphioracle
+cd contract
+eosio-cpp oracle.cpp -o oracle.wasm
+cleos set code <myeosaccount> oracle.wasm
+cleos set abi <myeosaccount> oracle.abi
+```
+
+# Set up and run updater.js
+
+```
+cd scripts
+npm install
+```
+
+Copy sample.env to .env and update values
+
+```
+node updater.js
+```
