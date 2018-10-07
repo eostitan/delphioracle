@@ -29,9 +29,9 @@ static const uint64_t X = 9;
 
 const uint64_t one_minute = 1000000 * 60;
 
-class TitanDocs : public eosio::contract {
+class DelphiOracle : public eosio::contract {
  public:
-  TitanDocs(account_name self) : eosio::contract(self){}
+  DelphiOracle(account_name self) : eosio::contract(self){}
 
   //Types
 
@@ -216,4 +216,4 @@ class TitanDocs : public eosio::contract {
 
 };
 
-EOSIO_ABI(TitanDocs, (write)(clear))
+EOSIO_ABI(DelphiOracle, (write)(clear))
