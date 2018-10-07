@@ -137,7 +137,6 @@ class DelphiOracle : public eosio::contract {
 
 
       auto last = usdstore.begin();
-      last--;
 
       //print("id: ", last->id, "\n");
       //print("owner: ", last->owner, "\n");
