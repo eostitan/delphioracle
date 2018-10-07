@@ -9,7 +9,8 @@
   "author": "Guillaume Babin-Tremblay",
   "license": "ISC",
   "dependencies": {
-  	"eosjs": "*",
-  	"dotenv": "*"
+    "eosjs": "*",
+    "dotenv": "*",
+    "axios": "*"
   }
 }

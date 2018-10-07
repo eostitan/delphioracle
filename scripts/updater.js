@@ -1,5 +1,9 @@
 const Eos = require('eosjs');
 const dotenv = require('dotenv');
+const axios = require('axios');
+
+const interval = 15000;
+const url = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD";
 
 dotenv.load();
 
@@ -16,29 +20,50 @@ const eos = Eos({
 
 function write(){
 
-eos.contract('eostitantest')
-	.then((contract) => {
-		contract.write({
-				owner:"acryptotitan",
-				value:564
-			},
-			{
-				scope: "eostitantest",
-				authorization: ['acryptotitan'] 
-			})
-			.then(results=>{
-				console.log("results:", results);
-			})
-			.catch(error=>{
-				console.log("error:", error);
-			});
+	axios.get(`${url}`)
+		.then(results=>{
 
-	})
-	.catch(error=>{
-		console.log("error:", error);
-	});
+			if (results.data && results.data.USD){
 
+				eos.contract('eostitantest')
+					.then((contract) => {
+						contract.write({
+								owner:"acryptotitan",
+								value: results.data.USD * 100
+							},
+							{
+								scope: "eostitantest",
+								authorization: ['acryptotitan'] 
+							})
+							.then(results=>{
+								console.log("results:", results);
+								setTimeout(write, interval);
+							})
+							.catch(error=>{
+								console.log("error:", error);
+								setTimeout(write, interval);
+							});
+
+					})
+					.catch(error=>{
+						console.log("error:", error);
+						setTimeout(write, interval);
+					});
+
+			}
+			else setTimeout(write, interval);
+
+		})
+		.catch(error=>{
+			console.log("error:", error);
+			setTimeout(write, interval);
+		});
 
 }
 
-setInterval(write, 60000);
+
+write();
+
+//setInterval(write, 60000);
+
+
