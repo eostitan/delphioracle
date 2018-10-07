@@ -140,7 +140,7 @@ class TitanDocs : public eosio::contract {
       //print("average: ", last->average, "\n");
       //print("last timestamp: ", last->timestamp, "\n");
 
-      avg = (last->accumulated + value) / (size + 1);
+      avg = (last->accumulator + value) / (size + 1);
 
       accumulated+=value;
 
