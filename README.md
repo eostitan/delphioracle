@@ -20,7 +20,7 @@ The upating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
 This contract has been deployed to the CryptoKylin testnet, on account delphioracle.
 
-# Compile and deploy oracle.cpp
+## Compile and deploy oracle.cpp
 
 Clone repository
 
@@ -32,7 +32,7 @@ cleos set code <eoscontract> oracle.wasm
 cleos set abi <eoscontract> oracle.abi
 ```
 
-# Push value to the contract
+## Push value to the contract
 
 Qualified oracles and currently elected block producers can call the contract up to once every minute, to provide the current price of EOS/USD.
 
@@ -45,7 +45,7 @@ cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500}' -
 ```
 
 
-# Set up and run updater.js
+## Set up and run updater.js
 
 Updater.js is a nodejs module meant to retrieve the EOS/USD price using cryptocompare.com's API, and push the result to the DelphiOracle smart contract automatically and continuously.
 
@@ -61,7 +61,7 @@ node updater.js
 ```
 
 
-# Retrieve the last data point
+## Retrieve the last data point
 
 **Note:** *Use average / 10000 to get the actual value.*
 
