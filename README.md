@@ -20,10 +20,10 @@ The fetching script use cryptocompare.com's api to retrieve the EOS/USD price.
 
 **Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
 
-*Example: a value for EOS/USD of $5.85 would be pushed like this:*
+Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
 
 ```
-cleos push action eostitantest write '{"owner":"delphioracle", "value":58500}' -p delphioracle@active
+cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500}' -p acryptotitan@active
 ```
 
 # Compile and deploy oracle.cpp
@@ -52,7 +52,7 @@ node updater.js
 ```
 
 
-# Retrieve the last data point
+# Retrieve the last data point (use average / 10000)
 
 ```
 cleos get table <eoscontract> <eoscontract> eosusdstore --limit 1
