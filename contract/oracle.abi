@@ -21,7 +21,7 @@
             ]
         },
         {
-            "name": "eosusdstore",
+            "name": "eosusd",
             "base": "",
             "fields": [
                 {
@@ -87,8 +87,8 @@
             "key_types": []
         },
         {
-            "name": "eosusdstore",
-            "type": "eosusdstore",
+            "name": "eosusd",
+            "type": "eosusd",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
