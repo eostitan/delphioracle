@@ -27,6 +27,10 @@ static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydem
 //Number of datapoints to hold
 static const uint64_t X = 21;
 
+//Min value set to 0.01$ , max value set to 10,000$
+static const uint64_t val_min = 1;
+static const uint64_t val_max = 1000000;
+
 const uint64_t one_minute = 1000000 * 60;
 
 class DelphiOracle : public eosio::contract {
@@ -178,6 +182,8 @@ class DelphiOracle : public eosio::contract {
   void write(const account_name owner, const uint64_t value) {
     
     require_auth(owner);
+
+    eosio_assert(value >= val_min && value <= val_max, "value outside of allowed range");
 
     account_name producers[21] = { 0 };
     uint32_t bytes_populated = get_active_producers(producers, sizeof(account_name)*21);
