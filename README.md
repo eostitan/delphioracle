@@ -6,17 +6,17 @@
 
 The DelphiOracle dApp acts as a multi-party source of truth, designed to provide the near-realtime price of the EOS/USD pair to other smart contracts or to external users.
 
-The dApp allows the currently elected block producers and other qualified oracles to push the price of EOS expressed in USD, at a frequency of up to 1 minute.
+The dApp allows the currently elected block producers and other qualified oracles to push the price of EOS expressed in USD, at a maximum frequency of 1 minute.
 
-When a new datapoint is pushed to the contract, the contract will perform an approxmative, continuous moving average calculation over the last 21 periods and will store the value in RAM.
+When a new datapoint is pushed to the contract, the contract will perform a continuous moving average calculation over the last 21 values pushed.
 
 Consumer contracts or external applications can retrieve the last price and use it for their needs.
 
 As more block producers and oracles will begin pushing the value at a 1 minute interval, confidence and accuracy of the value will increase.
 
-This repository provides the code to the contract, as well as updating and fetching scripts written in node.js.
+This repository provides the code to the contract, as well as an updating scripts written in node.js for oracles and block producers to use. Ideally, block producers and oracles would use their own mechanism to retrieve the data, using various sources.
 
-The fetching script use cryptocompare.com's api to retrieve the EOS/USD price.
+The upating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
 **Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
 
