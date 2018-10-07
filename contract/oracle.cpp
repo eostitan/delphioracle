@@ -120,7 +120,7 @@ class TitanDocs : public eosio::contract {
 
     auto size = std::distance(usdstore.begin(), usdstore.end());
 
-    //print("size ", size, "\n");
+    print("size ", size, "\n");
     //print("value ", value, "\n");
 
     uint64_t avg;
@@ -159,7 +159,7 @@ class TitanDocs : public eosio::contract {
     if (size>X){
       auto first = usdstore.begin();
       usdstore.erase(first);
-      //print("pop", "\n");
+      print("pop", "\n");
     }
 
   }
