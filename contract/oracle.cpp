@@ -166,7 +166,7 @@ class DelphiOracle : public eosio::contract {
 
     //Push new point at the end of the queue
     usdstore.emplace(get_self(), [&](auto& s) {
-      s.id = usdstore.available_primary_key();
+      s.id = std::numeric_limits<unsigned long long> - usdstore.available_primary_key();
       s.owner = owner;
       s.value = value;
       s.accumulator = accumulated;
