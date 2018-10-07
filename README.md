@@ -52,7 +52,9 @@ node updater.js
 ```
 
 
-# Retrieve the last data point (use average / 10000 to get the actual value)
+# Retrieve the last data point
+
+Use average / 10000 to get the actual value.
 
 ```
 cleos get table <eoscontract> <eoscontract> eosusdstore --limit 1
