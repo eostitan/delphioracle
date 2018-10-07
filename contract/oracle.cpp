@@ -12,7 +12,6 @@
 */
 
 #include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
 #include <eosiolib/fixedpoint.hpp>
 #include <eosiolib/chain.h>
 
@@ -106,7 +105,6 @@ class DelphiOracle : public eosio::contract {
 
     } else {
 
-    //print("last not found, inserting", "\n");
       store.emplace(get_self(), [&](auto& s) {
         s.owner = owner;
         s.timestamp = current_time();
@@ -119,14 +117,9 @@ class DelphiOracle : public eosio::contract {
   //Push oracle message on top of queue, pop oldest element if queue size is larger than X
   void update_eosusd_oracle(const account_name owner, const uint64_t value){
 
-    //print("update_eosusd_oracle", "\n");
-
     usdtable usdstore(get_self(), get_self());
 
     auto size = std::distance(usdstore.begin(), usdstore.end());
-
-    print("size ", size, "\n");
-    //print("value ", value, "\n");
 
     uint64_t avg;
     uint64_t accumulated;
@@ -139,12 +132,6 @@ class DelphiOracle : public eosio::contract {
       auto oldest = usdstore.end();
       oldest--;
 
-      //print("id: ", last->id, "\n");
-      //print("owner: ", last->owner, "\n");
-      //print("value: ", last->value, "\n");
-      //print("average: ", last->average, "\n");
-      //print("last timestamp: ", last->timestamp, "\n");
-
       uint64_t p_accumulated = latest->accumulator;
 
       primary_key = latest->id - 1;
@@ -156,8 +143,6 @@ class DelphiOracle : public eosio::contract {
 
         accumulated-=oldest->value;
         usdstore.erase(oldest);
-
-        print("pop", "\n");
 
       }
 
@@ -196,10 +181,8 @@ class DelphiOracle : public eosio::contract {
     uint32_t bytes_populated = get_active_producers(producers, sizeof(account_name)*21);
 
     if (check_oracle(producers, owner)){
-      //print("account is oracle ", name{owner}, "\n");
       check_last_push(owner);
       update_eosusd_oracle(owner, value);
-      //print("done.");
     }
 
   }
@@ -222,8 +205,6 @@ class DelphiOracle : public eosio::contract {
         itr--;
         estore.erase(itr);
     }
-    
-    //print("cleared lastusdtable and usdtable", "\n");
 
   }
 
