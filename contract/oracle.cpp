@@ -22,7 +22,7 @@ using namespace eosio;
 static const account_name titan_account = N(titanclearer);
 
 //Approved oracles
-static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan)};
+static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle)};
 
 //Number of datapoints to hold
 static const uint64_t X = 9;
@@ -160,7 +160,7 @@ class DelphiOracle : public eosio::contract {
         print("pop", "\n");
 
       }
-      
+
       avg = (p_accumulated + value) / (size + 1);
 
 
