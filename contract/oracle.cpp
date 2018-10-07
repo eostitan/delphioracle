@@ -28,8 +28,8 @@ static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydem
 static const uint64_t X = 21;
 
 //Min value set to 0.01$ , max value set to 10,000$
-static const uint64_t val_min = 1;
-static const uint64_t val_max = 1000000;
+static const uint64_t val_min = 100;
+static const uint64_t val_max = 100000000;
 
 const uint64_t one_minute = 1000000 * 60;
 

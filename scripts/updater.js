@@ -34,7 +34,7 @@ function write(){
 					.then((contract) => {
 						contract.write({
 								owner: owner,
-								value: results.data.USD * 100
+								value: results.data.USD * 10000
 							},
 							{
 								scope: oracleContract,
