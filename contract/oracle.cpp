@@ -24,7 +24,7 @@ static const account_name titan_account = N(titanclearer);
 static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle)};
 
 //Number of datapoints to hold
-static const uint64_t X = 21;
+static const uint64_t datapoints_count = 21;
 
 //Min value set to 0.01$ , max value set to 10,000$
 static const uint64_t val_min = 100;
@@ -38,8 +38,8 @@ class DelphiOracle : public eosio::contract {
 
   //Types
 
-  //Holds the last X datapoints from qualified oracles
-  struct [[eosio::table]] eosusdstore {
+  //Holds the last datapoints_count datapoints from qualified oracles
+  struct [[eosio::table]] eosusd {
     uint64_t id;
     account_name owner; 
     uint64_t value;
@@ -50,7 +50,7 @@ class DelphiOracle : public eosio::contract {
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
 
-    EOSLIB_SERIALIZE( eosusdstore, (id)(owner)(value)(accumulator)(average)(timestamp))
+    EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(accumulator)(average)(timestamp))
 
   };
 
@@ -65,7 +65,7 @@ class DelphiOracle : public eosio::contract {
 
   //Multi index types definition
   typedef eosio::multi_index<N(eosusdlast), eosusdlast> lastusdtable;
-  typedef eosio::multi_index<N(eosusdstore), eosusdstore, indexed_by<N(timestamp), const_mem_fun<eosusdstore, uint64_t, &eosusdstore::by_timestamp>>> usdtable;
+  typedef eosio::multi_index<N(eosusd), eosusd, indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>> usdtable;
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name producers[] , const account_name owner){
@@ -139,7 +139,7 @@ class DelphiOracle : public eosio::contract {
       accumulated = latest->accumulator+value;
 
       //Pop oldest point
-      if (size+1>X){
+      if (size+1>datapoints_count){
 
         accumulated-=oldest->value;
         usdstore.erase(oldest);
