@@ -34,8 +34,8 @@ Clone repository
 cd delphioracle
 cd contract
 eosio-cpp oracle.cpp -o oracle.wasm
-cleos set code <myeosaccount> oracle.wasm
-cleos set abi <myeosaccount> oracle.abi
+cleos set code <eoscontract> oracle.wasm
+cleos set abi <eoscontract> oracle.abi
 ```
 
 # Set up and run updater.js
@@ -49,4 +49,27 @@ Copy sample.env to .env and update values
 
 ```
 node updater.js
+```
+
+
+# Retrieve the last data point
+
+```
+cleos get table <eoscontract> <eoscontract> eosusdstore --limit 1
+```
+
+Sample output:
+```
+{
+  "rows": [{
+      "id": "18446744073709551508",
+      "owner": "acryptotitan",
+      "value": 56800,
+      "accumulator": 1194100,
+      "average": 56863,
+      "timestamp": "1538937978500000"
+    }
+  ],
+  "more": true
+}
 ```
