@@ -4,6 +4,8 @@ const axios = require('axios');
 
 const interval = 15000;
 const url = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD";
+const owner = "acryptotitan";
+const oracleContract = "eostitantest";
 
 dotenv.load();
 
@@ -27,14 +29,14 @@ function write(){
 
 				console.log(" results.data.USD",  results.data.USD);
 
-				eos.contract('eostitantest')
+				eos.contract(oracleContract)
 					.then((contract) => {
 						contract.write({
-								owner:"acryptotitan",
+								owner: owner,
 								value: results.data.USD * 100
 							},
 							{
-								scope: "eostitantest",
+								scope: oracleContract,
 								authorization: ['acryptotitan'] 
 							})
 							.then(results=>{
