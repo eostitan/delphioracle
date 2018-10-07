@@ -130,6 +130,7 @@ class DelphiOracle : public eosio::contract {
 
     uint64_t avg;
     uint64_t accumulated;
+    uint64_t primary_key ;
 
     //Calculate approximative rolling average
     if (size>0){
@@ -144,12 +145,14 @@ class DelphiOracle : public eosio::contract {
       //print("average: ", last->average, "\n");
       //print("last timestamp: ", last->timestamp, "\n");
 
+      primary_key = last->id - 1;
       avg = (last->accumulator + value) / (size + 1);
 
       accumulated = last->accumulator+value;
 
     }
     else {
+      primary_key = std::numeric_limits<unsigned long long>::max();
       accumulated = value;
       avg = value;
     }
@@ -166,7 +169,7 @@ class DelphiOracle : public eosio::contract {
 
     //Push new point at the end of the queue
     usdstore.emplace(get_self(), [&](auto& s) {
-      s.id = std::numeric_limits<unsigned long long>::max() - usdstore.available_primary_key();
+      s.id = primary_key;
       s.owner = owner;
       s.value = value;
       s.accumulator = accumulated;
