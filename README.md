@@ -18,6 +18,8 @@ This repository provides the code to the contract, as well as an updating script
 
 The upating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
+This contract has been deployed to the CryptoKylin testnet, on account delphioracle.
+
 **Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
 
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
