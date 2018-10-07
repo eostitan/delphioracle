@@ -40,3 +40,5 @@ eos.contract('eostitantest')
 
 
 }
+
+setInterval(write, 60000);
