@@ -25,6 +25,8 @@ function write(){
 
 			if (results.data && results.data.USD){
 
+				console.log(" results.data.USD",  results.data.USD);
+
 				eos.contract('eostitantest')
 					.then((contract) => {
 						contract.write({
