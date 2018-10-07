@@ -18,10 +18,10 @@
 using namespace eosio;
 
 //Controlling account
-static const account_name titan_account = N(delphioracle);
+static const account_name titan_account = N(titanclearer);
 
 //Approved oracles
-static const account_name oracles[] = {N(eostitanprod), N(eostitantest), N(delphioracle)};
+static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle)};
 
 //Number of datapoints to hold
 static const uint64_t datapoints_count = 21;
