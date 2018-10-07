@@ -25,7 +25,7 @@ static const account_name titan_account = N(titanclearer);
 static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan)};
 
 //Number of datapoints to hold
-static const uint64_t X = 21;
+static const uint64_t X = 9;
 
 const uint64_t one_minute = 1000000 * 60;
 
