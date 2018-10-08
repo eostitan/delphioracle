@@ -54,13 +54,13 @@ cd scripts
 npm install
 ```
 
-Copy sample.env to .env and update values
+**Required:** Copy sample.env to .env and update values
 
 ```
 node updater.js
 ```
 
-Optional: Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
+**Required:** Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
 
 ```
 cleos set account permission <eosaccount> <permissionname> <eoskey> <permissionparent>
