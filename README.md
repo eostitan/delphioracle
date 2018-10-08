@@ -60,6 +60,20 @@ Copy sample.env to .env and update values
 node updater.js
 ```
 
+Optional: Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
+
+```
+cleos set account permission <eosaccount> <permissionname> <eoskey> <permissionparent>
+cleos set action permission <eosaccount> <eoscontract> <action> <permissionname>
+```
+
+Example:
+
+```
+cleos set account permission eostitantest oracle EOS6JhWzHJWystQmEv8VbXTHVagf5LKRVjkowwsdqCNYDFxYZQEJ9 active
+cleos set action permission eostitantest delphioracle write oracle
+```
+
 
 ## Retrieve the last data point
 
