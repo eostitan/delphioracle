@@ -7,6 +7,8 @@
   Website: https://eostitan.com
   Email: guillaume@eostitan.com
 
+  Github: https://github.com/eostitan/delphioracle/
+  
   Published under MIT License
 
 */
