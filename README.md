@@ -34,7 +34,7 @@ cleos set abi <eoscontract> oracle.abi
 
 ## Push value to the contract
 
-Qualified oracles and currently elected block producers can call the contract up to once every minute, to provide the current price of EOS/USD.
+Qualified oracles and currently elected block producers can call the contract up to once every minute, to provide the current price of the EOS/USD pair.
 
 **Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
 
