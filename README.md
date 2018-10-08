@@ -57,6 +57,20 @@ npm install
 **Required:** Copy sample.env to .env and update values
 
 ```
+EOS_PROTOCOL='http'
+EOS_HOST='api.kylin.alohaeos.com'
+EOS_PORT='80'
+EOS_KEY='5... <replace with private key>'
+EOS_CHAIN='5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191'
+ORACLE="acryptotitan"
+CONTRACT="delphioracle"
+FREQ=15000
+ORACLE_PERMISSION="active"
+```
+
+Run script:
+
+```
 node updater.js
 ```
 
