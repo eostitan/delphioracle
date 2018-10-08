@@ -60,7 +60,7 @@ npm install
 node updater.js
 ```
 
-**Required:** Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
+**Optional:** Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
 
 ```
 cleos set account permission <eosaccount> <permissionname> <eoskey> <permissionparent>
