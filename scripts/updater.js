@@ -38,7 +38,7 @@ function write(){
 							},
 							{
 								scope: oracleContract,
-								authorization: [owner] 
+								authorization: [owner@`${process.env.ORACLE_PERMISSION || 'active'}`] 
 							})
 							.then(results=>{
 								console.log("results:", results);
