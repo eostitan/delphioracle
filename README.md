@@ -56,6 +56,8 @@ npm install
 
 **Required:** Copy sample.env to .env and update values
 
+Example file for CryptoKylin:
+
 ```
 EOS_PROTOCOL='http'
 EOS_HOST='api.kylin.alohaeos.com'
