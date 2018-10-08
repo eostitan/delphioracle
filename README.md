@@ -66,7 +66,7 @@ node updater.js
 **Note:** *Use average / 10000 to get the actual value.*
 
 ```
-cleos get table <eoscontract> <eoscontract> eosusdstore --limit 1
+cleos get table <eoscontract> <eoscontract> eosusd --limit 1
 ```
 
 Sample output:
