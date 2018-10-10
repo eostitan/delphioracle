@@ -23,7 +23,7 @@ using namespace eosio;
 static const account_name titan_account = N(titanclearer);
 
 //Approved oracles
-static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle), N(eosmetaliock)};
+static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle), N(eosmetaliock), N(eosdacbptest) };
 
 //Number of datapoints to hold
 static const uint64_t datapoints_count = 21;
