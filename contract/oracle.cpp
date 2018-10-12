@@ -181,12 +181,11 @@ class DelphiOracle : public eosio::contract {
 
     account_name producers[21] = { 0 };
     uint32_t bytes_populated = get_active_producers(producers, sizeof(account_name)*21);
-
-    if (check_oracle(producers, owner)){
-      check_last_push(owner);
-      update_eosusd_oracle(owner, value);
-    }
-
+    
+    eosio_assert(check_oracle(producers, owner), "account is not an active producer");
+    check_last_push(owner);
+    update_eosusd_oracle(owner, value);
+    
   }
 
   //Clear all data
