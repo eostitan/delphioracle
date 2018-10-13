@@ -76,9 +76,9 @@ class DelphiOracle : public eosio::contract {
   //Multi index types definition
   typedef eosio::multi_index<N(eosusdlast), eosusdlast> lastusdtable;
   typedef eosio::multi_index<N(oracles), oracles> oraclestable;
-  typedef eosio::multi_index<N(eosusd), eosusd, 
-      indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>,
-      indexed_by<N(value), const_mem_fun<eosusd, uint64_t, &eosusd::by_value>>> usdtable;
+  typedef eosio::multi_index<N(eosusd), eosusd,
+      indexed_by<N(value), const_mem_fun<eosusd, uint64_t, &eosusd::by_value>>, 
+      indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>> usdtable;
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name owner){
@@ -170,7 +170,7 @@ class DelphiOracle : public eosio::contract {
           s.timestamp = current_time();
         });
 
-        auto value_sorted = usdstore.get_index(N(value));
+        auto value_sorted = usdstore.get_index();
 
         value_sorted.begin();
         value_sorted+=6;
