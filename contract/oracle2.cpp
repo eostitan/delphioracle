@@ -8,7 +8,7 @@
   Email: guillaume@eostitan.com
 
   Github: https://github.com/eostitan/delphioracle/
-
+  
   Published under MIT License
 
 */
@@ -20,10 +20,10 @@
 using namespace eosio;
 
 //Controlling account
-static const account_name titan_account = N(delphioracle);
+static const account_name titan_account = N(titanclearer);
 
 //Approved oracles
-static const account_name oracles[] = {N(eostitanprod), N(eostitantest), N(delphioracle)};
+//static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle), N(eosmetaliock), N(eosdacbptest) };
 
 //Number of datapoints to hold
 static const uint64_t datapoints_count = 21;
@@ -65,8 +65,17 @@ class DelphiOracle : public eosio::contract {
 
   };
 
+  //Holds the list of oracles
+  struct [[eosio::table]] oracles {
+    account_name owner;
+
+    account_name primary_key() const {return owner;}
+
+  };
+
   //Multi index types definition
   typedef eosio::multi_index<N(eosusdlast), eosusdlast> lastusdtable;
+  typedef eosio::multi_index<N(oracles), oracles> oraclestable;
   typedef eosio::multi_index<N(eosusd), eosusd, indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>> usdtable;
 
   //Check if calling account is a qualified oracle
@@ -185,6 +194,20 @@ class DelphiOracle : public eosio::contract {
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
     check_last_push(owner);
     update_eosusd_oracle(owner, value);
+    
+  }
+
+  //Update oracles list
+  [[eosio::action]]
+  void setoracles(const account_name oracles_list[]) {
+    
+    require_auth(titan_account);
+
+    for(account_name oracle : oracles_list){
+      print(oracle);
+      print(oracle.c_str());
+       
+    }
     
   }
 
