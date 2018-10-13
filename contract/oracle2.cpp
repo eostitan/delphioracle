@@ -173,7 +173,12 @@ class DelphiOracle : public eosio::contract {
         auto value_sorted = usdstore.get_index<N(value)>();
 
         value_sorted.begin();
-        value_sorted+=6;
+        value_sorted++;
+        value_sorted++;
+        value_sorted++;
+        value_sorted++;
+        value_sorted++;
+        value_sorted++;
 
         for (int i = 6; i<15;i++){
           avg+=value_sorted->value;
