@@ -220,7 +220,7 @@ class DelphiOracle : public eosio::contract {
         oracles.erase(itr);
     }
 
-    for(const account_name& oracle : oracles_list){
+    for(const account_name& oracle : oracleslist){
       oracles.emplace(get_self(), [&](auto& o) {
         o.owner = oracle;
       });
