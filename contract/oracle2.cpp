@@ -217,10 +217,10 @@ class DelphiOracle : public eosio::contract {
     while (oracles.begin() != oracles.end()) {
         auto itr = oracles.end();
         itr--;
-        lstore.erase(itr);
+        oracles.erase(itr);
     }
 
-    for(account_name& oracle : oracles_list){
+    for(const account_name& oracle : oracles_list){
       oracles.emplace(get_self(), [&](auto& o) {
         o.owner = oracle;
       });
