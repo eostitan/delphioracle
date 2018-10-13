@@ -45,7 +45,6 @@ class DelphiOracle : public eosio::contract {
     uint64_t id;
     account_name owner; 
     uint64_t value;
-    uint64_t accumulator;
     uint64_t average;
     uint64_t timestamp;
 
@@ -53,7 +52,7 @@ class DelphiOracle : public eosio::contract {
     uint64_t by_timestamp() const {return timestamp;}
     uint64_t by_value() const {return value;}
 
-    EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(accumulator)(average)(timestamp))
+    EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(average)(timestamp))
 
   };
 
@@ -148,50 +147,79 @@ class DelphiOracle : public eosio::contract {
     auto size = std::distance(usdstore.begin(), usdstore.end());
 
     uint64_t avg;
-    uint64_t accumulated;
     uint64_t primary_key ;
 
     //Calculate approximative rolling average
     if (size>0){
 
       auto latest = usdstore.begin();
-      auto oldest = usdstore.end();
-      oldest--;
-
-      uint64_t p_accumulated = latest->accumulator;
-
       primary_key = latest->id - 1;
-
-      accumulated = latest->accumulator+value;
 
       //Pop oldest point
       if (size+1>datapoints_count){
 
-        accumulated-=oldest->value;
+        auto oldest = usdstore.end();
+        oldest--;
+
         usdstore.erase(oldest);
 
+        auto itr = usdstore.emplace(get_self(), [&](auto& s) {
+          s.id = primary_key;
+          s.owner = owner;
+          s.value = value;
+          s.timestamp = current_time();
+        });
+
+        auto value_sorted = usdstore.get_index("by_value");
+
+        value_sorted.begin();
+        value_sorted+=6;
+
+        for (int i = 6; i<15;i++){
+          avg+=value_sorted->value;
+          value_sorted++;
+        }
+
+        itr->average = avg / 9;
+
+        usdstore.emplace(get_self(), [&](auto& s) {
+          s.id = primary_key;
+          s.owner = owner;
+          s.value = value;
+          s.average = avg;
+          s.timestamp = current_time();
+        });
+
       }
+      else {
+        avg = value;
 
-      avg = (p_accumulated + value) / (size + 1);
+        //Push new point at the end of the queue
+        usdstore.emplace(get_self(), [&](auto& s) {
+          s.id = primary_key;
+          s.owner = owner;
+          s.value = value;
+          s.average = avg;
+          s.timestamp = current_time();
+        });
 
+      }
 
     }
     else {
       primary_key = std::numeric_limits<unsigned long long>::max();
-      accumulated = value;
       avg = value;
+
+      //Push new point at the end of the queue
+      usdstore.emplace(get_self(), [&](auto& s) {
+        s.id = primary_key;
+        s.owner = owner;
+        s.value = value;
+        s.average = avg;
+        s.timestamp = current_time();
+      });
+
     }
-
-    //Push new point at the end of the queue
-    usdstore.emplace(get_self(), [&](auto& s) {
-      s.id = primary_key;
-      s.owner = owner;
-      s.value = value;
-      s.accumulator = accumulated;
-      s.average = avg;
-      s.timestamp = current_time();
-    });
-
 
   }
 
