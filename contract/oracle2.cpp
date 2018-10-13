@@ -208,7 +208,7 @@ class DelphiOracle : public eosio::contract {
 
   //Update oracles list
   [[eosio::action]]
-  void setoracles(const account_name oracleslist[]) {
+  void setoracles(std::array<account_name>& oracleslist) {
     
     require_auth(titan_account);
 
