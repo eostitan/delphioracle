@@ -83,10 +83,10 @@ class DelphiOracle : public eosio::contract {
 
     oraclestable oracles(get_self(), get_self());
 
-    while (oracles.begin() != oracles.end()) {
-        auto itr = oracles.end();
-        itr--;
+    auto itr = oracles.begin();
+    while (itr != oracles.end()) {
         if (itr->owner == owner) return true;
+        else itr++;
     }
 
 
