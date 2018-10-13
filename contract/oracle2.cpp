@@ -180,8 +180,8 @@ class DelphiOracle : public eosio::contract {
         itr++;
 
         for (int i = 0; i<9;i++){
-          avg+=itr->value;
           itr++;
+          avg+=itr->value;
         }
 
         usdstore.modify(c_itr, get_self(), [&](auto& s) {
