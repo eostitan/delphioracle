@@ -170,8 +170,7 @@ class DelphiOracle : public eosio::contract {
           s.timestamp = current_time();
         });
 
-        usdtable va_sort(get_self(), get_self());
-        auto value_sorted = va_sort.get_index();
+        auto value_sorted = usdstore.get_index<N(value)>();
 
         value_sorted.begin();
         value_sorted+=6;
