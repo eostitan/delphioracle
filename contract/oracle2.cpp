@@ -81,10 +81,19 @@ class DelphiOracle : public eosio::contract {
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name owner){
 
-    //Account is oracle if on qualified oracle list
+    oraclestable oracles(get_self(), get_self());
+
+    while (oracles.begin() != oracles.end()) {
+        auto itr = oracles.end();
+        itr--;
+        if (itr->owner == owner) return true;
+    }
+
+
+/*    //Account is oracle if on qualified oracle list
     for(account_name oracle : oracles){
       if (oracle == owner) return true;
-    }
+    }*/
 
     account_name producers[21] = { 0 };
     uint32_t bytes_populated = get_active_producers(producers, sizeof(account_name)*21);
@@ -199,16 +208,24 @@ class DelphiOracle : public eosio::contract {
 
   //Update oracles list
   [[eosio::action]]
-  void setoracles(const account_name oracles_list[]) {
+  void setoracles(const std::vector<account_name>& oracles_list) {
     
     require_auth(titan_account);
 
-    for(account_name oracle : oracles_list){
-      print(oracle);
-      print(oracle.c_str());
-       
+    oraclestable oracles(get_self(), get_self());
+
+    while (oracles.begin() != oracles.end()) {
+        auto itr = oracles.end();
+        itr--;
+        lstore.erase(itr);
     }
-    
+
+    for(account_name& oracle : oracles_list){
+      oracles.emplace(get_self(), [&](auto& o) {
+        o.owner = oracle;
+      });
+    }
+
   }
 
   //Clear all data
@@ -234,4 +251,4 @@ class DelphiOracle : public eosio::contract {
 
 };
 
-EOSIO_ABI(DelphiOracle, (write)(clear))
+EOSIO_ABI(DelphiOracle, (write)(setoracles)(clear))
