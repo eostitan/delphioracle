@@ -163,7 +163,7 @@ class DelphiOracle : public eosio::contract {
 
         usdstore.erase(oldest);
 
-        auto itr = usdstore.emplace(get_self(), [&](auto& s) {
+        auto c_itr = usdstore.emplace(get_self(), [&](auto& s) {
           s.id = primary_key;
           s.owner = owner;
           s.value = value;
@@ -172,28 +172,20 @@ class DelphiOracle : public eosio::contract {
 
         auto value_sorted = usdstore.get_index<N(value)>();
 
-        value_sorted.begin();
-        value_sorted++;
-        value_sorted++;
-        value_sorted++;
-        value_sorted++;
-        value_sorted++;
-        value_sorted++;
+        auto itr = value_sorted.begin();
+        itr++;
+        itr++;
+        itr++;
+        itr++;
+        itr++;
+        itr++;
 
         for (int i = 6; i<15;i++){
           avg+=value_sorted->value;
-          value_sorted++;
+          itr++;
         }
 
-        itr->average = avg / 9;
-
-        usdstore.emplace(get_self(), [&](auto& s) {
-          s.id = primary_key;
-          s.owner = owner;
-          s.value = value;
-          s.average = avg;
-          s.timestamp = current_time();
-        });
+        c_itr->average = avg / 9;
 
       }
       else {
