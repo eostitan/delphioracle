@@ -50,7 +50,7 @@ class DelphiOracle : public eosio::contract {
 
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
-    uint64_t by_value()  {return value;}
+    uint64_t by_value() const {return value;}
 
     EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(average)(timestamp))
 
