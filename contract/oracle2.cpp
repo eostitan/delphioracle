@@ -50,7 +50,7 @@ class DelphiOracle : public eosio::contract {
 
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
-    uint64_t by_value() const {return value;}
+    uint64_t by_value()  {return value;}
 
     EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(average)(timestamp))
 
@@ -181,11 +181,13 @@ class DelphiOracle : public eosio::contract {
         itr++;
 
         for (int i = 6; i<15;i++){
-          avg+=value_sorted->value;
+          avg+=itr->value;
           itr++;
         }
 
-        c_itr->average = avg / 9;
+        usdstore.modify(c_itr, get_self(), [&](auto& s) {
+          s.avg = avg / 9;
+        });
 
       }
       else {
