@@ -146,7 +146,7 @@ class DelphiOracle : public eosio::contract {
 
     auto size = std::distance(usdstore.begin(), usdstore.end());
 
-    uint64_t avg;
+    uint64_t avg = 0;
     uint64_t primary_key ;
 
     //Calculate approximative rolling average
@@ -179,7 +179,7 @@ class DelphiOracle : public eosio::contract {
         itr++;
         itr++;
 
-        for (int i = 6; i<15;i++){
+        for (int i = 0; i<9;i++){
           avg+=itr->value;
           itr++;
         }
