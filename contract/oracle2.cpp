@@ -51,6 +51,7 @@ class DelphiOracle : public eosio::contract {
 
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
+    uint64_t by_value() const {return value;}
 
     EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(accumulator)(average)(timestamp))
 
@@ -76,7 +77,9 @@ class DelphiOracle : public eosio::contract {
   //Multi index types definition
   typedef eosio::multi_index<N(eosusdlast), eosusdlast> lastusdtable;
   typedef eosio::multi_index<N(oracles), oracles> oraclestable;
-  typedef eosio::multi_index<N(eosusd), eosusd, indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>> usdtable;
+  typedef eosio::multi_index<N(eosusd), eosusd, 
+      indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>,
+      indexed_by<N(value), const_mem_fun<eosusd, uint64_t, &eosusd::by_value>>> usdtable;
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name owner){
@@ -234,6 +237,7 @@ class DelphiOracle : public eosio::contract {
     require_auth(titan_account);
     lastusdtable lstore(get_self(), get_self());
     usdtable estore(get_self(), get_self());
+    oraclestable oracles(get_self(), get_self());
     
     while (lstore.begin() != lstore.end()) {
         auto itr = lstore.end();
@@ -245,6 +249,12 @@ class DelphiOracle : public eosio::contract {
         auto itr = estore.end();
         itr--;
         estore.erase(itr);
+    }
+    
+    while (oracles.begin() != oracles.end()) {
+        auto itr = oracles.end();
+        itr--;
+        oracles.erase(itr);
     }
 
   }
