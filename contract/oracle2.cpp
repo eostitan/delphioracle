@@ -178,7 +178,6 @@ class DelphiOracle : public eosio::contract {
         itr++;
         itr++;
         itr++;
-        itr++;
 
         for (int i = 6; i<15;i++){
           avg+=itr->value;
