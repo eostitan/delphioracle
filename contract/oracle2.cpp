@@ -186,7 +186,7 @@ class DelphiOracle : public eosio::contract {
         }
 
         usdstore.modify(c_itr, get_self(), [&](auto& s) {
-          s.avg = avg / 9;
+          s.average = avg / 9;
         });
 
       }
