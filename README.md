@@ -109,7 +109,6 @@ Sample output:
       "id": "18446744073709551508",
       "owner": "acryptotitan",
       "value": 56800,
-      "accumulator": 1194100,
       "average": 56863,
       "timestamp": "1538937978500000"
     }
