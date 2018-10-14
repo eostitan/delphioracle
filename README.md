@@ -12,7 +12,7 @@ Pre-approved oracles are set manually as a mean to bootstrap the oracle's pricef
 
 When a new datapoint is pushed to the contract, the contract will remove the top 6 and bottom 6 values, and will perform a continuous moving average calculation over the remaining 9 values.
 
-This provides the same DPOS byzantine fault tolerance guarantees, providing a reliable pricefeed even if up to 6 block producers are colluding or corrupt.
+This provides the same DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 6 block producers are colluding or corrupt.
 
 Consumer contracts or external applications can retrieve the last price and use it for their needs.
 
