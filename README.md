@@ -10,7 +10,9 @@ The dApp allows the currently elected block producers and other pre-approved ora
 
 Pre-approved oracles are set manually as a mean to bootstrap the oracle's pricefeed. As more elected block producers start pushing values, pre-approved oracles will be removed.
 
-When a new datapoint is pushed to the contract, the contract will perform a continuous moving average calculation over the last 21 values pushed.
+When a new datapoint is pushed to the contract, the contract will remove the top 6 and bottom 6 values, and will perform a continuous moving average calculation over the remaining 9 values.
+
+This provides the same DPOS byzantine fault tolerance guarantees, providing a reliable pricefeed even if up to 6 block producers are colluding or corrupt.
 
 Consumer contracts or external applications can retrieve the last price and use it for their needs.
 
@@ -91,7 +93,6 @@ Example:
 cleos set account permission eostitantest oracle EOS6JhWzHJWystQmEv8VbXTHVagf5LKRVjkowwsdqCNYDFxYZQEJ9 active
 cleos set action permission eostitantest delphioracle write oracle
 ```
-
 
 ## Retrieve the last data point
 
