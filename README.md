@@ -18,7 +18,7 @@ As more block producers and oracles will begin pushing the value at a 1 minute i
 
 This repository provides the code to the contract, as well as an updating script written in node.js for oracles and block producers to use. Ideally, block producers and oracles would use their own mechanism to retrieve the data, using various sources.
 
-The upating script use cryptocompare.com's api to retrieve the EOS/USD price.
+The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
 This contract has been deployed to the CryptoKylin testnet, on account delphioracle.
 
