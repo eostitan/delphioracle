@@ -6,7 +6,9 @@
 
 The DelphiOracle dApp acts as a multi-party source of truth, designed to provide the near-realtime price of the EOS/USD pair to other smart contracts or to external users.
 
-The dApp allows the currently elected block producers and other qualified oracles to push the price of EOS expressed in USD, at a maximum frequency of 1 minute.
+The dApp allows the currently elected block producers and other pre-approved oracles to push the price of EOS expressed in USD, at a maximum frequency of 1 minute.
+
+Pre-approved oracles are set manually as a mean to bootstrap the oracle's pricefeed. As more elected block producers start pushing values, pre-approved oracles will be removed.
 
 When a new datapoint is pushed to the contract, the contract will perform a continuous moving average calculation over the last 21 values pushed.
 
@@ -34,7 +36,7 @@ cleos set abi <eoscontract> oracle.abi
 
 ## Push value to the contract
 
-Qualified oracles and currently elected block producers can call the contract up to once every minute, to provide the current price of the EOS/USD pair.
+Pre-approved oracles and currently elected block producers can call the contract up to once every minute, to provide the current price of the EOS/USD pair.
 
 **Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
 

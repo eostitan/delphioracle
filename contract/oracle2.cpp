@@ -89,12 +89,6 @@ class DelphiOracle : public eosio::contract {
         else itr++;
     }
 
-
-/*    //Account is oracle if on qualified oracle list
-    for(account_name oracle : oracles){
-      if (oracle == owner) return true;
-    }*/
-
     account_name producers[21] = { 0 };
     uint32_t bytes_populated = get_active_producers(producers, sizeof(account_name)*21);
     
@@ -237,8 +231,8 @@ class DelphiOracle : public eosio::contract {
     require_auth(owner);
 
     eosio_assert(value >= val_min && value <= val_max, "value outside of allowed range");
-
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
+    
     check_last_push(owner);
     update_eosusd_oracle(owner, value);
     
