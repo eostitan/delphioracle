@@ -4,9 +4,9 @@
 
 # DelphiOracle
 
-The DelphiOracle dApp acts as a multi-party source of truth, designed to provide the near-realtime price of the EOS/USD pair to other smart contracts or to external users.
+The DelphiOracle contract acts as a multi-party source of truth, designed to provide the near-realtime price of the EOS/USD pair to other smart contracts or to external users.
 
-The dApp allows the currently elected block producers and other pre-approved oracles to push the price of EOS expressed in USD, at a maximum frequency of 1 minute.
+The contract allows the currently elected block producers and other pre-approved oracles to push the price of EOS expressed in USD, at a maximum frequency of 1 minute.
 
 Pre-approved oracles are set manually as a mean to bootstrap the oracle's pricefeed. As more elected block producers start pushing values, pre-approved oracles will be removed.
 
