@@ -22,9 +22,6 @@ using namespace eosio;
 //Controlling account
 static const account_name titan_account = N(titanclearer);
 
-//Approved oracles
-//static const account_name oracles[] = {N(titanclearer), N(eostitantest), N(mydemolisher), N(acryptotitan), N(delphioracle), N(eosmetaliock), N(eosdacbptest) };
-
 //Number of datapoints to hold
 static const uint64_t datapoints_count = 21;
 
@@ -56,10 +53,11 @@ class DelphiOracle : public eosio::contract {
 
   };
 
-  //Holds the time of last eosusd writes for qualified oracles
-  struct [[eosio::table]] eosusdlast {
+  //Holds the count and time of last eosusd writes for approved oracles
+  struct [[eosio::table]] eosusdstats {
     account_name owner; 
     uint64_t timestamp;
+    uint64_t count;
 
     account_name primary_key() const {return owner;}
 
@@ -74,7 +72,7 @@ class DelphiOracle : public eosio::contract {
   };
 
   //Multi index types definition
-  typedef eosio::multi_index<N(eosusdlast), eosusdlast> lastusdtable;
+  typedef eosio::multi_index<N(eosusdstats), eosusdstats> statstable;
   typedef eosio::multi_index<N(oracles), oracles> oraclestable;
   typedef eosio::multi_index<N(eosusd), eosusd,
       indexed_by<N(value), const_mem_fun<eosusd, uint64_t, &eosusd::by_value>>, 
@@ -114,7 +112,7 @@ class DelphiOracle : public eosio::contract {
   //Ensure account cannot push data more often than every 60 seconds
   void check_last_push(const account_name owner){
 
-    lastusdtable store(get_self(), get_self());
+    statstable store(get_self(), get_self());
 
     auto itr = store.find(owner);
     if (itr != store.end()) {
@@ -126,6 +124,7 @@ class DelphiOracle : public eosio::contract {
 
       store.modify( itr, get_self(), [&]( auto& s ) {
         s.timestamp = ctime;
+        s.count++;
       });
 
     } else {
@@ -133,6 +132,7 @@ class DelphiOracle : public eosio::contract {
       store.emplace(get_self(), [&](auto& s) {
         s.owner = owner;
         s.timestamp = current_time();
+        s.count = 0;
       });
 
     }
@@ -152,17 +152,20 @@ class DelphiOracle : public eosio::contract {
     //Calculate approximative rolling average
     if (size>0){
 
+      //Calculate new primary key by substracting one from the previous one
       auto latest = usdstore.begin();
       primary_key = latest->id - 1;
 
-      //Pop oldest point
+      //If new size is greater than the max number of datapoints count
       if (size+1>datapoints_count){
 
         auto oldest = usdstore.end();
         oldest--;
 
+        //Pop oldest point
         usdstore.erase(oldest);
 
+        //Insert next datapoint
         auto c_itr = usdstore.emplace(get_self(), [&](auto& s) {
           s.id = primary_key;
           s.owner = owner;
@@ -170,8 +173,10 @@ class DelphiOracle : public eosio::contract {
           s.timestamp = current_time();
         });
 
+        //Get index sorted by value
         auto value_sorted = usdstore.get_index<N(value)>();
 
+        //skip first 6 values
         auto itr = value_sorted.begin();
         itr++;
         itr++;
@@ -179,17 +184,21 @@ class DelphiOracle : public eosio::contract {
         itr++;
         itr++;
 
+        //get next 9 values
         for (int i = 0; i<9;i++){
           itr++;
           avg+=itr->value;
         }
 
+        //calculate average
         usdstore.modify(c_itr, get_self(), [&](auto& s) {
           s.average = avg / 9;
         });
 
       }
       else {
+
+        //No average is calculated until the expected number of datapoints have been received
         avg = value;
 
         //Push new point at the end of the queue
@@ -261,7 +270,7 @@ class DelphiOracle : public eosio::contract {
   [[eosio::action]]
   void clear() {
     require_auth(titan_account);
-    lastusdtable lstore(get_self(), get_self());
+    statstable lstore(get_self(), get_self());
     usdtable estore(get_self(), get_self());
     oraclestable oracles(get_self(), get_self());
     
