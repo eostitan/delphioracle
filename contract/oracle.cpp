@@ -20,7 +20,7 @@
 using namespace eosio;
 
 //Controlling account
-static const account_name titan_account = N(titanclearer);
+static const account_name titan_account = N(eostitanprod);
 
 //Number of datapoints to hold
 static const uint64_t datapoints_count = 21;
