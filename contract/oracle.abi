@@ -1,24 +1,11 @@
 {
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Oct 13 17:02:35 2018",
     "version": "eosio::abi/1.0",
     "structs": [
         {
             "name": "clear",
             "base": "",
             "fields": []
-        },
-        {
-            "name": "eosusdlast",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "timestamp",
-                    "type": "uint64"
-                }
-            ]
         },
         {
             "name": "eosusd",
@@ -37,16 +24,50 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "accumulator",
-                    "type": "uint64"
-                },
-                {
                     "name": "average",
                     "type": "uint64"
                 },
                 {
                     "name": "timestamp",
                     "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "eosusdstats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "uint64"
+                },
+                {
+                    "name": "count",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "oracles",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "setoracles",
+            "base": "",
+            "fields": [
+                {
+                    "name": "oracleslist",
+                    "type": "name[]"
                 }
             ]
         },
@@ -65,30 +86,41 @@
             ]
         }
     ],
-    "types": [],
     "actions": [
         {
             "name": "clear",
             "type": "clear",
-            "ricardian_contract": "I have no idea what I'm doing. By using this, you acknowledge that you are just as batshit insane as I am and you agree that you will not sue me for any damages or loss resulting from the use of this contract."
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setoracles",
+            "type": "setoracles",
+            "ricardian_contract": ""
         },
         {
             "name": "write",
             "type": "write",
-            "ricardian_contract": "I have no idea what I'm doing. By using this, you acknowledge that you are just as batshit insane as I am and you agree that you will not sue me for any damages or loss resulting from the use of this contract."
+            "ricardian_contract": ""
         }
     ],
     "tables": [
         {
-            "name": "eosusdlast",
-            "type": "eosusdlast",
+            "name": "eosusd",
+            "type": "eosusd",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "eosusd",
-            "type": "eosusd",
+            "name": "eosusdstats",
+            "type": "eosusdstats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "oracles",
+            "type": "oracles",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

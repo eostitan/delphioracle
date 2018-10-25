@@ -8,7 +8,7 @@
   Email: guillaume@eostitan.com
 
   Github: https://github.com/eostitan/delphioracle/
-
+  
   Published under MIT License
 
 */
@@ -20,10 +20,7 @@
 using namespace eosio;
 
 //Controlling account
-static const account_name titan_account = N(delphioracle);
-
-//Approved oracles
-static const account_name oracles[] = {N(eostitanprod), N(eostitantest), N(delphioracle)};
+static const account_name titan_account = N(titanclearer);
 
 //Number of datapoints to hold
 static const uint64_t datapoints_count = 21;
@@ -45,36 +42,51 @@ class DelphiOracle : public eosio::contract {
     uint64_t id;
     account_name owner; 
     uint64_t value;
-    uint64_t accumulator;
     uint64_t average;
     uint64_t timestamp;
 
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
+    uint64_t by_value() const {return value;}
 
-    EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(accumulator)(average)(timestamp))
+    EOSLIB_SERIALIZE( eosusd, (id)(owner)(value)(average)(timestamp))
 
   };
 
-  //Holds the time of last eosusd writes for qualified oracles
-  struct [[eosio::table]] eosusdlast {
+  //Holds the count and time of last eosusd writes for approved oracles
+  struct [[eosio::table]] eosusdstats {
     account_name owner; 
     uint64_t timestamp;
+    uint64_t count;
+
+    account_name primary_key() const {return owner;}
+
+  };
+
+  //Holds the list of oracles
+  struct [[eosio::table]] oracles {
+    account_name owner;
 
     account_name primary_key() const {return owner;}
 
   };
 
   //Multi index types definition
-  typedef eosio::multi_index<N(eosusdlast), eosusdlast> lastusdtable;
-  typedef eosio::multi_index<N(eosusd), eosusd, indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>> usdtable;
+  typedef eosio::multi_index<N(eosusdstats), eosusdstats> statstable;
+  typedef eosio::multi_index<N(oracles), oracles> oraclestable;
+  typedef eosio::multi_index<N(eosusd), eosusd,
+      indexed_by<N(value), const_mem_fun<eosusd, uint64_t, &eosusd::by_value>>, 
+      indexed_by<N(timestamp), const_mem_fun<eosusd, uint64_t, &eosusd::by_timestamp>>> usdtable;
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name owner){
 
-    //Account is oracle if on qualified oracle list
-    for(account_name oracle : oracles){
-      if (oracle == owner) return true;
+    oraclestable oracles(get_self(), get_self());
+
+    auto itr = oracles.begin();
+    while (itr != oracles.end()) {
+        if (itr->owner == owner) return true;
+        else itr++;
     }
 
     account_name producers[21] = { 0 };
@@ -94,7 +106,7 @@ class DelphiOracle : public eosio::contract {
   //Ensure account cannot push data more often than every 60 seconds
   void check_last_push(const account_name owner){
 
-    lastusdtable store(get_self(), get_self());
+    statstable store(get_self(), get_self());
 
     auto itr = store.find(owner);
     if (itr != store.end()) {
@@ -106,6 +118,7 @@ class DelphiOracle : public eosio::contract {
 
       store.modify( itr, get_self(), [&]( auto& s ) {
         s.timestamp = ctime;
+        s.count++;
       });
 
     } else {
@@ -113,6 +126,7 @@ class DelphiOracle : public eosio::contract {
       store.emplace(get_self(), [&](auto& s) {
         s.owner = owner;
         s.timestamp = current_time();
+        s.count = 0;
       });
 
     }
@@ -126,51 +140,87 @@ class DelphiOracle : public eosio::contract {
 
     auto size = std::distance(usdstore.begin(), usdstore.end());
 
-    uint64_t avg;
-    uint64_t accumulated;
+    uint64_t avg = 0;
     uint64_t primary_key ;
 
     //Calculate approximative rolling average
     if (size>0){
 
+      //Calculate new primary key by substracting one from the previous one
       auto latest = usdstore.begin();
-      auto oldest = usdstore.end();
-      oldest--;
-
-      uint64_t p_accumulated = latest->accumulator;
-
       primary_key = latest->id - 1;
 
-      accumulated = latest->accumulator+value;
-
-      //Pop oldest point
+      //If new size is greater than the max number of datapoints count
       if (size+1>datapoints_count){
 
-        accumulated-=oldest->value;
+        auto oldest = usdstore.end();
+        oldest--;
+
+        //Pop oldest point
         usdstore.erase(oldest);
 
+        //Insert next datapoint
+        auto c_itr = usdstore.emplace(get_self(), [&](auto& s) {
+          s.id = primary_key;
+          s.owner = owner;
+          s.value = value;
+          s.timestamp = current_time();
+        });
+
+        //Get index sorted by value
+        auto value_sorted = usdstore.get_index<N(value)>();
+
+        //skip first 6 values
+        auto itr = value_sorted.begin();
+        itr++;
+        itr++;
+        itr++;
+        itr++;
+        itr++;
+
+        //get next 9 values
+        for (int i = 0; i<9;i++){
+          itr++;
+          avg+=itr->value;
+        }
+
+        //calculate average
+        usdstore.modify(c_itr, get_self(), [&](auto& s) {
+          s.average = avg / 9;
+        });
+
       }
+      else {
 
-      avg = (p_accumulated + value) / (size + 1);
+        //No average is calculated until the expected number of datapoints have been received
+        avg = value;
 
+        //Push new point at the end of the queue
+        usdstore.emplace(get_self(), [&](auto& s) {
+          s.id = primary_key;
+          s.owner = owner;
+          s.value = value;
+          s.average = avg;
+          s.timestamp = current_time();
+        });
+
+      }
 
     }
     else {
       primary_key = std::numeric_limits<unsigned long long>::max();
-      accumulated = value;
       avg = value;
+
+      //Push new point at the end of the queue
+      usdstore.emplace(get_self(), [&](auto& s) {
+        s.id = primary_key;
+        s.owner = owner;
+        s.value = value;
+        s.average = avg;
+        s.timestamp = current_time();
+      });
+
     }
-
-    //Push new point at the end of the queue
-    usdstore.emplace(get_self(), [&](auto& s) {
-      s.id = primary_key;
-      s.owner = owner;
-      s.value = value;
-      s.accumulator = accumulated;
-      s.average = avg;
-      s.timestamp = current_time();
-    });
-
 
   }
 
@@ -181,19 +231,42 @@ class DelphiOracle : public eosio::contract {
     require_auth(owner);
 
     eosio_assert(value >= val_min && value <= val_max, "value outside of allowed range");
-
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
+    
     check_last_push(owner);
     update_eosusd_oracle(owner, value);
     
+  }
+
+  //Update oracles list
+  [[eosio::action]]
+  void setoracles(const std::vector<account_name>& oracleslist) {
+    
+    require_auth(titan_account);
+
+    oraclestable oracles(get_self(), get_self());
+
+    while (oracles.begin() != oracles.end()) {
+        auto itr = oracles.end();
+        itr--;
+        oracles.erase(itr);
+    }
+
+    for(const account_name& oracle : oracleslist){
+      oracles.emplace(get_self(), [&](auto& o) {
+        o.owner = oracle;
+      });
+    }
+
   }
 
   //Clear all data
   [[eosio::action]]
   void clear() {
     require_auth(titan_account);
-    lastusdtable lstore(get_self(), get_self());
+    statstable lstore(get_self(), get_self());
     usdtable estore(get_self(), get_self());
+    oraclestable oracles(get_self(), get_self());
     
     while (lstore.begin() != lstore.end()) {
         auto itr = lstore.end();
@@ -206,9 +279,15 @@ class DelphiOracle : public eosio::contract {
         itr--;
         estore.erase(itr);
     }
+    
+    while (oracles.begin() != oracles.end()) {
+        auto itr = oracles.end();
+        itr--;
+        oracles.erase(itr);
+    }
 
   }
 
 };
 
-EOSIO_ABI(DelphiOracle, (write)(clear))
+EOSIO_ABI(DelphiOracle, (write)(setoracles)(clear))
