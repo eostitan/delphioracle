@@ -24,7 +24,7 @@ The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
 This contract has been deployed to the CryptoKylin testnet, on account delphioracle.
 
-## Compile and deploy oracle.cpp
+## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
 
 Clone repository
 
