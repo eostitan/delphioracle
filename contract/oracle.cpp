@@ -29,7 +29,7 @@ static const uint64_t datapoints_count = 21;
 static const uint64_t val_min = 100;
 static const uint64_t val_max = 100000000;
 
-const uint64_t one_minute = 1000000 * 60;
+const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
 
 class DelphiOracle : public eosio::contract {
  public:
