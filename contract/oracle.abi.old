@@ -5,34 +5,10 @@
         {
             "name": "clear",
             "base": "",
-            "fields": [
-                {
-                    "name": "symbol",
-                    "type": "name"
-                }
-            ]
-        },
-        {
-            "name": "configure",
-            "base": "",
             "fields": []
         },
         {
-            "name": "global",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "total_datapoints_count",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
-            "name": "datapoints",
+            "name": "eosusd",
             "base": "",
             "fields": [
                 {
@@ -48,7 +24,7 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "median",
+                    "name": "average",
                     "type": "uint64"
                 },
                 {
@@ -58,7 +34,7 @@
             ]
         },
         {
-            "name": "stats",
+            "name": "eosusdstats",
             "base": "",
             "fields": [
                 {
@@ -72,14 +48,6 @@
                 {
                     "name": "count",
                     "type": "uint64"
-                },
-                {
-                    "name": "last_claim",
-                    "type": "uint64"
-                },
-                {
-                    "name": "balance",
-                    "type": "asset"
                 }
             ]
         },
@@ -94,26 +62,12 @@
             ]
         },
         {
-            "name": "claim",
+            "name": "setoracles",
             "base": "",
             "fields": [
                 {
-                    "name": "owner",
-                    "type": "name"
-                }
-            ]
-        },
-        {
-            "name": "pairs",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "name",
-                    "type": "name"
+                    "name": "oracleslist",
+                    "type": "name[]"
                 }
             ]
         },
@@ -128,32 +82,21 @@
                 {
                     "name": "value",
                     "type": "uint64"
-                },
-                {
-                    "name": "symbol",
-                    "type": "name"
                 }
             ]
         }
     ],
     "actions": [
         {
-            "name": "claim",
-            "type": "claim",
-            "ricardian_contract": "BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.
-IN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.
-SUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME."
-        },
-        {
-            "name": "configure",
-            "type": "configure",
-            "ricardian_contract": "BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.
-IN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.
-SUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME."
-        },
-        {
             "name": "clear",
             "type": "clear",
+            "ricardian_contract": "BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.
+IN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.
+SUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME."
+        },
+        {
+            "name": "setoracles",
+            "type": "setoracles",
             "ricardian_contract": "BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.
 IN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.
 SUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME."
@@ -168,22 +111,15 @@ SUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF 
     ],
     "tables": [
         {
-            "name": "global",
-            "type": "global",
+            "name": "eosusd",
+            "type": "eosusd",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "datapoints",
-            "type": "datapoints",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "stats",
-            "type": "stats",
+            "name": "eosusdstats",
+            "type": "eosusdstats",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
@@ -191,13 +127,6 @@ SUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF 
         {
             "name": "oracles",
             "type": "oracles",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "pairs",
-            "type": "pairs",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
