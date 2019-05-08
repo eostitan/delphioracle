@@ -2,7 +2,7 @@ const Eos = require('eosjs');
 const dotenv = require('dotenv');
 const axios = require('axios');
 
-const url = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD";
+const url = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD&e=Kraken";
 
 dotenv.load();
 
