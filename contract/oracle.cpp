@@ -16,7 +16,7 @@ TODO
 OK - add multi instrument support
 OK - open it to BPs rank 50 or better
 OK - replace the average with median
-do the automated fee distribution based on contribution
+OK - do the automated fee distribution based on contribution
 
 
 */
@@ -348,7 +348,7 @@ typedef eosio::multi_index<N(producers), producer_info,
     check_last_push(owner, symbol);
     update_datapoints(owner, value, symbol);
 
-    require_recipient(N(notifier1111));
+    require_recipient(N(eosusdcom111));
     
   }
 
