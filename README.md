@@ -4,15 +4,13 @@
 
 # DelphiOracle
 
-The DelphiOracle contract acts as a multi-party source of truth, designed to provide the near-realtime price of the EOS/USD pair to other smart contracts or to external users.
+The DelphiOracle contract acts as a multi-party source of truth, designed to provide the near-realtime price of the asset pairs to other smart contracts or to external users.
 
-The contract allows the currently elected block producers and other pre-approved oracles to push the price of EOS expressed in USD, at a maximum frequency of 1 minute.
+The contract allows the current top 50 block producers to push rates for various assets, at a maximum frequency of 1 minute per asset.
 
-Pre-approved oracles are set manually as a mean to bootstrap the oracle's pricefeed. As more elected block producers start pushing values, pre-approved oracles will be removed.
+When a new datapoint is pushed to the contract, the contract will use the median from the last 21 datapoints.
 
-When a new datapoint is pushed to the contract, the contract will remove the top 6 and bottom 6 values, and will perform a continuous moving average calculation over the remaining 9 values.
-
-This provides the same DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 6 block producers are colluding or corrupt.
+This provides strong DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 10 block producers are colluding or corrupt.
 
 Consumer contracts or external applications can retrieve the last price and use it for their needs.
 
@@ -22,7 +20,18 @@ This repository provides the code to the contract, as well as an updating script
 
 The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
-This contract has been deployed to EOS Mainnet and to CryptoKylin testnet, both on account delphioracle.
+## Incentive mechanism for BPs to push rates
+
+Each time a BP pushes a datapoint, a counter for this BP is incremented. The contract supports an EOS transfer notification handler which splits any EOS reward sent to the contract between BPs that are pushing rates, proportionally to the number of datapoints they have pushed.
+
+This allows for anyone relying on this pricefeed to incentivize BPs to join and to push rates, simply by transferring any amount of EOS to the contract.
+
+BPs can claim these rewards by calling the claim function.
+
+```
+cleos push action <eoscontract> claim '{"owner":"<account>"}' -p <account>
+
+```
 
 ## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
 
@@ -31,21 +40,21 @@ Clone repository
 ```
 cd delphioracle
 cd contract
-eosio-cpp oracle.cpp -o oracle.wasm
+eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
 cleos set code <eoscontract> oracle.wasm
 cleos set abi <eoscontract> oracle.abi
 ```
 
 ## Push value to the contract
 
-Pre-approved oracles and currently elected block producers can call the contract up to once every minute, to provide the current price of the EOS/USD pair.
+Qualified block producers can call the contract up to once every minute, to provide the current price of any asset pair.
 
 **Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
 
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
 
 ```
-cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500}' -p acryptotitan@active
+cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500, "symbol":"eosusd"}' -p acryptotitan@active
 ```
 
 
@@ -99,7 +108,7 @@ cleos set action permission eostitantest delphioracle write oracle
 **Note:** *Use average / 10000 to get the actual value.*
 
 ```
-cleos get table <eoscontract> <eoscontract> eosusd --limit 1
+cleos get table <eoscontract> eosusd datapoints --limit 1
 ```
 
 Sample output:
@@ -109,7 +118,7 @@ Sample output:
       "id": "18446744073709551508",
       "owner": "acryptotitan",
       "value": 56800,
-      "average": 56863,
+      "median": 56863,
       "timestamp": "1538937978500000"
     }
   ],
