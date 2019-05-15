@@ -13,6 +13,20 @@
             ]
         },
         {
+            "name": "quote",
+            "base": "",
+            "fields": [
+                {
+                    "name": "value",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pair",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "configure",
             "base": "",
             "fields": []
@@ -126,12 +140,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "value",
-                    "type": "uint64"
-                },
-                {
-                    "name": "symbol",
-                    "type": "name"
+                    "name": "quotes",
+                    "type": "quote[]"
                 }
             ]
         }
