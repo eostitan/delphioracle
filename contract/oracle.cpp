@@ -1,6 +1,6 @@
 /*
 
-  DelphiOracle
+  oracle
 
   Author: Guillaume "Gnome" Babin-Tremblay - EOS Titan
   
@@ -43,9 +43,9 @@ const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
 static const uint64_t standbys = 50; //allowed standby producers rank cutoff
 static const uint64_t paid = 21; //maximum number of oracles getting paid from donations
 
-CONTRACT DelphiOracle : public eosio::contract {
+CONTRACT oracle : public eosio::contract {
  public:
-  DelphiOracle(name receiver, name code, datastream<const char*> ds) : eosio::contract(receiver, code, ds) {}
+  oracle(name receiver, name code, datastream<const char*> ds) : eosio::contract(receiver, code, ds) {}
 
   //Types
 
@@ -456,7 +456,7 @@ typedef eosio::multi_index<name("producers"), producer_info,
 
     print("transfer notifier", "\n");
 
-    auto transfer_data = unpack_action_data<DelphiOracle::st_transfer>();
+    auto transfer_data = unpack_action_data<oracle::st_transfer>();
 
     print("transfer ", name{transfer_data.from}, " ",  name{transfer_data.to}, " ", transfer_data.quantity, "\n");
 
@@ -551,11 +551,11 @@ extern "C" {
         {
             switch(action)
             {
-                EOSIO_DISPATCH_HELPER(DelphiOracle, (write)(clear)(claim)(configure)(transfer))
+                EOSIO_DISPATCH_HELPER(oracle, (write)(clear)(claim)(configure)(transfer))
             }
         }
         else if(code=="eosio.token"_n.value && action=="transfer"_n.value) {
-            execute_action( name(receiver), name(code), &DelphiOracle::transfer);
+            execute_action( name(receiver), name(code), &oracle::transfer);
         }
     }
 }
