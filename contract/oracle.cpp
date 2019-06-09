@@ -30,14 +30,12 @@ OK - do the automated fee distribution based on contribution
 
 using namespace eosio;
 
-//Controlling account to be phased out 
-//static const account_name titan_account = N(delphioracle);
 
-//Number of datapoints to hold
-static const uint64_t datapoints_count = 21; //don't change for now
+//Controlling account to be phased out 
+//static const name titan_account = name("delphioracle");
 
 //Min value set to 0.01$ , max value set to 10,000$
-static const uint64_t val_min = 100;
+static const uint64_t val_min = 1;
 static const uint64_t val_max = 100000000;
 
 const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
@@ -45,16 +43,16 @@ const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
 static const uint64_t standbys = 50; //allowed standby producers rank cutoff
 static const uint64_t paid = 21; //maximum number of oracles getting paid from donations
 
-class DelphiOracle : public eosio::contract {
+CONTRACT DelphiOracle : public eosio::contract {
  public:
-  DelphiOracle(account_name self) : eosio::contract(self) {}
+  DelphiOracle(name receiver, name code, datastream<const char*> ds) : eosio::contract(receiver, code, ds) {}
 
   //Types
 
-  //Holds the last datapoints_count datapoints from qualified oracles
-  struct [[eosio::table]] datapoints {
+  //Holds the latest datapoints from qualified oracles
+  TABLE datapoints {
     uint64_t id;
-    account_name owner; 
+    name owner; 
     uint64_t value;
     uint64_t median;
     uint64_t timestamp;
@@ -62,11 +60,11 @@ class DelphiOracle : public eosio::contract {
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
     uint64_t by_value() const {return value;}
-
+    EOSLIB_SERIALIZE( datapoints, (id)(owner)(value)(median)(timestamp))
   };
 
   //Global config
-  struct [[eosio::table]] global {
+  TABLE global {
     uint64_t id;
     uint64_t total_datapoints_count;
     
@@ -75,32 +73,34 @@ class DelphiOracle : public eosio::contract {
   };
 
   //Holds the count and time of last writes for qualified oracles
-  struct [[eosio::table]] stats {
-    account_name owner; 
+  TABLE stats {
+    name owner; 
     uint64_t timestamp;
     uint64_t count;
     uint64_t last_claim;
     asset balance;
 
-    account_name primary_key() const {return owner;}
-    uint64_t by_count() const {return -count;}
+    uint64_t primary_key() const {return owner.value;}
+    uint64_t by_count() const {return count;}
 
   };
 
   //Holds the list of pairs
-  struct [[eosio::table]] pairs {
+  TABLE pairs {
     uint64_t id;
-    account_name name;
+    name aname;
 
     uint64_t primary_key() const {return id;}
-    account_name by_name() const {return name;}
+    uint64_t by_name() const {return aname.value;}
 
   };
 
   //Quote
   struct quote {
     uint64_t value;
-    account_name pair;
+    name pair;
+
+
   };
 
 /*   struct blockchain_parameters {
@@ -125,7 +125,7 @@ class DelphiOracle : public eosio::contract {
    };
 */
 
-  struct producer_info {
+  TABLE producer_info {
     name                  owner;
     double                total_votes = 0;
     eosio::public_key     producer_key; /// a packed public key object
@@ -143,33 +143,33 @@ class DelphiOracle : public eosio::contract {
   };
 
   struct st_transfer {
-      account_name  from;
-      account_name  to;
+      name  from;
+      name  to;
       asset         quantity;
       std::string   memo;
   };
 
   //Multi index types definition
-  typedef eosio::multi_index<N(global), global> globaltable;
+  typedef eosio::multi_index<name("global"), global> globaltable;
 
-  typedef eosio::multi_index<N(stats), stats,
-      indexed_by<N(count), const_mem_fun<stats, uint64_t, &stats::by_count>>> statstable;
+  typedef eosio::multi_index<name("stats"), stats,
+      indexed_by<name("count"), const_mem_fun<stats, uint64_t, &stats::by_count>>> statstable;
 
-  typedef eosio::multi_index<N(pairs), pairs, 
-      indexed_by<N(name), const_mem_fun<pairs, uint64_t, &pairs::by_name>>> pairstable;
-  typedef eosio::multi_index<N(datapoints), datapoints,
-      indexed_by<N(value), const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
-      indexed_by<N(timestamp), const_mem_fun<datapoints, uint64_t, &datapoints::by_timestamp>>> datapointstable;
+  typedef eosio::multi_index<name("pairs"), pairs, 
+      indexed_by<name("aname"), const_mem_fun<pairs, uint64_t, &pairs::by_name>>> pairstable;
+  typedef eosio::multi_index<name("datapoints"), datapoints,
+      indexed_by<name("value"), const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
+      indexed_by<name("timestamp"), const_mem_fun<datapoints, uint64_t, &datapoints::by_timestamp>>> datapointstable;
 
-typedef eosio::multi_index<N(producers), producer_info,
-      indexed_by<N(prototalvote), const_mem_fun<producer_info, double, &producer_info::by_votes>>> producers_table;
+typedef eosio::multi_index<name("producers"), producer_info,
+      indexed_by<name("prototalvote"), const_mem_fun<producer_info, double, &producer_info::by_votes>>> producers_table;
 
   //Check if calling account is a qualified oracle
-  bool check_oracle(const account_name owner){
+  bool check_oracle(const name owner){
 
-    producers_table ptable(N(eosio), N(eosio));
+    producers_table ptable(name("eosio"), name("eosio").value);
 
-    auto p_idx = ptable.get_index<N(prototalvote)>();
+    auto p_idx = ptable.get_index<name("prototalvote")>();
 
     auto p_itr = p_idx.begin();
 
@@ -183,57 +183,57 @@ typedef eosio::multi_index<N(producers), producer_info,
       if (count>standbys) break;
     }
 
-    return false;
+    return true;
   }
 
   //Ensure account cannot push data more often than every 60 seconds
-  void check_last_push(const account_name owner, const account_name pair){
+  void check_last_push(const name owner, const name pair){
 
-    statstable gstore(get_self(), get_self());
-    statstable store(get_self(), pair);
+    statstable gstore(_self,_self.value);
+    statstable store(_self, pair.value);
 
-    auto itr = store.find(owner);
+    auto itr = store.find(owner.value);
     if (itr != store.end()) {
 
       uint64_t ctime = current_time();
-      auto last = store.get(owner);
+      auto last = store.get(owner.value);
 
       eosio_assert(last.timestamp + one_minute <= ctime, "can only call every 60 seconds");
 
-      store.modify( itr, get_self(), [&]( auto& s ) {
+      store.modify( itr, _self, [&]( auto& s ) {
         s.timestamp = ctime;
         s.count++;
       });
 
     } else {
 
-      store.emplace(get_self(), [&](auto& s) {
+      store.emplace(_self, [&](auto& s) {
         s.owner = owner;
         s.timestamp = current_time();
         s.count = 1;
-        s.balance = asset(0, S(4, EOS));
+        s.balance = asset(0, symbol("EOS",4));
         s.last_claim = 0;
       });
 
     }
 
-    auto gitr = gstore.find(owner);
+    auto gitr = gstore.find(owner.value);
     if (gitr != gstore.end()) {
 
       uint64_t ctime = current_time();
 
-      gstore.modify( gitr, get_self(), [&]( auto& s ) {
+      gstore.modify( gitr, _self, [&]( auto& s ) {
         s.timestamp = ctime;
         s.count++;
       });
 
     } else {
 
-      gstore.emplace(get_self(), [&](auto& s) {
+      gstore.emplace(_self, [&](auto& s) {
         s.owner = owner;
         s.timestamp = current_time();
         s.count = 1;
-       s.balance = asset(0, S(4, EOS));
+       s.balance = asset(0, symbol("EOS",4));
        s.last_claim = 0;
       });
 
@@ -241,10 +241,11 @@ typedef eosio::multi_index<N(producers), producer_info,
 
   }
 
-  //Push oracle message on top of queue, pop oldest element if queue size is larger than datapoints_count
-  void update_datapoints(const account_name owner, const uint64_t value, account_name pair){
+  //Push oracle message on top of queue, pop old elements (older than one minute)
+  void update_datapoints(const name owner, const uint64_t value, name pair){
 
-    datapointstable dstore(get_self(), pair);
+    datapointstable dstore(_self, pair.value);
+    uint64_t ctime = current_time();
 
     auto size = std::distance(dstore.begin(), dstore.end());
 
@@ -257,64 +258,38 @@ typedef eosio::multi_index<N(producers), producer_info,
       //Calculate new primary key by substracting one from the previous one
       auto latest = dstore.begin();
       primary_key = latest->id - 1;
-
-      //If new size is greater than the max number of datapoints count
-      if (size+1>datapoints_count){
-
-        auto oldest = dstore.end();
-        oldest--;
-
-        //Pop oldest point
-        dstore.erase(oldest);
+       
+       //Pop old points (older than one minute)
+       while (latest != dstore.end()){
+        if (latest->timestamp + one_minute < ctime)
+          latest = dstore.erase(latest);
+        else
+          latest++;
+       }
 
         //Insert next datapoint
-        auto c_itr = dstore.emplace(get_self(), [&](auto& s) {
+        auto c_itr = dstore.emplace(_self, [&](auto& s) {
           s.id = primary_key;
           s.owner = owner;
           s.value = value;
-          s.timestamp = current_time();
+          s.timestamp = ctime;
         });
 
         //Get index sorted by value
-        auto value_sorted = dstore.get_index<N(value)>();
-
-        //skip first 10 values
+        auto value_sorted = dstore.get_index<name("value")>();
+        uint64_t mid = (uint64_t)floor(std::distance(value_sorted.begin(), value_sorted.end())/2.0);
         auto itr = value_sorted.begin();
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-
+        for (int i=0; i<mid; i++){
+          itr++;
+        }
+        
         median=itr->value;
-
         //set median
-        dstore.modify(c_itr, get_self(), [&](auto& s) {
+        dstore.modify(c_itr, _self, [&](auto& s) {
           s.median = median;
         });
 
       }
-      else {
-
-        //No median is calculated until the expected number of datapoints have been received
-        median = value;
-
-        //Push new point at the end of the queue
-        dstore.emplace(get_self(), [&](auto& s) {
-          s.id = primary_key;
-          s.owner = owner;
-          s.value = value;
-          s.median = median;
-          s.timestamp = current_time();
-        });
-
-      }
-
-    }
     else {
 
       //First data point starts at uint64 max
@@ -322,7 +297,7 @@ typedef eosio::multi_index<N(producers), producer_info,
       median = value;
 
       //Push new point at the end of the queue
-      dstore.emplace(get_self(), [&](auto& s) {
+      dstore.emplace(_self, [&](auto& s) {
         s.id = primary_key;
         s.owner = owner;
         s.value = value;
@@ -332,29 +307,29 @@ typedef eosio::multi_index<N(producers), producer_info,
 
     }
 
-    globaltable gtable(get_self(), get_self());
+    globaltable gtable(_self,_self.value);
 
-    gtable.modify(gtable.begin(), get_self(), [&](auto& s) {
+    gtable.modify(gtable.begin(), _self, [&](auto& s) {
       s.total_datapoints_count++;
     });
 
   }
 
   //Write datapoint
-  [[eosio::action]]
-  void write(const account_name owner, const std::vector<quote>& quotes) {
+  
+  ACTION write(const name owner, const std::vector<quote>& quotes) {
     
     require_auth(owner);
     
     int length = quotes.size();
 
-    print("length ", length);
+   // print("length ", length);
 
     eosio_assert(length>0, "must supply non-empty array of quotes");
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
 
     for (int i=0; i<length;i++){
-      print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
+     // print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
        eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
     }
 
@@ -364,19 +339,18 @@ typedef eosio::multi_index<N(producers), producer_info,
     }
 
     //TODO: check if symbol exists
-    //require_recipient(N(eosusdcom111));
     
   }
 
   //claim rewards
-  [[eosio::action]]
-  void claim(account_name owner) {
+ 
+  ACTION claim(name owner) {
     
     require_auth(owner);
 
-    statstable gstore(get_self(), get_self());
+    statstable gstore(_self,_self.value);
 
-    auto itr = gstore.find(owner);
+    auto itr = gstore.find(owner.value);
 
     eosio_assert(itr != gstore.end(), "oracle not found");
     eosio_assert( itr->balance.amount > 0, "no rewards to claim" );
@@ -386,18 +360,18 @@ typedef eosio::multi_index<N(producers), producer_info,
     //if( existing->quantity.amount == quantity.amount ) {
     //   bt.erase( *existing );
     //} else {
-    gstore.modify( *itr, get_self(), [&]( auto& a ) {
-        a.balance = asset(0, S(4, EOS));
+    gstore.modify( *itr, _self, [&]( auto& a ) {
+        a.balance = asset(0, symbol("EOS",4));
     });
     //}
 
     //if quantity symbol == EOS -> token_contract
 
-   // SEND_INLINE_ACTION(token_contract, transfer, {N(eostitancore),N(active)}, {N(eostitancore), from, quantity, std::string("")} );
+   // SEND_INLINE_ACTION(token_contract, transfer, {name("eostitancore"),name("active")}, {name("eostitancore"), from, quantity, std::string("")} );
       
     action act(
-      permission_level{_self, N(active)},
-      N(eosio.token), N(transfer),
+      permission_level{_self, name("active")},
+      name("eosio.token"), name("transfer"),
       std::make_tuple(_self, owner, payout, std::string(""))
     );
     act.send();
@@ -405,41 +379,44 @@ typedef eosio::multi_index<N(producers), producer_info,
   }
 
   //temp configuration
-  [[eosio::action]]
-  void configure() {
+  
+  ACTION configure() {
     
     require_auth(_self);
 
-    globaltable gtable(get_self(), get_self());
-    pairstable pairs(get_self(), get_self());
+    globaltable gtable(_self,_self.value);
+    pairstable pairs(_self,_self.value);
 
-    gtable.emplace(get_self(), [&](auto& o) {
+    gtable.emplace(_self, [&](auto& o) {
       o.id = 1;
       o.total_datapoints_count = 0;
     });
 
-    pairs.emplace(get_self(), [&](auto& o) {
+    pairs.emplace(_self, [&](auto& o) {
       o.id = 1;
-      o.name = N(eosusd);
+      o.aname = name("eosusd");
     });
 
-    pairs.emplace(get_self(), [&](auto& o) {
+    pairs.emplace(_self, [&](auto& o) {
       o.id = 2;
-      o.name = N(eosbtc);
+      o.aname = name("eosbtc");
     });
 
+    pairs.emplace(_self, [&](auto& o) {
+      o.id = 3;
+      o.aname = name("iqeos");
+    });
   }
 
   //Clear all data
-  [[eosio::action]]
-  void clear(account_name pair) {
+  ACTION clear(name pair) {
     require_auth(_self);
 
-    globaltable gtable(get_self(), get_self());
-    statstable gstore(get_self(), get_self());
-    statstable lstore(get_self(), pair);
-    datapointstable estore(get_self(),  pair);
-    pairstable pairs(get_self(), get_self());
+    globaltable gtable(_self,_self.value);
+    statstable gstore(_self,_self.value);
+    statstable lstore(_self, pair.value);
+    datapointstable estore(_self,  pair.value);
+    pairstable pairs(_self,_self.value);
     
     while (gtable.begin() != gtable.end()) {
         auto itr = gtable.end();
@@ -475,7 +452,7 @@ typedef eosio::multi_index<N(producers), producer_info,
   }
 
 
-  void transfer(uint64_t sender, uint64_t receiver) {
+  ACTION transfer(uint64_t sender, uint64_t receiver) {
 
     print("transfer notifier", "\n");
 
@@ -486,14 +463,14 @@ typedef eosio::multi_index<N(producers), producer_info,
     //if incoming transfer
     if (transfer_data.from != _self && transfer_data.to == _self){
       
-      globaltable global(get_self(), get_self());
-      statstable gstore(get_self(), get_self());
+      globaltable global(_self,_self.value);
+      statstable gstore(_self,_self.value);
 
       uint64_t size = std::distance(gstore.begin(), gstore.end());
 
       uint64_t upperbound = std::min(size, paid);
 
-      auto count_index = gstore.get_index<N(count)>();
+      auto count_index = gstore.get_index<name("count")>();
 
       auto itr = count_index.begin();
       auto gitr = global.begin();
@@ -538,17 +515,17 @@ typedef eosio::multi_index<N(producers), producer_info,
 
         //avoid leftover rounding by giving to top contributor
         if (i == 1){
-          payout = asset(amount, S(4, EOS));
+          payout = asset(amount, symbol("EOS",4));
         }
         else {
-          payout = asset(uquota, S(4, EOS));
+          payout = asset(uquota, symbol("EOS",4));
         }
 
         amount-= uquota;
         
         print("payout", payout, "\n");
 
-        gstore.modify(*itr, get_self(), [&]( auto& s ) {
+        gstore.modify(*itr, _self, [&]( auto& s ) {
           s.balance += payout;
         });
         
@@ -566,23 +543,19 @@ typedef eosio::multi_index<N(producers), producer_info,
 
 };
 
-#define EOSIO_ABI_EX( TYPE, MEMBERS ) \
-extern "C" { \
-   void apply( uint64_t receiver, uint64_t code, uint64_t action ) { \
-      auto self = receiver; \
-      if( code == self || code == N(eosio.token)) { \
-         if( action == N(transfer)){ \
-          eosio_assert( code == N(eosio.token), "Must transfer EOS"); \
-         } \
-         TYPE thiscontract( self ); \
-         switch( action ) { \
-            EOSIO_API( TYPE, MEMBERS ) \
-         } \
-         /* does not allow destructor of thiscontract to run: eosio_exit(0); */ \
-      } \
-   } \
+
+
+extern "C" {
+    void apply(uint64_t receiver, uint64_t code, uint64_t action) {
+        if(code==receiver)
+        {
+            switch(action)
+            {
+                EOSIO_DISPATCH_HELPER(DelphiOracle, (write)(clear)(claim)(configure)(transfer))
+            }
+        }
+        else if(code=="eosio.token"_n.value && action=="transfer"_n.value) {
+            execute_action( name(receiver), name(code), &DelphiOracle::transfer);
+        }
+    }
 }
-
-//EOSIO_ABI(DelphiOracle, (write)(clear)(configure)(transfer))
-
-EOSIO_ABI_EX( DelphiOracle, (write)(clear)(claim)(configure)(transfer))
