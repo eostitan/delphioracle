@@ -55,6 +55,20 @@
             ]
         },
         {
+            "name": "extended_symbol",
+            "base": "",
+            "fields": [
+                {
+                    "name": "symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "global",
             "base": "",
             "fields": [
@@ -79,6 +93,14 @@
                 {
                     "name": "aname",
                     "type": "name"
+                },
+                {
+                    "name": "base",
+                    "type": "extended_symbol"
+                },
+                {
+                    "name": "quote",
+                    "type": "extended_symbol"
                 }
             ]
         },

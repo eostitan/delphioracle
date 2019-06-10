@@ -89,6 +89,8 @@ CONTRACT oracle : public eosio::contract {
   TABLE pairs {
     uint64_t id;
     name aname;
+    extended_symbol base;
+    extended_symbol quote;
 
     uint64_t primary_key() const {return id;}
     uint64_t by_name() const {return aname.value;}
@@ -99,7 +101,6 @@ CONTRACT oracle : public eosio::contract {
   struct quote {
     uint64_t value;
     name pair;
-
 
   };
 
@@ -395,17 +396,45 @@ typedef eosio::multi_index<name("producers"), producer_info,
     pairs.emplace(_self, [&](auto& o) {
       o.id = 1;
       o.aname = name("eosusd");
+      o.base = extended_symbol(symbol("EOS",4),name("eosio.token"));
+      o.quote = extended_symbol(symbol("USD",4),name("fiat"));
     });
 
     pairs.emplace(_self, [&](auto& o) {
       o.id = 2;
       o.aname = name("eosbtc");
+      o.base = extended_symbol(symbol("EOS",4),name("eosio.token"));
+      o.quote = extended_symbol(symbol("BTC",4),name("btc"));
     });
 
     pairs.emplace(_self, [&](auto& o) {
       o.id = 3;
       o.aname = name("iqeos");
+      o.base = extended_symbol(symbol("IQ",3),name("everipediaiq"));
+      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
     });
+
+    pairs.emplace(_self, [&](auto& o) {
+      o.id = 4;
+      o.aname = name("peoseos");
+      o.base = extended_symbol(symbol("PEOS",4),name("thepeostoken"));
+      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+    });
+
+    pairs.emplace(_self, [&](auto& o) {
+      o.id = 5;
+      o.aname = name("diceeos");
+      o.base = extended_symbol(symbol("DICE",4),name("betdicetoken"));
+      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+    });
+
+    pairs.emplace(_self, [&](auto& o) {
+      o.id = 6;
+      o.aname = name("tpteos");
+      o.base = extended_symbol(symbol("TPT",4),name("eosiotptoken"));
+      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+    });
+
   }
 
   //Clear all data
