@@ -184,7 +184,7 @@ typedef eosio::multi_index<name("producers"), producer_info,
       if (count>standbys) break;
     }
 
-    return true;
+    return false;
   }
 
   //Ensure account cannot push data more often than every 60 seconds
