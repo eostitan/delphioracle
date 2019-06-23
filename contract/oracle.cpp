@@ -97,6 +97,12 @@ class DelphiOracle : public eosio::contract {
 
   };
 
+  //Quote
+  struct quote {
+    uint64_t value;
+    account_name pair;
+  };
+
 /*   struct blockchain_parameters {
       uint64_t free_ram()const { return max_ram_size - total_ram_bytes_reserved; }
 
@@ -181,10 +187,10 @@ typedef eosio::multi_index<N(producers), producer_info,
   }
 
   //Ensure account cannot push data more often than every 60 seconds
-  void check_last_push(const account_name owner, const account_name symbol){
+  void check_last_push(const account_name owner, const account_name pair){
 
     statstable gstore(get_self(), get_self());
-    statstable store(get_self(), symbol);
+    statstable store(get_self(), pair);
 
     auto itr = store.find(owner);
     if (itr != store.end()) {
@@ -236,9 +242,9 @@ typedef eosio::multi_index<N(producers), producer_info,
   }
 
   //Push oracle message on top of queue, pop oldest element if queue size is larger than datapoints_count
-  void update_datapoints(const account_name owner, const uint64_t value, account_name symbol){
+  void update_datapoints(const account_name owner, const uint64_t value, account_name pair){
 
-    datapointstable dstore(get_self(), symbol);
+    datapointstable dstore(get_self(), pair);
 
     auto size = std::distance(dstore.begin(), dstore.end());
 
@@ -336,19 +342,29 @@ typedef eosio::multi_index<N(producers), producer_info,
 
   //Write datapoint
   [[eosio::action]]
-  void write(const account_name owner, const uint64_t value, account_name symbol = N(eosusd)) {
+  void write(const account_name owner, const std::vector<quote>& quotes) {
     
     require_auth(owner);
+    
+    int length = quotes.size();
 
-    eosio_assert(value >= val_min && value <= val_max, "value outside of allowed range");
+    print("length ", length);
+
+    eosio_assert(length>0, "must supply non-empty array of quotes");
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
 
+    for (int i=0; i<length;i++){
+      print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
+       eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
+    }
+
+    for (int i=0; i<length;i++){    
+      check_last_push(owner, quotes[i].pair);
+      update_datapoints(owner, quotes[i].value, quotes[i].pair);
+    }
+
     //TODO: check if symbol exists
-
-    check_last_push(owner, symbol);
-    update_datapoints(owner, value, symbol);
-
-    require_recipient(N(eosusdcom111));
+    //require_recipient(N(eosusdcom111));
     
   }
 
@@ -416,13 +432,13 @@ typedef eosio::multi_index<N(producers), producer_info,
 
   //Clear all data
   [[eosio::action]]
-  void clear(account_name symbol) {
+  void clear(account_name pair) {
     require_auth(_self);
 
     globaltable gtable(get_self(), get_self());
     statstable gstore(get_self(), get_self());
-    statstable lstore(get_self(), symbol);
-    datapointstable estore(get_self(),  symbol);
+    statstable lstore(get_self(), pair);
+    datapointstable estore(get_self(),  pair);
     pairstable pairs(get_self(), get_self());
     
     while (gtable.begin() != gtable.end()) {
@@ -566,8 +582,6 @@ extern "C" { \
       } \
    } \
 }
-
-
 
 //EOSIO_ABI(DelphiOracle, (write)(clear)(configure)(transfer))
 
