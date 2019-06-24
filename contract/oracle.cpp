@@ -69,7 +69,7 @@ class DelphiOracle : public eosio::contract {
   struct [[eosio::table]] global {
     uint64_t id;
     uint64_t total_datapoints_count;
-    uint64_t total_claimed;
+    asset total_claimed;
     
     uint64_t primary_key() const {return id;}
 

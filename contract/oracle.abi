@@ -45,7 +45,7 @@
                 },
                 {
                     "name": "total_claimed",
-                    "type": "uint64"
+                    "type": "asset"
                 }
             ]
         },
