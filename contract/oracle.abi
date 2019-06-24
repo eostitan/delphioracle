@@ -42,6 +42,10 @@
                 {
                     "name": "total_datapoints_count",
                     "type": "uint64"
+                },
+                {
+                    "name": "total_claimed",
+                    "type": "uint64"
                 }
             ]
         },

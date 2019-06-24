@@ -69,6 +69,7 @@ class DelphiOracle : public eosio::contract {
   struct [[eosio::table]] global {
     uint64_t id;
     uint64_t total_datapoints_count;
+    uint64_t total_claimed;
     
     uint64_t primary_key() const {return id;}
 
@@ -374,11 +375,13 @@ typedef eosio::multi_index<N(producers), producer_info,
     
     require_auth(owner);
 
-    statstable gstore(get_self(), get_self());
+    globaltable gtable(get_self(), get_self());
+    statstable sstore(get_self(), get_self());
 
-    auto itr = gstore.find(owner);
+    auto itr = sstore.find(owner);
+    auto gitr = gtable.begin();
 
-    eosio_assert(itr != gstore.end(), "oracle not found");
+    eosio_assert(itr != sstore.end(), "oracle not found");
     eosio_assert( itr->balance.amount > 0, "no rewards to claim" );
 
     asset payout = itr->balance;
@@ -386,10 +389,15 @@ typedef eosio::multi_index<N(producers), producer_info,
     //if( existing->quantity.amount == quantity.amount ) {
     //   bt.erase( *existing );
     //} else {
-    gstore.modify( *itr, get_self(), [&]( auto& a ) {
+    sstore.modify( *itr, get_self(), [&]( auto& a ) {
         a.balance = asset(0, S(4, EOS));
         a.last_claim = current_time();
     });
+
+    globaltable.modify( *gitr, get_self(), [&]( auto& a ) {
+        a.total_claimed += payout;
+    });
+
     //}
 
     //if quantity symbol == EOS -> token_contract
