@@ -42,7 +42,7 @@ static const uint64_t val_max = 100000000;
 
 const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
 
-static const uint64_t standbys = 60; //allowed standby producers rank cutoff
+static const uint64_t standbys = 105; //allowed standby producers rank cutoff
 static const uint64_t paid = 21; //maximum number of oracles getting paid from donations
 
 class DelphiOracle : public eosio::contract {
@@ -388,7 +388,7 @@ typedef eosio::multi_index<N(producers), producer_info,
     //} else {
     gstore.modify( *itr, get_self(), [&]( auto& a ) {
         a.balance = asset(0, S(4, EOS));
-        a.last_claim_time = current_time();
+        a.last_claim = current_time();
     });
     //}
 
