@@ -355,7 +355,7 @@ typedef eosio::multi_index<N(producers), producer_info,
 
     for (int i=0; i<length;i++){
       print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
-       eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
+      eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
     }
 
     for (int i=0; i<length;i++){    
@@ -388,6 +388,7 @@ typedef eosio::multi_index<N(producers), producer_info,
     //} else {
     gstore.modify( *itr, get_self(), [&]( auto& a ) {
         a.balance = asset(0, S(4, EOS));
+        a.last_claim_time = current_time();
     });
     //}
 

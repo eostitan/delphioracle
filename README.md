@@ -6,7 +6,7 @@
 
 The DelphiOracle contract acts as a multi-party source of truth, designed to provide the near-realtime price of the asset pairs to other smart contracts or to external users.
 
-The contract allows the current top 60 block producers to push rates for various assets, at a maximum frequency of 1 minute per asset.
+The contract allows the current top 105 block producers to push rates for various assets, at a maximum frequency of 1 minute per asset.
 
 When a new datapoint is pushed to the contract, the contract will use the median from the last 21 datapoints.
 
