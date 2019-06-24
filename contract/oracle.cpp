@@ -394,7 +394,7 @@ typedef eosio::multi_index<N(producers), producer_info,
         a.last_claim = current_time();
     });
 
-    globaltable.modify( *gitr, get_self(), [&]( auto& a ) {
+    gtable.modify( *gitr, get_self(), [&]( auto& a ) {
         a.total_claimed += payout;
     });
 
