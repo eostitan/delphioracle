@@ -20,7 +20,6 @@ Add timeframes (in seconds)
   60 min  -> 3600
   daily   -> 86400
 OK - Add voting system
-
 */
 
 #include <eosio.system/eosio.system.hpp>
