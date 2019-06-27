@@ -33,6 +33,10 @@ cleos push action <eoscontract> claim '{"owner":"<account>"}' -p <account>
 
 ```
 
+In addition, the contract act as a proxy, and automatically revotes every 10,000 datapoints for up to 30 BPs, ranking them by total number of datapoints contributed since inception.
+
+Users and dApps relying on DelphiOracle are invited to delegate their votes to it, to support contributing BPs.
+
 ## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
 
 Clone repository
@@ -49,7 +53,9 @@ cleos set abi <eoscontract> oracle.abi
 
 Qualified block producers can call the contract up to once every minute, to provide the current price of any asset pair.
 
-**Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+**Note:** 
+*for EOS/USD (eosusd), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+*for EOS/BTC (eosbtc), price must be pushed as integer, using the last 8 digits to represent the value after the decimal separator (100,000,000th of a bitcoin precision)*
 
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
 
