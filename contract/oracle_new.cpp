@@ -14,12 +14,13 @@
 TODO
 
 Add bounty system
+OK - Add auto-voting system
 Parse memo field of transfers and allocate the transfer to bounty or to distribution
 Add timeframes (in seconds)
   1 min   -> 60
   60 min  -> 3600
   daily   -> 86400
-OK - Add voting system
+Add user - payer logic for additional pairs
 
 */
 
@@ -32,14 +33,14 @@ OK - Add voting system
 
 using namespace eosio;
 
-//Controlling account to be phased out 
-//static const account_name titan_account = N(delphioracle);
-
-//Number of datapoints to hold
+//Number of datapoints to hold per asset
 static const uint64_t datapoints_count = 21; //don't change for now
 
+//Number of bars to hold per asset
+static const uint64_t bars_count = 30;
+
 //revote every vote_interval datapoints
-static const uint64_t vote_interval = 10000;
+static const uint64_t vote_interval = 1;
 
 //Min value set to 0.01$ , max value set to 10,000$
 static const uint64_t val_min = 100;
@@ -70,6 +71,31 @@ class DelphiOracle : public eosio::contract {
 
   };
 
+  //Holds aggregated datapoints
+  struct [[eosio::table]] bars {
+    uint64_t id;
+
+    uint64_t high;
+    uint64_t low;
+    uint64_t median;
+    uint64_t timestamp;
+
+    uint64_t primary_key() const {return id;}
+    uint64_t by_timestamp() const {return timestamp;}
+
+  };
+
+  //Holds bounties information
+  struct [[eosio::table]] bounties {
+
+    std::string description;
+    account_name name;
+    asset bounty;
+
+    uint64_t primary_key() const {return name;}
+
+  };
+
   //Global config
   struct [[eosio::table]] global {
     uint64_t id;
@@ -96,7 +122,10 @@ class DelphiOracle : public eosio::contract {
   //Holds the list of pairs
   struct [[eosio::table]] pairs {
     uint64_t id;
+    asset bounty;
     account_name name;
+    //uint64_t precision;
+    //account_name owner;
 
     uint64_t primary_key() const {return id;}
     account_name by_name() const {return name;}
@@ -167,8 +196,10 @@ class DelphiOracle : public eosio::contract {
       indexed_by<N(value), const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
       indexed_by<N(timestamp), const_mem_fun<datapoints, uint64_t, &datapoints::by_timestamp>>> datapointstable;
 
-typedef eosio::multi_index<N(producers), producer_info,
+  typedef eosio::multi_index<N(producers), producer_info,
       indexed_by<N(prototalvote), const_mem_fun<producer_info, double, &producer_info::by_votes>>> producers_table;
+
+  typedef eosio::multi_index<N(bounties), bounties> bountiestable;
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name owner){
@@ -245,6 +276,39 @@ typedef eosio::multi_index<N(producers), producer_info,
 
     }
 
+  }
+
+  void update_votes(){
+
+    print("voting for bps:", "\n");
+
+    std::vector<account_name> bps;
+
+    statstable gstore(get_self(), get_self());
+
+    auto sorted_idx = gstore.get_index<N(count)>();
+    auto itr = sorted_idx.begin();
+
+    uint64_t count = 0;
+
+    while(itr != sorted_idx.end() && count<30){
+      print(itr->owner, "\n");
+      bps.push_back(itr->owner);
+
+      itr++;
+      count++;
+
+    }
+
+    sort(bps.begin(), bps.end());
+
+    action act(
+      permission_level{_self, N(active)},
+      N(eosio), N(voteproducer),
+      std::make_tuple(_self, N(""), bps)
+    );
+    act.send();
+ 
   }
 
   //Push oracle message on top of queue, pop oldest element if queue size is larger than datapoints_count
@@ -344,6 +408,8 @@ typedef eosio::multi_index<N(producers), producer_info,
       s.total_datapoints_count++;
     });
 
+    print("gtable.begin()->total_datapoints_count:", gtable.begin()->total_datapoints_count,  "\n");
+
     if (gtable.begin()->total_datapoints_count % vote_interval == 0){
       update_votes();
     }
@@ -373,6 +439,7 @@ typedef eosio::multi_index<N(producers), producer_info,
       update_datapoints(owner, quotes[i].value, quotes[i].pair);
     }
 
+    print("done \n");
     //TODO: check if symbol exists
     //require_recipient(N(eosusdcom111));
     
@@ -448,6 +515,69 @@ typedef eosio::multi_index<N(producers), producer_info,
 
   }
 
+  //create a new pair request bounty
+  //[[eosio::action]]
+  void new_bounty(account_name proposer, account_name name, std::string description) {
+
+    require_auth(proposer);
+
+    //add request, proposer pays the RAM for the request + data structure for datapoints & bars. Anyone can then transfer EOS to the smart contract with the name
+    //of the bounty in the memo to have the amount added to the bounty.
+
+  }
+
+  //cancel a bounty
+  //[[eosio::action]]
+  void cancel_bounty(account_name name, std::string reason) {
+
+    //eosio_assert(has_auth(_self) || has_auth(proposer), "missing required authority of contract or proposer");
+
+    //cancel bounty, post reason to chain. Refund accumulated bounty or split between oracles?
+
+  }
+
+  //approve_bounty
+  //[[eosio::action]]
+  void approve_bounty(account_name name, account_name new_name, std::string description) {
+
+    require_auth(_self); //controlled by msig over active key
+
+    //add pair from existing bounty request, move bounty amount to deferred bounty payout, delete bounty request
+
+  }
+
+  //edit a bounty's information
+  //[[eosio::action]]
+  void edit_bounty_info(account_name name, std::string description) {
+
+    account_name proposer;
+
+    require_auth(proposer);
+
+    //edit bounty description
+
+  }
+
+  //edit pair 
+  //[[eosio::action]]
+  void edit_pair(account_name name, std::string description) {
+    
+    require_auth(_self); //controlled by msig over active key
+    
+    //edit pair description
+
+  }
+
+  //delete pair 
+  //[[eosio::action]]
+  void delete_pair(account_name name, std::string reason) {
+    
+    require_auth(_self); //controlled by msig over active key
+    
+    //delete pair, post reason to chain for reference
+
+  }
+
   //Clear all data
   [[eosio::action]]
   void clear(account_name pair) {
@@ -492,37 +622,97 @@ typedef eosio::multi_index<N(producers), producer_info,
 
   }
 
-  void update_votes(){
+  void process_donation(account_name scope, asset quantity){
 
-    print("voting for bps:", "\n");
+    statstable cstore(get_self(), scope);
 
-    std::vector<account_name> bps;
+    uint64_t size = std::distance(cstore.begin(), cstore.end());
 
-    statstable gstore(get_self(), get_self());
+    uint64_t upperbound = std::min(size, paid);
 
-    auto sorted_idx = gstore.get_index<N(count)>();
-    auto itr = sorted_idx.begin();
+    auto count_index = cstore.get_index<N(count)>();
 
-    uint64_t count = 0;
+    auto itr = count_index.begin();
 
-    while(itr != sorted_idx.end() && count<30){
-      print(itr->owner, "\n");
-      bps.push_back(itr->owner);
+    uint64_t total_datapoints = 0; //gitr->total_datapoints_count;
 
-      itr++;
-      count++;
+    print("upperbound", upperbound, "\n");
+
+    //Move pointer to upperbound, counting total number of datapoints for oracles elligible for payout
+    for (uint64_t i=1;i<=upperbound;i++){
+      total_datapoints+=itr->count;
+      
+      if (i<upperbound ){
+        itr++;
+        print("increment 1", "\n");
+
+      } 
 
     }
 
-    sort(bps.begin(), bps.end());
+    print("total_datapoints", total_datapoints, "\n");
 
-    action act(
-      permission_level{_self, N(active)},
-      N(eosio), N(voteproducer),
-      std::make_tuple(_self, N(""), bps)
-    );
-    act.send();
- 
+    uint64_t amount = quantity.amount;
+
+    //Move pointer back to 0, calculating prorated contribution of oracle and allocating proportion of donation
+    for (uint64_t i=upperbound;i>=1;i--){
+
+      uint64_t datapoints = itr->count;
+
+      double percent = ((double)datapoints / (double)total_datapoints) ;
+      uint64_t uquota = (uint64_t)(percent * (double)quantity.amount) ;
+
+      print("itr->owner", itr->owner, "\n");
+      print("datapoints", datapoints, "\n");
+      print("percent", percent, "\n");
+      print("uquota", uquota, "\n");
+
+      asset payout;
+
+      //avoid leftover rounding by giving to top contributor
+      if (i == 1){
+        payout = asset(amount, S(4, EOS));
+      }
+      else {
+        payout = asset(uquota, S(4, EOS));
+      }
+
+      amount-= uquota;
+      
+      print("payout", payout, "\n");
+
+
+      if (scope == get_self()) {
+
+        cstore.modify(*itr, get_self(), [&]( auto& s ) {
+          s.balance += payout;
+        });
+
+      }
+      else {
+
+        statstable gstore(get_self(), get_self());
+
+        auto optr = gstore.find(itr->owner);
+
+        gstore.modify(*optr, get_self(), [&]( auto& s ) {
+          s.balance += payout;
+        });
+
+      }
+      
+      if (i>1 ){
+        itr--;
+        print("decrement 1", "\n");
+
+      } 
+    }
+
+
+  }
+
+  void process_bounty(account_name pair, asset quantity){
+
   }
 
   void transfer(uint64_t sender, uint64_t receiver) {
@@ -536,79 +726,22 @@ typedef eosio::multi_index<N(producers), producer_info,
     //if incoming transfer
     if (transfer_data.from != _self && transfer_data.to == _self){
       
-      globaltable global(get_self(), get_self());
-      statstable gstore(get_self(), get_self());
+      //check if memo contains the name of an existing pair
 
-      uint64_t size = std::distance(gstore.begin(), gstore.end());
+      pairstable pairs(get_self(), get_self());
+      bountiestable bounties(get_self(), get_self());
 
-      uint64_t upperbound = std::min(size, paid);
+      auto name_index = pairs.get_index<N(name)>();
 
-      auto count_index = gstore.get_index<N(count)>();
+      print("string_to_name(transfer_data.memo.c_str())", string_to_name(transfer_data.memo.c_str()), "\n");
+      print("transfer_data.memo.c_str()", transfer_data.memo.c_str(), "\n");
 
-      auto itr = count_index.begin();
-      auto gitr = global.begin();
+      auto itr = name_index.find(string_to_name(transfer_data.memo.c_str()));
+      auto bitr = bounties.find(string_to_name(transfer_data.memo.c_str()));
 
-      uint64_t total_datapoints = 0; //gitr->total_datapoints_count;
-
-      print("upperbound", upperbound, "\n");
-      //print("itr->owner", itr->owner, "\n");
-
-      //Move pointer to upperbound, counting total number of datapoints for oracles elligible for payout
-      for (uint64_t i=1;i<=upperbound;i++){
-        total_datapoints+=itr->count;
-        
-
-        if (i<upperbound ){
-          itr++;
-          print("increment 1", "\n");
-
-        } 
-
-      }
-
-      print("total_datapoints", total_datapoints, "\n");
-
-      uint64_t amount = transfer_data.quantity.amount;
-
-      //Move pointer back to 0, calculating prorated contribution of oracle and allocating proportion of donation
-      for (uint64_t i=upperbound;i>=1;i--){
-
-        uint64_t datapoints = itr->count;
-
-        double percent = ((double)datapoints / (double)total_datapoints) ;
-        uint64_t uquota = (uint64_t)(percent * (double)transfer_data.quantity.amount) ;
-
-
-        print("itr->owner", itr->owner, "\n");
-        print("datapoints", datapoints, "\n");
-        print("percent", percent, "\n");
-        print("uquota", uquota, "\n");
-
-        asset payout;
-
-        //avoid leftover rounding by giving to top contributor
-        if (i == 1){
-          payout = asset(amount, S(4, EOS));
-        }
-        else {
-          payout = asset(uquota, S(4, EOS));
-        }
-
-        amount-= uquota;
-        
-        print("payout", payout, "\n");
-
-        gstore.modify(*itr, get_self(), [&]( auto& s ) {
-          s.balance += payout;
-        });
-        
-        if (i>1 ){
-          itr--;
-          print("decrement 1", "\n");
-
-        } 
-      }
-
+      if (itr != name_index.end()) process_donation(itr->name, transfer_data.quantity);
+      //else if (itr != name_index.end()) process_bounty(itr->name, transfer_data.quantity);
+      else process_donation(get_self(), transfer_data.quantity);
 
     }
 
