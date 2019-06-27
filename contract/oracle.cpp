@@ -13,11 +13,16 @@
 
 TODO
 
-OK - add multi instrument support
-OK - open it to BPs rank 50 or better
-OK - replace the average with median
-OK - do the automated fee distribution based on contribution
-
+Add bounty system
+Parse memo field of transfers and allocate the transfer to bounty or to distribution
+Add timeframes (in seconds)
+  1 min   -> 60
+  5 min   -> 300
+  15 min  -> 900
+  60 min  -> 3600
+  4 hours -> 14400
+  daily   -> 86400
+  weekly  -> 604800
 
 */
 
