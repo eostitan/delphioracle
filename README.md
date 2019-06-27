@@ -20,6 +20,10 @@ This repository provides the code to the contract, as well as an updating script
 
 The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
+View live rates on EOS Mainnet:
+
+[https://labs.eostitan.com/#/pricefeed-oracle](https://labs.eostitan.com/#/pricefeed-oracle)
+
 ## Incentive mechanism for BPs to push rates
 
 Each time a BP pushes a datapoint, a counter for this BP is incremented. The contract supports an EOS transfer notification handler which splits any EOS reward sent to the contract between BPs that are pushing rates, proportionally to the number of datapoints they have pushed.

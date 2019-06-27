@@ -123,9 +123,14 @@ class DelphiOracle : public eosio::contract {
   struct [[eosio::table]] pairs {
     uint64_t id;
     asset bounty;
+
     account_name name;
-    //uint64_t precision;
-    //account_name owner;
+
+    symbol_type base_symbol;
+    symbol_type quote_symbol;
+    uint64_t precision;
+
+    account_name owner;
 
     uint64_t primary_key() const {return id;}
     account_name by_name() const {return name;}
@@ -538,7 +543,7 @@ class DelphiOracle : public eosio::contract {
 
   //approve_bounty
   //[[eosio::action]]
-  void approve_bounty(account_name name, account_name new_name, std::string description) {
+  void approve_bounty(account_name name, account_name new_name, symbol_type base_symbol, symbol_type quote_symbol, std::string description) {
 
     require_auth(_self); //controlled by msig over active key
 
