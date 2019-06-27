@@ -35,7 +35,9 @@ cleos push action <eoscontract> claim '{"owner":"<account>"}' -p <account>
 
 In addition, the contract act as a proxy, and automatically revotes every 10,000 datapoints for up to 30 BPs, ranking them by total number of datapoints contributed since inception.
 
-Users and dApps relying on DelphiOracle are invited to delegate their votes to it, to support contributing BPs.
+[https://www.alohaeos.com/vote/proxy/delphioracle](https://www.alohaeos.com/vote/proxy/delphioracle)
+
+Users and dApps relying on DelphiOracle are invited to delegate their votes to it, and support contributing BPs.
 
 ## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
 
