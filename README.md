@@ -53,8 +53,10 @@ cleos set abi <eoscontract> oracle.abi
 
 Qualified block producers can call the contract up to once every minute, to provide the current price of any asset pair.
 
-**Note:** 
+**Note:**
+
 *for EOS/USD (eosusd), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+
 *for EOS/BTC (eosbtc), price must be pushed as integer, using the last 8 digits to represent the value after the decimal separator (100,000,000th of a bitcoin precision)*
 
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
