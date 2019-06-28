@@ -43,25 +43,13 @@ In addition, the contract act as a proxy, and automatically revotes every 10,000
 
 Users and dApps relying on DelphiOracle are invited to delegate their votes to it, and support contributing BPs.
 
-## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
+## Push values to the contract
 
-Clone repository
-
-```
-cd delphioracle
-cd contract
-eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
-cleos set code <eoscontract> oracle.wasm
-cleos set abi <eoscontract> oracle.abi
-```
-
-## Push value to the contract
-
-Qualified block producers can call the contract up to once every minute, to provide the current price of any asset pair.
+Qualified block producers can call the contract up to once every minute to provide the current price of an asset pair.
 
 **Note:**
 
-*for EOS/USD (eosusd), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+*for EOS/USD (eosusd) and EOS/CNY (eoscny), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar / yuan precision)*
 
 *for EOS/BTC (eosbtc), price must be pushed as integer, using the last 8 digits to represent the value after the decimal separator (100,000,000th of a bitcoin precision)*
 
@@ -153,4 +141,16 @@ Sample output:
   ],
   "more": true
 }
+```
+
+## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
+
+Clone repository
+
+```
+cd delphioracle
+cd contract
+eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
+cleos set code <eoscontract> oracle.wasm
+cleos set abi <eoscontract> oracle.abi
 ```
