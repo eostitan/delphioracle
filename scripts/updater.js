@@ -38,7 +38,7 @@ function write(){
 			var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
 										{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}, 
 										{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"}, 
-										{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btccny"}];
+										{"value": parseInt(Math.round(JSON.parse(btcRes).CNY * 10000)), pair:"btccny"}];
 
 			console.log("quotes:", quotes);
 
