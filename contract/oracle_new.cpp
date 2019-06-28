@@ -468,7 +468,7 @@ class DelphiOracle : public eosio::contract {
     statstable sstore(get_self(), get_self());
 
     auto itr = sstore.find(owner);
-    //auto gitr = gtable.begin();
+    auto gitr = gtable.begin();
 
     eosio_assert(itr != sstore.end(), "oracle not found");
     eosio_assert( itr->balance.amount > 0, "no rewards to claim" );

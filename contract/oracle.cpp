@@ -363,8 +363,17 @@ typedef eosio::multi_index<N(producers), producer_info,
     eosio_assert(length>0, "must supply non-empty array of quotes");
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
 
+    pairstable pairs(get_self(), get_self());
+
+    auto name_idx = pairs.get_index<N(name)>();
+    //auto itr = sorted_idx.begin();
+
     for (int i=0; i<length;i++){
       print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
+      
+      auto itr = name_idx.find(quotes[i].pair);
+      
+      eosio_assert(itr!=pairs.end(), "pair not allowed");
       eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
     }
 
