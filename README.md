@@ -10,7 +10,7 @@ The contract allows the current top 105 block producers to push rates for variou
 
 When a new datapoint is pushed to the contract, the contract will use the median from the last 21 datapoints.
 
-This provides strong DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 10 block producers are colluding or corrupt.
+This provides strong DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 10 block producers are colluding or corrupt (once a sufficient number of BPs are pushing rates).
 
 Consumer contracts or external applications can retrieve the last price and use it for their needs.
 
