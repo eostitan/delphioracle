@@ -100,7 +100,7 @@ class DelphiOracle : public eosio::contract {
   struct [[eosio::table]] global {
     uint64_t id;
     uint64_t total_datapoints_count;
-    //asset total_claimed;
+    asset total_claimed;
     
     uint64_t primary_key() const {return id;}
 
@@ -123,9 +123,14 @@ class DelphiOracle : public eosio::contract {
   struct [[eosio::table]] pairs {
     uint64_t id;
     asset bounty;
+
     account_name name;
-    //uint64_t precision;
-    //account_name owner;
+
+    symbol_type base_symbol;
+    symbol_type quote_symbol;
+    uint64_t precision;
+
+    account_name owner;
 
     uint64_t primary_key() const {return id;}
     account_name by_name() const {return name;}
@@ -451,7 +456,7 @@ class DelphiOracle : public eosio::contract {
     
     require_auth(owner);
 
-   // globaltable gtable(get_self(), get_self());
+    globaltable gtable(get_self(), get_self());
     statstable sstore(get_self(), get_self());
 
     auto itr = sstore.find(owner);
@@ -470,10 +475,10 @@ class DelphiOracle : public eosio::contract {
         a.last_claim = current_time();
     });
 
-/*    gtable.modify( *gitr, get_self(), [&]( auto& a ) {
+    gtable.modify( *gitr, get_self(), [&]( auto& a ) {
         a.total_claimed += payout;
     });
-*/
+
     //}
 
     //if quantity symbol == EOS -> token_contract
@@ -538,7 +543,7 @@ class DelphiOracle : public eosio::contract {
 
   //approve_bounty
   //[[eosio::action]]
-  void approve_bounty(account_name name, account_name new_name, std::string description) {
+  void approve_bounty(account_name name, account_name new_name, symbol_type base_symbol, symbol_type quote_symbol, std::string description) {
 
     require_auth(_self); //controlled by msig over active key
 
@@ -740,7 +745,7 @@ class DelphiOracle : public eosio::contract {
       auto bitr = bounties.find(string_to_name(transfer_data.memo.c_str()));
 
       if (itr != name_index.end()) process_donation(itr->name, transfer_data.quantity);
-      //else if (itr != name_index.end()) process_bounty(itr->name, transfer_data.quantity);
+      else if (itr != name_index.end()) process_bounty(itr->name, transfer_data.quantity);
       else process_donation(get_self(), transfer_data.quantity);
 
     }

@@ -20,7 +20,11 @@ This repository provides the code to the contract, as well as an updating script
 
 The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
 
-## Incentive mechanism for BPs to push rates
+View live rates on EOS Mainnet:
+
+[https://labs.eostitan.com/#/pricefeed-oracle](https://labs.eostitan.com/#/pricefeed-oracle)
+
+## Incentive mechanisms for BPs to push rates
 
 Each time a BP pushes a datapoint, a counter for this BP is incremented. The contract supports an EOS transfer notification handler which splits any EOS reward sent to the contract between BPs that are pushing rates, proportionally to the number of datapoints they have pushed.
 
@@ -32,6 +36,12 @@ BPs can claim these rewards by calling the claim function.
 cleos push action <eoscontract> claim '{"owner":"<account>"}' -p <account>
 
 ```
+
+In addition, the contract act as a proxy, and automatically revotes every 10,000 datapoints for up to 30 BPs, ranking them by total number of datapoints contributed since inception.
+
+[https://www.alohaeos.com/vote/proxy/delphioracle](https://www.alohaeos.com/vote/proxy/delphioracle)
+
+Users and dApps relying on DelphiOracle are invited to delegate their votes to it, and support contributing BPs.
 
 ## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
 
@@ -49,7 +59,11 @@ cleos set abi <eoscontract> oracle.abi
 
 Qualified block producers can call the contract up to once every minute, to provide the current price of any asset pair.
 
-**Note:** *price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+**Note:**
+
+*for EOS/USD (eosusd), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+
+*for EOS/BTC (eosbtc), price must be pushed as integer, using the last 8 digits to represent the value after the decimal separator (100,000,000th of a bitcoin precision)*
 
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
 
@@ -60,7 +74,7 @@ cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500, "s
 
 ## Set up and run updater.js
 
-Updater.js is a nodejs module meant to retrieve the EOS/USD price using cryptocompare.com's API, and push the result to the DelphiOracle smart contract automatically and continuously.
+Updater.js is a nodejs module meant to retrieve the EOS/USD price using cryptocompare.com's API, and push the result to the DelphiOracle smart contract automatically and continuously, with the help of CRON.
 
 ```
 cd scripts
@@ -83,11 +97,26 @@ FREQ=15000
 ORACLE_PERMISSION="active"
 ```
 
-Run script:
+Run script (once):
 
 ```
 node updater.js
 ```
+
+Run script every minute via CRON:
+
+```
+crontab -e
+```
+
+And add the following entry:
+
+
+```
+* * * * * /path/to/contract/folder/scripts/update.sh
+```
+
+
 
 **Optional:** Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
 
