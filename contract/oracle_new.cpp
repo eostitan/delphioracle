@@ -745,7 +745,7 @@ class DelphiOracle : public eosio::contract {
       auto bitr = bounties.find(string_to_name(transfer_data.memo.c_str()));
 
       if (itr != name_index.end()) process_donation(itr->name, transfer_data.quantity);
-      //else if (itr != name_index.end()) process_bounty(itr->name, transfer_data.quantity);
+      else if (itr != name_index.end()) process_bounty(itr->name, transfer_data.quantity);
       else process_donation(get_self(), transfer_data.quantity);
 
     }
