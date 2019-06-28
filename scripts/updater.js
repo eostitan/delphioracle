@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const axios = require('axios');
 const request = require('request');
 
-const usdUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD";
-const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC";
+const ccUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD,CNY";
+//const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC";
 
 dotenv.load();
 
@@ -26,14 +26,15 @@ const eos = Eos({
 function write(){
 
 
-	request.get(usdUrl, function (err, res, usdRes){
-		request.get(btcUrl, function (err, res, btcRes){
+	request.get(ccUrl, function (err, res, ccRes){
 			
-			console.log("USD:", JSON.parse(usdRes).USD);
-			console.log("BTC:", JSON.parse(btcRes).BTC);
+			console.log("USD:", JSON.parse(ccRes).USD);
+			console.log("BTC:", JSON.parse(ccRes).BTC);
+			console.log("CNY:", JSON.parse(ccRes).CNY);
 
 			var quotes = [{"value": parseInt(Math.round(JSON.parse(btcRes).BTC * 100000000)), pair:"eosbtc"}, 
-										{"value": parseInt(Math.round(JSON.parse(usdRes).USD * 10000)), pair:"eosusd"}];
+										{"value": parseInt(Math.round(JSON.parse(usdRes).USD * 10000)), pair:"eosusd"}, 
+										{"value": parseInt(Math.round(JSON.parse(usdRes).CNY * 10000)), pair:"eoscny"}];
 
 			console.log("quotes:", quotes);
 
@@ -61,7 +62,6 @@ function write(){
 
 		});
 
-	});
 
 }
 
