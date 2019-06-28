@@ -33,7 +33,7 @@ This allows for anyone relying on this pricefeed to incentivize BPs to join and 
 BPs can claim these rewards by calling the claim function.
 
 ```
-cleos push action <eoscontract> claim '{"owner":"<account>"}' -p <account>
+cleos push action delphioracle claim '{"owner":"<account>"}' -p <account>
 
 ```
 
