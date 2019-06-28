@@ -16,9 +16,11 @@ Consumer contracts or external applications can retrieve the last price and use 
 
 As more block producers and oracles will begin pushing the value at a 1 minute interval, confidence and accuracy of the value will increase.
 
-This repository provides the code to the contract, as well as an updating script written in node.js for oracles and block producers to use. Ideally, block producers and oracles would use their own mechanism to retrieve the data, using various sources.
+This repository provides the code to the contract, as well as an updating script written in node.js for oracles and block producers to use. 
 
-The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
+Ideally, block producers acting as oracles should use their own mechanism to retrieve and aggregate the data, using multiple sources.
+
+A sample updating script using cryptocompare.com's api to retrieve the EOSUSD, EOSBTC and EOSCNY prices is provided as an example.
 
 View live rates on EOS Mainnet:
 

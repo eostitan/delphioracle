@@ -122,13 +122,21 @@ class DelphiOracle : public eosio::contract {
   //Holds the list of pairs
   struct [[eosio::table]] pairs {
     uint64_t id;
+
     asset bounty;
 
     account_name name;
 
+    bool active;
+
+    uint64_t quoted_precision;
+
     symbol_type base_symbol;
     symbol_type quote_symbol;
-    uint64_t precision;
+    std::string base_type;
+    std::string quote_type;
+    std::string base_description;
+    std::string quote_description;
 
     account_name owner;
 
