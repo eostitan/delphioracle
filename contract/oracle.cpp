@@ -430,20 +430,15 @@ typedef eosio::multi_index<N(producers), producer_info,
 
     globaltable gtable(get_self(), get_self());
     pairstable pairs(get_self(), get_self());
-
+/*
     gtable.emplace(get_self(), [&](auto& o) {
       o.id = 1;
       o.total_datapoints_count = 0;
-    });
+    });*/
 
     pairs.emplace(get_self(), [&](auto& o) {
-      o.id = 1;
-      o.name = N(eosusd);
-    });
-
-    pairs.emplace(get_self(), [&](auto& o) {
-      o.id = 2;
-      o.name = N(eosbtc);
+      o.id = 5;
+      o.name = N(eoscny);
     });
 
   }
