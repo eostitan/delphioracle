@@ -4,7 +4,9 @@ const axios = require('axios');
 const request = require('request');
 
 const eosUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD";
-const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,CNY";
+const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD";
+const btccnyUrl = "http://api.zb.cn/data/v1/ticker?market=btc_qc";
+
 
 dotenv.load();
 
@@ -28,42 +30,44 @@ function write(){
 
 	request.get(eosUrl, function (err, res, eosRes){
 		request.get(btcUrl, function (err, res, btcRes){
+			request.get(btccnyUrl, function (err, res, btccnyRes){
 			
-			console.log("EOSUSD:", JSON.parse(eosRes).USD);
-			console.log("EOSBTC:", JSON.parse(eosRes).BTC);
-			console.log("BTCCNY:", JSON.parse(btcRes).CNY);
-			console.log("BTCUSD:", JSON.parse(btcRes).USD);
+				console.log("EOSUSD:", JSON.parse(eosRes).USD);
+				console.log("EOSBTC:", JSON.parse(eosRes).BTC);
+				console.log("BTCUSD:", JSON.parse(btcRes).USD);
+				console.log("BTCCNY:", JSON.parse(btccnyRes).ticker.last);
 
 
-			var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
-										{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}, 
-										{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"}, 
-										{"value": parseInt(Math.round(JSON.parse(btcRes).CNY * 10000)), pair:"btccny"}];
+				var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
+											{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}, 
+											{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"}, 
+											{"value": parseInt(Math.round(JSON.parse(btccnyRes).ticker.last * 10000)), pair:"btccny"}];
 
-			console.log("quotes:", quotes);
+				console.log("quotes:", quotes);
 
-			eos.contract(oracleContract)
-				.then((contract) => {
-					contract.write({
-							owner: owner,
-							quotes: quotes
-						},
-						{
-							scope: oracleContract,
-							authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`] 
-						})
-						.then(results=>{
-							console.log("results:", results);
-						})
-						.catch(error=>{
-							console.log("error:", error);
-						});
+				eos.contract(oracleContract)
+					.then((contract) => {
+						contract.write({
+								owner: owner,
+								quotes: quotes
+							},
+							{
+								scope: oracleContract,
+								authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`] 
+							})
+							.then(results=>{
+								console.log("results:", results);
+							})
+							.catch(error=>{
+								console.log("error:", error);
+							});
 
-				})
-				.catch(error=>{
-					console.log("error:", error);
-				});
+					})
+					.catch(error=>{
+						console.log("error:", error);
+					});
 
+			});
 		});
 	});
 
