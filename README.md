@@ -74,7 +74,7 @@ cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500, "s
 
 ## Set up and run updater.js
 
-Updater.js is a nodejs module meant to retrieve the EOS/USD price using cryptocompare.com's API, and push the result to the DelphiOracle smart contract automatically and continuously.
+Updater.js is a nodejs module meant to retrieve the EOS/USD price using cryptocompare.com's API, and push the result to the DelphiOracle smart contract automatically and continuously, with the help of CRON.
 
 ```
 cd scripts
@@ -97,11 +97,26 @@ FREQ=15000
 ORACLE_PERMISSION="active"
 ```
 
-Run script:
+Run script (once):
 
 ```
 node updater.js
 ```
+
+Run script every minute via CRON:
+
+```
+crontab -e
+```
+
+And add the following entry:
+
+
+```
+* * * * * /path/to/contract/folder/scripts/update.sh
+```
+
+
 
 **Optional:** Create a custom permission for oracle write action. Custom oracle permission can be supplied in the .env file under ORACLE_PERMISSION (defaults to active).
 
