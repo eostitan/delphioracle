@@ -10,15 +10,17 @@ The contract allows the current top 105 block producers to push rates for variou
 
 When a new datapoint is pushed to the contract, the contract will use the median from the last 21 datapoints.
 
-This provides strong DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 10 block producers are colluding or corrupt.
+This provides strong DPOS byzantine fault tolerance guarantees, ensuring a reliable pricefeed even if up to 10 block producers are colluding or corrupt (once a sufficient number of BPs are pushing rates).
 
 Consumer contracts or external applications can retrieve the last price and use it for their needs.
 
 As more block producers and oracles will begin pushing the value at a 1 minute interval, confidence and accuracy of the value will increase.
 
-This repository provides the code to the contract, as well as an updating script written in node.js for oracles and block producers to use. Ideally, block producers and oracles would use their own mechanism to retrieve the data, using various sources.
+This repository provides the code to the contract, as well as an updating script written in node.js for oracles and block producers to use. 
 
-The updating script use cryptocompare.com's api to retrieve the EOS/USD price.
+Ideally, block producers acting as oracles should use their own mechanism to retrieve and aggregate the data, using multiple sources.
+
+A sample updating script using cryptocompare.com's api to retrieve the EOSUSD, EOSBTC and EOSCNY prices is provided as an example.
 
 View live rates on EOS Mainnet:
 
@@ -33,7 +35,7 @@ This allows for anyone relying on this pricefeed to incentivize BPs to join and 
 BPs can claim these rewards by calling the claim function.
 
 ```
-cleos push action <eoscontract> claim '{"owner":"<account>"}' -p <account>
+cleos push action delphioracle claim '{"owner":"<account>"}' -p <account>
 
 ```
 
@@ -43,25 +45,13 @@ In addition, the contract act as a proxy, and automatically revotes every 10,000
 
 Users and dApps relying on DelphiOracle are invited to delegate their votes to it, and support contributing BPs.
 
-## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
+## Push values to the contract
 
-Clone repository
-
-```
-cd delphioracle
-cd contract
-eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
-cleos set code <eoscontract> oracle.wasm
-cleos set abi <eoscontract> oracle.abi
-```
-
-## Push value to the contract
-
-Qualified block producers can call the contract up to once every minute, to provide the current price of any asset pair.
+Qualified block producers can call the contract up to once every minute to provide the current price of an asset pair.
 
 **Note:**
 
-*for EOS/USD (eosusd), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar precision)*
+*for EOS/USD (eosusd) and EOS/CNY (eoscny), price must be pushed as integer, using the last 4 digits to represent the value after the decimal separator (10,000th of a dollar / yuan precision)*
 
 *for EOS/BTC (eosbtc), price must be pushed as integer, using the last 8 digits to represent the value after the decimal separator (100,000,000th of a bitcoin precision)*
 
@@ -153,4 +143,16 @@ Sample output:
   ],
   "more": true
 }
+```
+
+## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
+
+Clone repository
+
+```
+cd delphioracle
+cd contract
+eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
+cleos set code <eoscontract> oracle.wasm
+cleos set abi <eoscontract> oracle.abi
 ```
