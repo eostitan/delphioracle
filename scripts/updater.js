@@ -33,8 +33,7 @@ function write(){
 			console.log("CNY:", JSON.parse(ccRes).CNY);
 
 			var quotes = [{"value": parseInt(Math.round(JSON.parse(ccRes).BTC * 100000000)), pair:"eosbtc"}, 
-										{"value": parseInt(Math.round(JSON.parse(ccRes).USD * 10000)), pair:"eosusd"}, 
-										{"value": parseInt(Math.round(JSON.parse(ccRes).CNY * 10000)), pair:"eoscny"}];
+										{"value": parseInt(Math.round(JSON.parse(ccRes).USD * 10000)), pair:"eosusd"}];
 
 			console.log("quotes:", quotes);
 

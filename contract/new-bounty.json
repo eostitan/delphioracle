@@ -1,0 +1,11 @@
+{
+   "proposer":"acct1",
+   "pair":{
+	"name":"btccad",
+	"base_symbol":"8,BTC",
+	"base_type":2,
+	"quote_symbol":"4,CAD",
+	"quote_type":1,
+	"quoted_precision":4
+    }
+}

@@ -33,7 +33,7 @@ Add user - payer logic for additional pairs
 
 using namespace eosio;
 
-//Number of datapoints to hold per asset
+/*//Number of datapoints to hold per asset
 static const uint64_t datapoints_count = 21; //don't change for now
 
 //Number of bars to hold per asset
@@ -50,12 +50,50 @@ const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
 
 static const uint64_t standbys = 105; //allowed standby producers rank cutoff
 static const uint64_t paid = 21; //maximum number of oracles getting paid from donations
+*/
+
+
+static const std::string system_str("system");
 
 class DelphiOracle : public eosio::contract {
  public:
   DelphiOracle(account_name self) : eosio::contract(self) {}
 
   //Types
+
+  enum asset_type: uint16_t {
+      fiat=1, 
+      cryptocurrency=2, 
+      erc20_token=4, 
+      eosio_token=5, 
+      equity=6, 
+      derivative=7, 
+      other=8
+  };
+
+  enum instrument_type: uint16_t {
+      pair=1, 
+      value=2
+  };
+
+  //Global config
+  struct [[eosio::table]] global {
+    uint64_t id;
+    uint64_t total_datapoints_count;
+    asset total_claimed = asset(0, S(4, EOS));
+    uint64_t datapoints_per_instrument = 21;
+    uint64_t bars_per_instrument = 30;
+    uint64_t vote_interval = 10000;
+    uint64_t write_cooldown = 1000000 * 55;
+    uint64_t approver_threshold = 25000;
+    uint64_t minimum_rank = 105;
+    uint64_t paid = 21;
+    uint64_t min_bounty_delay = 604800;
+    uint64_t new_bounty_delay = 259200;
+
+    uint64_t primary_key() const {return id;}
+
+  };
 
   //Holds the last datapoints_count datapoints from qualified oracles
   struct [[eosio::table]] datapoints {
@@ -68,41 +106,6 @@ class DelphiOracle : public eosio::contract {
     uint64_t primary_key() const {return id;}
     uint64_t by_timestamp() const {return timestamp;}
     uint64_t by_value() const {return value;}
-
-  };
-
-  //Holds aggregated datapoints
-  struct [[eosio::table]] bars {
-    uint64_t id;
-
-    uint64_t high;
-    uint64_t low;
-    uint64_t median;
-    uint64_t timestamp;
-
-    uint64_t primary_key() const {return id;}
-    uint64_t by_timestamp() const {return timestamp;}
-
-  };
-
-  //Holds bounties information
-  struct [[eosio::table]] bounties {
-
-    std::string description;
-    account_name name;
-    asset bounty;
-
-    uint64_t primary_key() const {return name;}
-
-  };
-
-  //Global config
-  struct [[eosio::table]] global {
-    uint64_t id;
-    uint64_t total_datapoints_count;
-    asset total_claimed;
-    
-    uint64_t primary_key() const {return id;}
 
   };
 
@@ -119,21 +122,101 @@ class DelphiOracle : public eosio::contract {
 
   };
 
-  //Holds the list of pairs
-  struct [[eosio::table]] pairs {
+  //Holds aggregated datapoints
+  struct [[eosio::table]] bars {
     uint64_t id;
+
+    uint64_t high;
+    uint64_t low;
+    uint64_t median;
+    uint64_t timestamp;
+
+    uint64_t primary_key() const {return id;}
+    uint64_t by_timestamp() const {return timestamp;}
+
+  };
+/*
+  //Holds bounties information
+  struct [[eosio::table]] bounties {
+
+    account_name name;
+    std::string description;
     asset bounty;
+
+    uint64_t primary_key() const {return name;}
+
+  };*/
+
+  //Holds donations information
+  struct [[eosio::table]] donations {
+
+    uint64_t id;
+
+    account_name donator;
+    account_name instrument;
+    instrument_type type;
+    uint64_t timestamp;
+    asset amount;
+
+    uint64_t primary_key() const {return id;}
+
+  };
+
+  //Holds donators information
+  struct [[eosio::table]] donators {
+
+    account_name name;
+    asset donated;
+    uint64_t creation_timestamp;
+
+    uint64_t primary_key() const {return name;}
+
+  };
+
+  //Holds custodians information
+  struct [[eosio::table]] custodians {
 
     account_name name;
 
+    uint64_t primary_key() const {return name;}
+
+  };
+
+  struct pairinput {
+    account_name name;
     symbol_type base_symbol;
+    asset_type base_type;
     symbol_type quote_symbol;
-    uint64_t precision;
+    asset_type quote_type;
+    uint64_t quoted_precision;
+  };
 
-    account_name owner;
+  //Holds the list of pairs
+  struct [[eosio::table]] pairs {
+    //uint64_t id;
 
-    uint64_t primary_key() const {return id;}
-    account_name by_name() const {return name;}
+    bool active = false;
+    bool bounty_awarded = false;
+    bool bounty_edited_by_custodians = false;
+
+    account_name proposer;
+    account_name name;
+
+    asset bounty_amount = asset(0, S(4, EOS));
+
+    uint64_t approved_custodian_counter = 0;
+    uint64_t approved_bp_counter = 0;
+
+    symbol_type base_symbol;
+    asset_type base_type;
+
+    symbol_type quote_symbol;
+    asset_type quote_type;
+    
+    uint64_t quoted_precision;
+
+    uint64_t primary_key() const {return name;}
+    //account_name by_name() const {return name;}
 
   };
 
@@ -192,11 +275,13 @@ class DelphiOracle : public eosio::contract {
   //Multi index types definition
   typedef eosio::multi_index<N(global), global> globaltable;
 
+  typedef eosio::multi_index<N(custodians), custodians> custodianstable;
+
   typedef eosio::multi_index<N(stats), stats,
       indexed_by<N(count), const_mem_fun<stats, uint64_t, &stats::by_count>>> statstable;
 
-  typedef eosio::multi_index<N(pairs), pairs, 
-      indexed_by<N(name), const_mem_fun<pairs, uint64_t, &pairs::by_name>>> pairstable;
+  typedef eosio::multi_index<N(pairs), pairs> pairstable;
+
   typedef eosio::multi_index<N(datapoints), datapoints,
       indexed_by<N(value), const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
       indexed_by<N(timestamp), const_mem_fun<datapoints, uint64_t, &datapoints::by_timestamp>>> datapointstable;
@@ -204,12 +289,15 @@ class DelphiOracle : public eosio::contract {
   typedef eosio::multi_index<N(producers), producer_info,
       indexed_by<N(prototalvote), const_mem_fun<producer_info, double, &producer_info::by_votes>>> producers_table;
 
-  typedef eosio::multi_index<N(bounties), bounties> bountiestable;
+  //typedef eosio::multi_index<N(bounties), bounties> bountiestable;
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const account_name owner){
 
+    globaltable gtable(get_self(), get_self());
     producers_table ptable(N(eosio), N(eosio));
+
+    auto gitr = gtable.begin();
 
     auto p_idx = ptable.get_index<N(prototalvote)>();
 
@@ -222,25 +310,43 @@ class DelphiOracle : public eosio::contract {
       if (p_itr->owner==owner) return true;
       p_itr++;
       count++;
-      if (count>standbys) break;
+      if (count>gitr->minimum_rank) break;
     }
 
     return false;
   }
 
+  //Check if calling account is can vote on bounties
+  bool check_approver(const account_name owner){
+
+    globaltable gtable(get_self(), get_self());
+    statstable stats(get_self(), get_self());
+
+    auto gitr = gtable.begin();
+    auto itr = stats.find(owner);
+
+    if (itr->count >= gitr->approver_threshold) return true;
+
+    return false;
+
+  }
+
   //Ensure account cannot push data more often than every 60 seconds
   void check_last_push(const account_name owner, const account_name pair){
 
+    globaltable gtable(get_self(), get_self());
     statstable gstore(get_self(), get_self());
     statstable store(get_self(), pair);
 
+    auto gitr = gtable.begin();
     auto itr = store.find(owner);
+
     if (itr != store.end()) {
 
       uint64_t ctime = current_time();
       auto last = store.get(owner);
 
-      eosio_assert(last.timestamp + one_minute <= ctime, "can only call every 60 seconds");
+      eosio_assert(last.timestamp + gitr->write_cooldown <= ctime, "can only call every 60 seconds");
 
       store.modify( itr, get_self(), [&]( auto& s ) {
         s.timestamp = ctime;
@@ -259,12 +365,12 @@ class DelphiOracle : public eosio::contract {
 
     }
 
-    auto gitr = gstore.find(owner);
-    if (gitr != gstore.end()) {
+    auto gsitr = gstore.find(owner);
+    if (gsitr != gstore.end()) {
 
       uint64_t ctime = current_time();
 
-      gstore.modify( gitr, get_self(), [&]( auto& s ) {
+      gstore.modify( gsitr, get_self(), [&]( auto& s ) {
         s.timestamp = ctime;
         s.count++;
       });
@@ -319,81 +425,64 @@ class DelphiOracle : public eosio::contract {
   //Push oracle message on top of queue, pop oldest element if queue size is larger than datapoints_count
   void update_datapoints(const account_name owner, const uint64_t value, account_name pair){
 
+    globaltable gtable(get_self(), get_self());
     datapointstable dstore(get_self(), pair);
 
-    auto size = std::distance(dstore.begin(), dstore.end());
+    //auto size = std::distance(dstore.begin(), dstore.end());
 
     uint64_t median = 0;
     uint64_t primary_key ;
 
     //Find median
-    if (size>0){
+    //if (size>0){
 
-      //Calculate new primary key by substracting one from the previous one
-      auto latest = dstore.begin();
-      primary_key = latest->id - 1;
+    //Calculate new primary key by substracting one from the previous one
+    auto latest = dstore.begin();
+    primary_key = latest->id - 1;
 
-      //If new size is greater than the max number of datapoints count
-      if (size+1>datapoints_count){
+    //If new size is greater than the max number of datapoints count
+    //if (size+1>datapoints_count){
 
-        auto oldest = dstore.end();
-        oldest--;
+    auto oldest = dstore.end();
+    oldest--;
 
-        //Pop oldest point
-        dstore.erase(oldest);
+    //Pop oldest point
+    dstore.erase(oldest);
 
-        //Insert next datapoint
-        auto c_itr = dstore.emplace(get_self(), [&](auto& s) {
-          s.id = primary_key;
-          s.owner = owner;
-          s.value = value;
-          s.timestamp = current_time();
-        });
+    //Insert next datapoint
+    auto c_itr = dstore.emplace(get_self(), [&](auto& s) {
+      s.id = primary_key;
+      s.owner = owner;
+      s.value = value;
+      s.timestamp = current_time();
+    });
 
-        //Get index sorted by value
-        auto value_sorted = dstore.get_index<N(value)>();
+    //Get index sorted by value
+    auto value_sorted = dstore.get_index<N(value)>();
 
-        //skip first 10 values
-        auto itr = value_sorted.begin();
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
-        itr++;
+    //skip first 10 values
+    auto itr = value_sorted.begin();
+    itr++;
+    itr++;
+    itr++;
+    itr++;
+    itr++;
+    itr++;
+    itr++;
+    itr++;
+    itr++;
 
-        median=itr->value;
+    median=itr->value;
 
-        //set median
-        dstore.modify(c_itr, get_self(), [&](auto& s) {
-          s.median = median;
-        });
+    //set median
+    dstore.modify(c_itr, get_self(), [&](auto& s) {
+      s.median = median;
+    });
 
-      }
-      else {
-
-        //No median is calculated until the expected number of datapoints have been received
-        median = value;
-
-        //Push new point at the end of the queue
-        dstore.emplace(get_self(), [&](auto& s) {
-          s.id = primary_key;
-          s.owner = owner;
-          s.value = value;
-          s.median = median;
-          s.timestamp = current_time();
-        });
-
-      }
-
-    }
-    else {
-
-      //First data point starts at uint64 max
-      primary_key = std::numeric_limits<unsigned long long>::max();
+    //}
+    //else {
+/*
+      //No median is calculated until the expected number of datapoints have been received
       median = value;
 
       //Push new point at the end of the queue
@@ -403,19 +492,38 @@ class DelphiOracle : public eosio::contract {
         s.value = value;
         s.median = median;
         s.timestamp = current_time();
-      });
+      });*/
 
-    }
+    //}
 
-    globaltable gtable(get_self(), get_self());
+  //}
+ // else {
+
+/*      //First data point starts at uint64 max
+    primary_key = std::numeric_limits<unsigned long long>::max();
+    median = value;
+
+    //Push new point at the end of the queue
+    dstore.emplace(get_self(), [&](auto& s) {
+      s.id = primary_key;
+      s.owner = owner;
+      s.value = value;
+      s.median = median;
+      s.timestamp = current_time();
+    });
+*/
+//   }
+
 
     gtable.modify(gtable.begin(), get_self(), [&](auto& s) {
       s.total_datapoints_count++;
     });
 
-    print("gtable.begin()->total_datapoints_count:", gtable.begin()->total_datapoints_count,  "\n");
+    auto gitr =  gtable.begin();
 
-    if (gtable.begin()->total_datapoints_count % vote_interval == 0){
+    print("gtable.begin()->total_datapoints_count:", gitr->total_datapoints_count,  "\n");
+
+    if (gtable.begin()->total_datapoints_count % gitr->vote_interval == 0){
       update_votes();
     }
 
@@ -432,12 +540,25 @@ class DelphiOracle : public eosio::contract {
     print("length ", length);
 
     eosio_assert(length>0, "must supply non-empty array of quotes");
-    eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
+    eosio_assert(check_oracle(owner), "account is not an a qualified oracle");
+
+    pairstable pairs(get_self(), get_self());
+
+    //auto name_idx = pairs.find<N(name)>();
+    //auto itr = sorted_idx.begin();
 
     for (int i=0; i<length;i++){
       print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
-      eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
+      
+      auto itr = pairs.find(quotes[i].pair);
+
+      eosio_assert(itr!=pairs.end() && itr->active == true, "pair not allowed");
     }
+
+    //for (int i=0; i<length;i++){
+      //print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
+      //eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
+    //}
 
     for (int i=0; i<length;i++){    
       check_last_push(owner, quotes[i].pair);
@@ -460,7 +581,7 @@ class DelphiOracle : public eosio::contract {
     statstable sstore(get_self(), get_self());
 
     auto itr = sstore.find(owner);
-    //auto gitr = gtable.begin();
+    auto gitr = gtable.begin();
 
     eosio_assert(itr != sstore.end(), "oracle not found");
     eosio_assert( itr->balance.amount > 0, "no rewards to claim" );
@@ -508,66 +629,147 @@ class DelphiOracle : public eosio::contract {
       o.total_datapoints_count = 0;
     });
 
-    pairs.emplace(get_self(), [&](auto& o) {
-      o.id = 1;
-      o.name = N(eosusd);
-    });
-
-    pairs.emplace(get_self(), [&](auto& o) {
-      o.id = 2;
-      o.name = N(eosbtc);
-    });
-
   }
+
+  //Delphi Oracle - Bounty logic
+
+  //Anyone can propose a bounty to add a new pair. This is the only way to add new pairs.
+  //  By proposing a bounty, the proposer pays upfront for all the RAM requirements of the pair (expensive enough to discourage spammy proposals)
+
+  //Once the bounty has been created, anyone can contribute to the bounty by sending a transfer with the bounty name in the memo
+
+  //Custodians of the contract or the bounty proposer can cancel the bounty. This refunds RAM to the proposer, as well as all donations made to the bounty 
+  //  to original payer accounts. 
+
+  //Custodians of the contract can edit the bounty's name and description (curation and standardization process)
+
+  //Any BP that has contributed a certain amount of datapoints (TBD) to the contract is automatically added as an authorized account to approve a bounty
+
+  //Once a BP approves the bounty, a timer (1 week?) starts
+
+  //X more BPs and Y custodians (1?) must then approve the bounty to activate it
+
+  //The pair is not activated until the timer expires AND X BPs and Y custodians approved
+
+  //No more than 1 pair can be activated per X period of time (72 hours?)
+
+  //The bounty is then paid at a rate of X larimers per datapoint to BPs contributing to it until it runs out.
+
 
   //create a new pair request bounty
   //[[eosio::action]]
-  void new_bounty(account_name proposer, account_name name, std::string description) {
+  void newbounty(account_name proposer, pairinput pair) {
 
     require_auth(proposer);
 
-    //add request, proposer pays the RAM for the request + data structure for datapoints & bars. Anyone can then transfer EOS to the smart contract with the name
-    //of the bounty in the memo to have the amount added to the bounty.
+    //Add request, proposer pays the RAM for the request + data structure for datapoints & bars. 
+
+    pairstable pairs(get_self(), get_self());
+    datapointstable dstore(get_self(), pair.name);
+
+    auto itr = pairs.find(pair.name);
+
+    eosio_assert(pair.name != N(system), "Cannot create a pair named system");
+    eosio_assert(itr == pairs.end(), "A pair with this name already exists.");
+
+    pairs.emplace(proposer, [&](auto& s) {
+      s.proposer = proposer;
+      s.name = pair.name;
+      s.base_symbol = pair.base_symbol;
+      s.base_type = pair.base_type;
+      s.quote_symbol = pair.quote_symbol;
+      s.quote_type = pair.quote_type;
+      s.quoted_precision = pair.quoted_precision;
+    });
+
+    //First data point starts at uint64 max
+    uint64_t primary_key = std::numeric_limits<unsigned long long>::max();
+   
+    for (uint16_t i=0; i < 21; i++){
+
+      //Insert next datapoint
+      auto c_itr = dstore.emplace(proposer, [&](auto& s) {
+        s.id = primary_key;
+        s.value = 0;
+        s.timestamp = 0;
+      });
+
+      primary_key--;
+
+    }
 
   }
 
   //cancel a bounty
   //[[eosio::action]]
-  void cancel_bounty(account_name name, std::string reason) {
+  void cancelbounty(account_name name, std::string reason) {
+    
+    pairstable pairs(get_self(), get_self());
+    datapointstable dstore(get_self(),  name);
 
-    //eosio_assert(has_auth(_self) || has_auth(proposer), "missing required authority of contract or proposer");
+    auto itr = pairs.find(name);
 
-    //cancel bounty, post reason to chain. Refund accumulated bounty or split between oracles?
+    eosio_assert(itr != pairs.end(), "bounty doesn't exist");
+
+    print("itr->proposer", itr->proposer, "\n");
+
+    eosio_assert(has_auth(_self) || has_auth(itr->proposer), "missing required authority of contract or proposer");
+    eosio_assert(itr->active == false, "cannot cancel live pair");
+
+    //Cancel bounty, post reason to chain. Refund accumulated bounty to balance of user
+
+    pairs.erase(itr);
+
+    while (dstore.begin() != dstore.end()) {
+        auto ditr = dstore.end();
+        ditr--;
+        dstore.erase(ditr);
+    }
 
   }
 
-  //approve_bounty
+  //vote bounty
   //[[eosio::action]]
-  void approve_bounty(account_name name, account_name new_name, symbol_type base_symbol, symbol_type quote_symbol, std::string description) {
+  void votebounty(account_name owner, account_name bounty) {
 
-    require_auth(_self); //controlled by msig over active key
+    require_auth(owner); 
 
-    //add pair from existing bounty request, move bounty amount to deferred bounty payout, delete bounty request
+    //Verify is BP meets criteria of contribution for approval
+    //Add to approved_bounty counter
+
+  }
+
+  //vote bounty
+  //[[eosio::action]]
+  void unvotebounty(account_name owner, account_name bounty) {
+
+    require_auth(owner); 
+
+    //Verify is BP meets criteria of contribution for approval
+    //Add to approved_bounty counter
 
   }
 
   //edit a bounty's information
   //[[eosio::action]]
-  void edit_bounty_info(account_name name, std::string description) {
+  void editbounty(account_name name, pairinput pair) {
 
     account_name proposer;
 
-    require_auth(proposer);
+    eosio_assert(has_auth(_self) || has_auth(proposer), "missing required authority of contract or proposer");
 
+    //check if bounty_edited_by_custodians == false, otherwise throw exception. Custodians have final say
     //edit bounty description
+
+    //if edited by custodians, set flag bounty_edited_by_custodians to true
 
   }
 
   //edit pair 
   //[[eosio::action]]
-  void edit_pair(account_name name, std::string description) {
+  void editpair(pairs pair) {
     
-    require_auth(_self); //controlled by msig over active key
+    require_auth(_self);
     
     //edit pair description
 
@@ -575,11 +777,42 @@ class DelphiOracle : public eosio::contract {
 
   //delete pair 
   //[[eosio::action]]
-  void delete_pair(account_name name, std::string reason) {
+  void deletepair(account_name name) {
     
     require_auth(_self); //controlled by msig over active key
     
     //delete pair, post reason to chain for reference
+
+  }
+
+  //add custodian
+  //[[eosio::action]]
+  void addcustodian(account_name name) {
+
+    require_auth(_self); 
+
+    custodianstable custodians(get_self(), get_self());
+
+    custodians.emplace(get_self(), [&](auto& s) {
+      s.name = name;
+    });
+
+
+  }
+
+  //remove custodian
+  //[[eosio::action]]
+  void delcustodian(account_name name) {
+
+    require_auth(_self); 
+
+    custodianstable custodians(get_self(), get_self());
+
+    auto itr = custodians.find(name);
+
+    eosio_assert(itr != custodians.end(), "account not a custodian");
+
+    custodians.erase(itr);
 
   }
 
@@ -593,7 +826,14 @@ class DelphiOracle : public eosio::contract {
     statstable lstore(get_self(), pair);
     datapointstable estore(get_self(),  pair);
     pairstable pairs(get_self(), get_self());
+    custodianstable ctable(get_self(), get_self());
     
+    while (ctable.begin() != ctable.end()) {
+        auto itr = ctable.end();
+        itr--;
+        ctable.erase(itr);
+    }
+
     while (gtable.begin() != gtable.end()) {
         auto itr = gtable.end();
         itr--;
@@ -627,13 +867,16 @@ class DelphiOracle : public eosio::contract {
 
   }
 
-  void process_donation(account_name scope, asset quantity){
+  void process_donation(account_name from, account_name scope, asset quantity){
 
+    globaltable gtable(get_self(), get_self());
     statstable cstore(get_self(), scope);
+
+    auto gitr = gtable.begin();
 
     uint64_t size = std::distance(cstore.begin(), cstore.end());
 
-    uint64_t upperbound = std::min(size, paid);
+    uint64_t upperbound = std::min(size, gitr->paid);
 
     auto count_index = cstore.get_index<N(count)>();
 
@@ -716,7 +959,9 @@ class DelphiOracle : public eosio::contract {
 
   }
 
-  void process_bounty(account_name pair, asset quantity){
+  void process_bounty(account_name from, account_name pair, asset quantity){
+
+    //
 
   }
 
@@ -734,19 +979,24 @@ class DelphiOracle : public eosio::contract {
       //check if memo contains the name of an existing pair
 
       pairstable pairs(get_self(), get_self());
-      bountiestable bounties(get_self(), get_self());
+      //bountiestable bounties(get_self(), get_self());
 
-      auto name_index = pairs.get_index<N(name)>();
+      //auto name_index = pairs.get_index<N(name)>();
 
       print("string_to_name(transfer_data.memo.c_str())", string_to_name(transfer_data.memo.c_str()), "\n");
       print("transfer_data.memo.c_str()", transfer_data.memo.c_str(), "\n");
 
-      auto itr = name_index.find(string_to_name(transfer_data.memo.c_str()));
-      auto bitr = bounties.find(string_to_name(transfer_data.memo.c_str()));
 
-      if (itr != name_index.end()) process_donation(itr->name, transfer_data.quantity);
-      else if (itr != name_index.end()) process_bounty(itr->name, transfer_data.quantity);
-      else process_donation(get_self(), transfer_data.quantity);
+      if (transfer_data.memo.c_str() == system_str.c_str() ) return; //transfer to system account
+
+
+      auto itr = pairs.find(string_to_name(transfer_data.memo.c_str()));
+
+      //auto bitr = bounties.find(string_to_name(transfer_data.memo.c_str()));
+
+      if (itr != pairs.end() && itr->bounty_awarded == true ) process_donation(name{transfer_data.from}, itr->name, transfer_data.quantity);
+      else if (itr != pairs.end() && itr->bounty_awarded == false) process_bounty(name{transfer_data.from}, itr->name, transfer_data.quantity);
+      else process_donation(name{transfer_data.from}, get_self(), transfer_data.quantity);
 
     }
 
@@ -773,4 +1023,4 @@ extern "C" { \
 
 //EOSIO_ABI(DelphiOracle, (write)(clear)(configure)(transfer))
 
-EOSIO_ABI_EX( DelphiOracle, (write)(clear)(claim)(configure)(transfer))
+EOSIO_ABI_EX( DelphiOracle, (write)(clear)(newbounty)(cancelbounty)(addcustodian)(delcustodian)(claim)(configure)(transfer))

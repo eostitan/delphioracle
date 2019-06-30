@@ -41,9 +41,8 @@ static const uint64_t datapoints_count = 21; //don't change for now
 //revote every vote_interval datapoints
 static const uint64_t vote_interval = 10000;
 
-//Min value set to 0.01$ , max value set to 10,000$
 static const uint64_t val_min = 100;
-static const uint64_t val_max = 100000000;
+static const uint64_t val_max = 10000000000;
 
 const uint64_t one_minute = 1000000 * 55; //give extra time for cron jobs
 
@@ -363,8 +362,17 @@ typedef eosio::multi_index<N(producers), producer_info,
     eosio_assert(length>0, "must supply non-empty array of quotes");
     eosio_assert(check_oracle(owner), "account is not an active producer or approved oracle");
 
+    pairstable pairs(get_self(), get_self());
+
+    auto name_idx = pairs.get_index<N(name)>();
+
     for (int i=0; i<length;i++){
       print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
+
+      auto itr = name_idx.find(quotes[i].pair);
+      
+      eosio_assert(itr!=name_idx.end(), "pair not allowed");
+
       eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
     }
 
@@ -436,9 +444,24 @@ typedef eosio::multi_index<N(producers), producer_info,
       o.total_datapoints_count = 0;
     });*/
 
+    auto itr = pairs.find(5);
+
+    pairs.erase(itr);
+/*
     pairs.emplace(get_self(), [&](auto& o) {
       o.id = 5;
       o.name = N(eoscny);
+    });
+
+*/
+    pairs.emplace(get_self(), [&](auto& o) {
+      o.id = 6;
+      o.name = N(btccny);
+    });
+
+    pairs.emplace(get_self(), [&](auto& o) {
+      o.id = 7;
+      o.name = N(btcusd);
     });
 
   }
