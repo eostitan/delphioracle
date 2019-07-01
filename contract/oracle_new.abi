@@ -326,6 +326,11 @@
                 },
                 {
 
+                    "name": "base_contract",
+                    "type": "name"
+                },
+                {
+
                     "name": "quote_symbol",
                     "type": "symbol"
                 },
@@ -333,6 +338,11 @@
 
                     "name": "quote_type",
                     "type": "uint16"
+                },
+                {
+
+                    "name": "quote_contract",
+                    "type": "name"
                 },
                 {
 
@@ -389,6 +399,11 @@
                 },
                 {
 
+                    "name": "base_contract",
+                    "type": "name"
+                },
+                {
+
                     "name": "quote_symbol",
                     "type": "symbol"
                 },
@@ -396,6 +411,11 @@
 
                     "name": "quote_type",
                     "type": "uint16"
+                },
+                {
+
+                    "name": "quote_contract",
+                    "type": "name"
                 },
                 {
 

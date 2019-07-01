@@ -184,11 +184,12 @@ class DelphiOracle : public eosio::contract {
 
   };
 
-  //Holds donators information
-  struct [[eosio::table]] donators {
+  //Holds users information
+  struct [[eosio::table]] users {
 
     account_name name;
-    asset donated;
+    asset contribution;
+    uint64_t score;
     uint64_t creation_timestamp;
 
     uint64_t primary_key() const {return name;}
@@ -208,8 +209,10 @@ class DelphiOracle : public eosio::contract {
     account_name name;
     symbol_type base_symbol;
     asset_type base_type;
+    account_name base_contract;
     symbol_type quote_symbol;
     asset_type quote_type;
+    account_name quote_contract;
     uint64_t quoted_precision;
   };
 
@@ -234,11 +237,24 @@ class DelphiOracle : public eosio::contract {
 */
     symbol_type base_symbol;
     asset_type base_type;
+    account_name base_contract;
 
     symbol_type quote_symbol;
     asset_type quote_type;
+    account_name quote_contract;
     
     uint64_t quoted_precision;
+
+    uint64_t primary_key() const {return name;}
+    //account_name by_name() const {return name;}
+
+  };
+
+  //Holds the list of pairs
+  struct [[eosio::table]] networks {
+    //uint64_t id;
+
+    account_name name;
 
     uint64_t primary_key() const {return name;}
     //account_name by_name() const {return name;}
@@ -249,6 +265,12 @@ class DelphiOracle : public eosio::contract {
   struct quote {
     uint64_t value;
     account_name pair;
+  };
+
+  //eosmechanics::cpu
+  struct event {
+    uint64_t value;
+    account_name instrument;
   };
 
 /*   struct blockchain_parameters {
@@ -729,8 +751,10 @@ class DelphiOracle : public eosio::contract {
           o.bounty_amount = asset(0, S(4, EOS));
           o.base_symbol =  S(4, EOS);
           o.base_type = asset_type::eosio_token;
+          o.base_contract = N(eosio.token);
           o.quote_symbol = S(2, USD);
           o.quote_type = asset_type::fiat;
+          o.quote_contract = N("");
           o.quoted_precision = 4;
         });
 
@@ -802,8 +826,10 @@ class DelphiOracle : public eosio::contract {
       s.name = pair.name;
       s.base_symbol = pair.base_symbol;
       s.base_type = pair.base_type;
+      s.base_contract = pair.base_contract;
       s.quote_symbol = pair.quote_symbol;
       s.quote_type = pair.quote_type;
+      s.quote_contract = pair.quote_contract;
       s.quoted_precision = pair.quoted_precision;
     });
 
@@ -1021,8 +1047,8 @@ class DelphiOracle : public eosio::contract {
 
     eosio_assert(has_auth(_self) || has_auth(proposer), "missing required authority of contract or proposer");
 
-    //check if bounty_edited_by_custodians == false, otherwise throw exception. Custodians have final say
-    //edit bounty description
+    //check if bounty_edited_by_custodians == false || has_auth(_self), otherwise throw exception. Custodians have final say
+    //edit bounty data
 
     //if edited by custodians, set flag bounty_edited_by_custodians to true
 
@@ -1076,6 +1102,14 @@ class DelphiOracle : public eosio::contract {
     eosio_assert(itr != custodians.end(), "account not a custodian");
 
     custodians.erase(itr);
+
+  }
+
+  //registers a user
+  //[[eosio::action]]
+  void reguser(account_name owner) {
+
+    require_auth(_self); 
 
   }
 

@@ -1,0 +1,13 @@
+{
+   "proposer":"acct1",
+   "pair":{
+	"name":"iqeos",
+	"base_symbol":"3,IQ",
+	"base_type":4,
+	"base_contract":"eosio.token"
+	"quote_symbol":"4,EOS",
+	"quote_type":4,
+	"quote_contract":"everipediaiq",
+	"quoted_precision":8
+    }
+}
