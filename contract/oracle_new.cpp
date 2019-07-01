@@ -231,10 +231,7 @@ class DelphiOracle : public eosio::contract {
 
     std::vector<account_name> approving_custodians;
     std::vector<account_name> approving_oracles;
-/*
-    uint64_t approved_custodian_counter = 0;
-    uint64_t approved_bp_counter = 0;
-*/
+
     symbol_type base_symbol;
     asset_type base_type;
     account_name base_contract;
