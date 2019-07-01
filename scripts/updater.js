@@ -38,11 +38,14 @@ function write(){
 				console.log("BTCCNY:", JSON.parse(btccnyRes).CNY.last);
 
 
-				var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
+				/* var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
 											{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}, 
 											{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"}, 
 											{"value": parseInt(Math.round(JSON.parse(btccnyRes).CNY.last * 10000)), pair:"btccny"}];
 
+						*/
+
+					var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}];
 				console.log("quotes:", quotes);
 
 				eos.contract(oracleContract)
