@@ -13,14 +13,13 @@
 
 TODO
 
-Add bounty system
+OK - Add bounty system
 OK - Add auto-voting system
-Parse memo field of transfers and allocate the transfer to bounty or to distribution
+OK - Parse memo field of transfers and allocate the transfer to bounty or to distribution
 Add timeframes (in seconds)
-  1 min   -> 60
-  60 min  -> 3600
-  daily   -> 86400
-Add user - payer logic for additional pairs
+  60
+Add more configuration flexibility
+
 
 */
 
