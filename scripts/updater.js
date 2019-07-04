@@ -1,6 +1,6 @@
 const Eos = require('eosjs');
 const dotenv = require('dotenv');
-const axios = require('axios');
+//const axios = require('axios');
 const request = require('request');
 
 const eosUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD";
