@@ -465,35 +465,47 @@ class DelphiOracle : public eosio::contract {
   }
 
   //Push oracle message on top of queue, pop oldest element if queue size is larger than datapoints_count
-  void update_datapoints(const account_name owner, const uint64_t value, account_name pair){
+  void update_datapoints(const account_name owner, const uint64_t value, pairstable::const_iterator pair_itr){
 
     globaltable gtable(get_self(), get_self());
-    datapointstable dstore(get_self(), pair);
-
-    //auto size = std::distance(dstore.begin(), dstore.end());
+    datapointstable dstore(get_self(), pair_itr->name);
 
     uint64_t median = 0;
-    uint64_t primary_key ;
-
-    //Find median
-    //if (size>0){
+    //uint64_t primary_key ;
 
     //Calculate new primary key by substracting one from the previous one
-    auto latest = dstore.begin();
-    primary_key = latest->id - 1;
+ /*   auto latest = dstore.begin();
+    primary_key = latest->id - 1;*/
 
-    //If new size is greater than the max number of datapoints count
-    //if (size+1>datapoints_count){
+    auto t_idx = dstore.get_index<N(timestamp)>();
 
-    auto oldest = dstore.end();
-    oldest--;
+    auto oldest = t_idx.begin();
+    
+/*
+
+  auto idx = hashtable.get_index<N(producer)>();
+    auto itr = idx.find(producer);
+    if (itr != idx.end()) {
+      idx.modify(itr, producer, [&](auto& prod_hash) {
+        prod_hash.hash = hash;
+      });
+    } else {*/
+
 
     //Pop oldest point
-    dstore.erase(oldest);
+    //t_idx.erase(oldest);
 
     //Insert next datapoint
-    auto c_itr = dstore.emplace(get_self(), [&](auto& s) {
+/*    auto c_itr = dstore.emplace(get_self(), [&](auto& s) {
       s.id = primary_key;
+      s.owner = owner;
+      s.value = value;
+      s.timestamp = current_time();
+    });*/
+
+
+    t_idx.modify(oldest, get_self(), [&](auto& s) {
+     // s.id = primary_key;
       s.owner = owner;
       s.value = value;
       s.timestamp = current_time();
@@ -517,45 +529,9 @@ class DelphiOracle : public eosio::contract {
     median=itr->value;
 
     //set median
-    dstore.modify(c_itr, get_self(), [&](auto& s) {
+    t_idx.modify(oldest, get_self(), [&](auto& s) {
       s.median = median;
     });
-
-    //}
-    //else {
-/*
-      //No median is calculated until the expected number of datapoints have been received
-      median = value;
-
-      //Push new point at the end of the queue
-      dstore.emplace(get_self(), [&](auto& s) {
-        s.id = primary_key;
-        s.owner = owner;
-        s.value = value;
-        s.median = median;
-        s.timestamp = current_time();
-      });*/
-
-    //}
-
-  //}
- // else {
-
-/*      //First data point starts at uint64 max
-    primary_key = std::numeric_limits<unsigned long long>::max();
-    median = value;
-
-    //Push new point at the end of the queue
-    dstore.emplace(get_self(), [&](auto& s) {
-      s.id = primary_key;
-      s.owner = owner;
-      s.value = value;
-      s.median = median;
-      s.timestamp = current_time();
-    });
-*/
-//   }
-
 
     gtable.modify(gtable.begin(), get_self(), [&](auto& s) {
       s.total_datapoints_count++;
@@ -602,6 +578,8 @@ class DelphiOracle : public eosio::contract {
 
       eosio_assert(itr!=pairs.end() && itr->active == true, "pair not allowed");
 
+      check_last_push(owner, quotes[i].pair);
+
       if (itr->bounty_amount>=one_larimer && oitr != stable.end()){
 
         //global donation to the contract, split between top oracles across all pairs
@@ -615,7 +593,7 @@ class DelphiOracle : public eosio::contract {
         });
 
       }
-      else if (itr->bounty_amount<one_larimer && itr->bounty_awarded==false){
+      else if (itr->bounty_awarded==false && itr->bounty_amount<one_larimer){
 
         //global donation to the contract, split between top oracles across all pairs
         pairs.modify(*itr, get_self(), [&]( auto& s ) {
@@ -624,6 +602,8 @@ class DelphiOracle : public eosio::contract {
 
       }
 
+      update_datapoints(owner, quotes[i].value, itr);
+
     }
 
     //for (int i=0; i<length;i++){
@@ -631,11 +611,9 @@ class DelphiOracle : public eosio::contract {
       //eosio_assert(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
     //}
 
-    for (int i=0; i<length;i++){    
-      check_last_push(owner, quotes[i].pair);
-      update_datapoints(owner, quotes[i].value, quotes[i].pair);
+/*    for (int i=0; i<length;i++){    
     }
-
+*/
     print("done \n");
     //TODO: check if symbol exists
     //require_recipient(N(eosusdcom111));
@@ -757,7 +735,7 @@ class DelphiOracle : public eosio::contract {
         datapointstable dstore(get_self(), N(eosusd));
 
         //First data point starts at uint64 max
-        uint64_t primary_key = std::numeric_limits<unsigned long long>::max();
+        uint64_t primary_key = 0;
        
         for (uint16_t i=0; i < 21; i++){
 
@@ -768,7 +746,7 @@ class DelphiOracle : public eosio::contract {
             s.timestamp = 0;
           });
 
-          primary_key--;
+          primary_key++;
 
         }
 
@@ -830,7 +808,7 @@ class DelphiOracle : public eosio::contract {
     });
 
     //First data point starts at uint64 max
-    uint64_t primary_key = std::numeric_limits<unsigned long long>::max();
+    uint64_t primary_key = 0;
    
     for (uint16_t i=0; i < 21; i++){
 
@@ -841,7 +819,7 @@ class DelphiOracle : public eosio::contract {
         s.timestamp = 0;
       });
 
-      primary_key--;
+      primary_key++;
 
     }
 
