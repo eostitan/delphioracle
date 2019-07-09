@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Jul  5 20:13:02 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Jul  8 20:46:01 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -54,20 +54,6 @@
             ]
         },
         {
-            "name": "extended_symbol",
-            "base": "",
-            "fields": [
-                {
-                    "name": "symbol",
-                    "type": "symbol"
-                },
-                {
-                    "name": "contract",
-                    "type": "name"
-                }
-            ]
-        },
-        {
             "name": "global",
             "base": "",
             "fields": [
@@ -86,20 +72,64 @@
             "base": "",
             "fields": [
                 {
-                    "name": "id",
-                    "type": "uint64"
+                    "name": "active",
+                    "type": "bool"
+                },
+                {
+                    "name": "bounty_awarded",
+                    "type": "bool"
+                },
+                {
+                    "name": "bounty_edited_by_custodians",
+                    "type": "bool"
+                },
+                {
+                    "name": "proposer",
+                    "type": "name"
                 },
                 {
                     "name": "aname",
                     "type": "name"
                 },
                 {
-                    "name": "base",
-                    "type": "extended_symbol"
+                    "name": "bounty_amount",
+                    "type": "asset"
                 },
                 {
-                    "name": "quote",
-                    "type": "extended_symbol"
+                    "name": "approving_custodians",
+                    "type": "name[]"
+                },
+                {
+                    "name": "approving_oracles",
+                    "type": "name[]"
+                },
+                {
+                    "name": "base_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "base_type",
+                    "type": "uint64"
+                },
+                {
+                    "name": "base_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quote_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "quote_type",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quote_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quoted_precision",
+                    "type": "uint64"
                 }
             ]
         },

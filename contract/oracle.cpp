@@ -48,6 +48,15 @@ CONTRACT oracle : public eosio::contract {
   oracle(name receiver, name code, datastream<const char*> ds) : eosio::contract(receiver, code, ds) {}
 
   //Types
+  enum asset_type: uint16_t {
+      fiat=1,
+      cryptocurrency=2, 
+      erc20_token=3, 
+      eosio_token=4, 
+      equity=5, 
+      derivative=6, 
+      other=7
+  };
 
   //Holds the latest datapoints from qualified oracles
   TABLE datapoints {
@@ -87,13 +96,30 @@ CONTRACT oracle : public eosio::contract {
 
   //Holds the list of pairs
   TABLE pairs {
-    uint64_t id;
-    name aname;
-    extended_symbol base;
-    extended_symbol quote;
+    
+    bool active = false;
+    bool bounty_awarded = false;
+    bool bounty_edited_by_custodians = false;
 
-    uint64_t primary_key() const {return id;}
-    uint64_t by_name() const {return aname.value;}
+    name proposer;
+    name aname;
+
+    asset bounty_amount = asset(0, symbol("EOS",4));
+
+    std::vector<name> approving_custodians;
+    std::vector<name> approving_oracles;
+
+    symbol base_symbol;
+    uint64_t base_type;
+    name base_contract;
+
+    symbol quote_symbol;
+    uint64_t quote_type;
+    name quote_contract;
+    
+    uint64_t quoted_precision;
+
+    uint64_t primary_key() const {return aname.value;}
 
   };
 
@@ -156,8 +182,8 @@ CONTRACT oracle : public eosio::contract {
   typedef eosio::multi_index<name("stats"), stats,
       indexed_by<name("count"), const_mem_fun<stats, uint64_t, &stats::by_count>>> statstable;
 
-  typedef eosio::multi_index<name("pairs"), pairs, 
-      indexed_by<name("aname"), const_mem_fun<pairs, uint64_t, &pairs::by_name>>> pairstable;
+  typedef eosio::multi_index<name("pairs"), pairs> pairstable;
+
   typedef eosio::multi_index<name("datapoints"), datapoints,
       indexed_by<name("value"), const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
       indexed_by<name("timestamp"), const_mem_fun<datapoints, uint64_t, &datapoints::by_timestamp>>> datapointstable;
@@ -394,45 +420,69 @@ typedef eosio::multi_index<name("producers"), producer_info,
     });
 
     pairs.emplace(_self, [&](auto& o) {
-      o.id = 1;
       o.aname = name("eosusd");
-      o.base = extended_symbol(symbol("EOS",4),name("eosio.token"));
-      o.quote = extended_symbol(symbol("USD",4),name("fiat"));
+      o.base_symbol = symbol("EOS",4);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("eosio.token");
+      o.quote_symbol = symbol("USD",2);
+      o.quote_type = asset_type::fiat;
+      o.quote_contract = name("");
+      o.quoted_precision = 4;
     });
 
     pairs.emplace(_self, [&](auto& o) {
-      o.id = 2;
       o.aname = name("eosbtc");
-      o.base = extended_symbol(symbol("EOS",4),name("eosio.token"));
-      o.quote = extended_symbol(symbol("BTC",4),name("btc"));
+      o.base_symbol = symbol("EOS",4);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("eosio.token");
+      o.quote_symbol = symbol("BTC",4);
+      o.quote_type = asset_type::cryptocurrency;
+      o.quote_contract = name("");
+      o.quoted_precision = 6;
     });
 
     pairs.emplace(_self, [&](auto& o) {
-      o.id = 3;
       o.aname = name("iqeos");
-      o.base = extended_symbol(symbol("IQ",3),name("everipediaiq"));
-      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+      o.base_symbol = symbol("IQ",3);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("everipediaiq");
+      o.quote_symbol = symbol("EOS",4);
+      o.quote_type = asset_type::eosio_token;
+      o.quote_contract = name("eosio.token");
+      o.quoted_precision = 6;
     });
 
     pairs.emplace(_self, [&](auto& o) {
-      o.id = 4;
       o.aname = name("peoseos");
-      o.base = extended_symbol(symbol("PEOS",4),name("thepeostoken"));
-      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+      o.base_symbol = symbol("PEOS",4);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("thepeostoken");
+      o.quote_symbol = symbol("EOS",4);
+      o.quote_type = asset_type::eosio_token;
+      o.quote_contract = name("eosio.token");
+      o.quoted_precision = 6;
     });
 
     pairs.emplace(_self, [&](auto& o) {
-      o.id = 5;
       o.aname = name("diceeos");
-      o.base = extended_symbol(symbol("DICE",4),name("betdicetoken"));
-      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+      o.base_symbol = symbol("DICE",4);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("betdicetoken");
+      o.quote_symbol = symbol("EOS",4);
+      o.quote_type = asset_type::eosio_token;
+      o.quote_contract = name("eosio.token");
+      o.quoted_precision = 6;
     });
 
     pairs.emplace(_self, [&](auto& o) {
-      o.id = 6;
       o.aname = name("tpteos");
-      o.base = extended_symbol(symbol("TPT",4),name("eosiotptoken"));
-      o.quote = extended_symbol(symbol("EOS",4),name("eosio.token"));
+      o.base_symbol = symbol("TPT",4);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("eosiotptoken");
+      o.quote_symbol = symbol("EOS",4);
+      o.quote_type = asset_type::eosio_token;
+      o.quote_contract = name("eosio.token");
+      o.quoted_precision = 6;
     });
 
   }

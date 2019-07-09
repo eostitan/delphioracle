@@ -39,7 +39,7 @@ function write(){
 					.then((contract) => {
 						contract.write({
 								owner: owner,
-								quotes:[{value: parseInt(Math.round((results.data.USD) * 1000000)), pair: "eosusd"}]
+								quotes:[{value: parseInt(Math.round((results.data.USD) * 10000)), pair: "eosusd"}]
 							},
 							{
 								scope: oracleContract,
