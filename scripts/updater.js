@@ -46,7 +46,7 @@ function write(){
 
 						*/
 
-					var quotes = [{"value": parseInt(Math.round(JSON.parse(btcRes).CAD * 10000)), pair:"btccad"}];
+					var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}];
 				console.log("quotes:", quotes);
 
 				eos.contract(oracleContract)
