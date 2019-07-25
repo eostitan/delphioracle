@@ -58,7 +58,7 @@ Qualified block producers can call the contract up to once every minute to provi
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
 
 ```
-cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500, "symbol":"eosusd"}' -p acryptotitan@active
+cleos push action delphioracle write '{"owner":"acryptotitan", "quotes": [{"value":58500, "symbol":"eosusd"}]}' -p acryptotitan@active
 ```
 
 
