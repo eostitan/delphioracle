@@ -1,0 +1,16 @@
+{
+  "g":{
+    "datapoints_per_instrument": 21,
+    "bars_per_instrument": 30,
+    "vote_interval": 10000,
+    "write_cooldown": 55000000,
+    "approver_threshold": 1,
+    "approving_oracles_threshold":2,
+    "approving_custodians_threshold":1,
+    "minimum_rank": 105,
+    "paid": 21,
+    "min_bounty_delay": 604800,
+    "new_bounty_delay": 259200
+   }
+}
+

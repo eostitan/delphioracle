@@ -108,7 +108,7 @@ ACTION delphioracle::claim(name owner) {
   //} else {
   sstore.modify( *itr, _self, [&]( auto& a ) {
       a.balance = asset(0, symbol("EOS", 4));
-      a.last_claim = current_time();
+      a.last_claim = current_time_point().sec_since_epoch();
   });
 
   gtable.modify( *gitr, _self, [&]( auto& a ) {
