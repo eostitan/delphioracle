@@ -412,7 +412,7 @@ CONTRACT delphioracle : public eosio::contract {
 
     if (itr != store.end()) {
 
-      uint64_t ctime = current_time();
+      uint64_t ctime = current_time_point();
       auto last = store.get(owner.value);
 
       check(last.timestamp + gitr->write_cooldown <= ctime, "can only call every 60 seconds");
@@ -426,7 +426,7 @@ CONTRACT delphioracle : public eosio::contract {
 
       store.emplace(_self, [&](auto& s) {
         s.owner = owner;
-        s.timestamp = current_time();
+        s.timestamp = current_time_point();
         s.count = 1;
         s.balance = asset(0, symbol("EOS", 4));
         s.last_claim = 0;
@@ -437,7 +437,7 @@ CONTRACT delphioracle : public eosio::contract {
     auto gsitr = gstore.find(owner.value);
     if (gsitr != gstore.end()) {
 
-      uint64_t ctime = current_time();
+      uint64_t ctime = current_time_point();
 
       gstore.modify( gsitr, _self, [&]( auto& s ) {
         s.timestamp = ctime;
@@ -448,7 +448,7 @@ CONTRACT delphioracle : public eosio::contract {
 
       gstore.emplace(_self, [&](auto& s) {
         s.owner = owner;
-        s.timestamp = current_time();
+        s.timestamp = current_time_point();
         s.count = 1;
        s.balance = asset(0, symbol("EOS", 4));
        s.last_claim = 0;
@@ -527,7 +527,7 @@ CONTRACT delphioracle : public eosio::contract {
       s.id = primary_key;
       s.owner = owner;
       s.value = value;
-      s.timestamp = current_time();
+      s.timestamp = current_time_point();
     });*/
 
 
@@ -535,7 +535,7 @@ CONTRACT delphioracle : public eosio::contract {
      // s.id = primary_key;
       s.owner = owner;
       s.value = value;
-      s.timestamp = current_time();
+      s.timestamp = current_time_point();
     });
 
     //Get index sorted by value
@@ -649,7 +649,7 @@ CONTRACT delphioracle : public eosio::contract {
       users.emplace(_self, [&](auto& o) {
         o.name = owner;
         o.score = 0;
-        o.creation_timestamp = current_time();
+        o.creation_timestamp = current_time_point();
       });
     }
 
@@ -677,7 +677,7 @@ CONTRACT delphioracle : public eosio::contract {
       o.id = donations.available_primary_key();
       o.donator = from;
       o.pair = scope;
-      o.timestamp = current_time();
+      o.timestamp = current_time_point();
       o.amount = quantity;
     });
 
