@@ -134,25 +134,24 @@ Sample output:
 ```
 {
   "rows": [{
-      "id": "18446744073709551508",
+      "id": "0",
       "owner": "acryptotitan",
       "value": 56800,
       "median": 56863,
-      "timestamp": "1538937978500000"
+      "timestamp": "1564096083"
     }
   ],
   "more": true
 }
 ```
 
-## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
-
-Clone repository
+## Compile and deploy delphioracle.cpp (using eosio.cdt v.1.6.x)
 
 ```
+git clone https://github.com/eostitan/delphioracle
 cd delphioracle
-cd contract
-eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
-cleos set code <eoscontract> oracle.wasm
-cleos set abi <eoscontract> oracle.abi
+git submodule update --init --recursive
+cd scripts
+./build.sh
+./deploy.sh <eoscontract>
 ```
