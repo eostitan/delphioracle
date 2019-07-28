@@ -485,6 +485,17 @@ typedef eosio::multi_index<name("producers"), producer_info,
       o.quoted_precision = 6;
     });
 
+    pairs.emplace(_self, [&](auto& o) {
+      o.aname = name("vigeos");
+      o.base_symbol = symbol("VIG",4);
+      o.base_type = asset_type::eosio_token;
+      o.base_contract = name("vig111111111");
+      o.quote_symbol = symbol("EOS",4);
+      o.quote_type = asset_type::eosio_token;
+      o.quote_contract = name("eosio.token");
+      o.quoted_precision = 6;
+    });
+
   }
 
   //Clear all data
