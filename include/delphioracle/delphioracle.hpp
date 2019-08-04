@@ -3,12 +3,12 @@
   delphioracle
 
   Authors: Guillaume "Gnome" Babin-Tremblay - EOS Titan, Andrew "netuoso" Chaney - EOS Titan
-  
+
   Website: https://eostitan.com
   Email: guillaume@eostitan.com
 
   Github: https://github.com/eostitan/delphioracle/
-  
+
   Published under MIT License
 
 */
@@ -28,18 +28,20 @@ CONTRACT delphioracle : public eosio::contract {
 
   //Types
 
-  enum asset_type: uint16_t {
-      fiat=1, 
-      cryptocurrency=2, 
-      erc20_token=3, 
-      eosio_token=4, 
-      equity=5, 
-      derivative=6, 
+  enum e_asset_type: uint16_t {
+      fiat=1,
+      cryptocurrency=2,
+      erc20_token=3,
+      eosio_token=4,
+      equity=5,
+      derivative=6,
       other=7
   };
 
+  typedef uint16_t asset_type;
+
   // enum instrument_type: uint16_t {
-  //     pair=1, 
+  //     pair=1,
   //     value=2
   // };
 
@@ -265,7 +267,7 @@ CONTRACT delphioracle : public eosio::contract {
       double               total_producer_vote_weight = 0; /// the sum of all producer votes
       block_timestamp      last_name_close;
 
-      uint64_t primary_key()const { return 1;      }  
+      uint64_t primary_key()const { return 1;      }
    };
 */
 
@@ -507,7 +509,7 @@ CONTRACT delphioracle : public eosio::contract {
     auto t_idx = dstore.get_index<"timestamp"_n>();
 
     auto oldest = t_idx.begin();
-    
+
 /*
 
   auto idx = hashtable.get_index<"producer"_n>();
@@ -587,7 +589,7 @@ CONTRACT delphioracle : public eosio::contract {
   //Once the bounty has been created, anyone can contribute to the bounty by sending a transfer with the bounty name in the memo
 
   //Custodians of the contract or the bounty proposer can cancel the bounty. This refunds RAM to the proposer, as well as all donations made to the bounty 
-  //  to original payer accounts. 
+  //  to original payer accounts.
 
   //Custodians of the contract can edit the bounty's name and description (curation and standardization process)
 
@@ -698,12 +700,12 @@ CONTRACT delphioracle : public eosio::contract {
     //Move pointer to upperbound, counting total number of datapoints for oracles elligible for payout
     for (uint64_t i=1;i<=upperbound;i++){
       total_datapoints+=itr->count;
-      
+
       if (i<upperbound ){
         itr++;
         print("increment 1", "\n");
 
-      } 
+      }
 
     }
 
@@ -735,7 +737,7 @@ CONTRACT delphioracle : public eosio::contract {
       }
 
       amount-= uquota;
-      
+
       print("payout", payout, "\n");
 
       if (scope == _self) {
@@ -758,7 +760,7 @@ CONTRACT delphioracle : public eosio::contract {
         });
 
       }
-      
+
       if (i>1 ){
         itr--;
         print("decrement 1", "\n");
@@ -792,7 +794,7 @@ CONTRACT delphioracle : public eosio::contract {
 
     //if incoming transfer
     if (transfer_data.from != _self && transfer_data.to == _self){
-      
+
       //check if memo contains the name of an existing pair
 
       pairstable pairs(_self, _self.value);

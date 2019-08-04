@@ -189,10 +189,10 @@ ACTION delphioracle::configure(globalinput g) {
         o.name = "eosusd"_n;
         o.bounty_amount = asset(0, symbol("EOS", 4));
         o.base_symbol =  symbol("EOS", 4);
-        o.base_type = asset_type::eosio_token;
+        o.base_type = e_asset_type::eosio_token;
         o.base_contract = "eosio.token"_n;
         o.quote_symbol = symbol("USD", 2);
-        o.quote_type = asset_type::fiat;
+        o.quote_type = e_asset_type::fiat;
         o.quote_contract = ""_n;
         o.quoted_precision = 4;
       });
