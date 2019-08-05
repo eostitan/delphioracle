@@ -595,9 +595,7 @@ ACTION delphioracle::reguser(name owner) {
 
   require_auth(owner);
 
-  userstable users(_self, _self.value);
-
-  if( auto itr = users.find(owner.value); itr == users.end() ) create_user( owner );
+  if( !check_user(owner) ) create_user( owner );
 
 }
 
@@ -606,11 +604,7 @@ ACTION delphioracle::deluser(name owner) {
 
   require_auth(owner);
 
-  userstable users(_self, _self.value);
-
-  auto itr = users.find(owner.value);
-
-  if( itr != users.end() ) users.erase(itr);
+  if( check_user(owner) ) users.erase(itr);
 
 }
 
