@@ -94,7 +94,7 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
   check(check_oracle(owner), "user is not a qualified oracle");
 
   statstable gstore(_self, _self.value);
-  hashestable hstore(_self, _self.value);
+  hashestable hstore(_self, owner.value);
 
   check(check_user(owner), "user not yet registered. call reguser action first.");
 
@@ -601,15 +601,6 @@ ACTION delphioracle::reguser(name owner) {
 
 }
 
-//deletes a user from system
-ACTION delphioracle::deluser(name owner) {
-
-  require_auth(owner);
-
-  if( check_user(owner) ) users.erase(itr);
-
-}
-
 //updates all users voting scores
 //run at some random interval daily
 ACTION delphioracle::updateusers() {
@@ -648,8 +639,6 @@ ACTION delphioracle::clear(name pair) {
   datapointstable estore(_self,  pair.value);
   pairstable pairs(_self, _self.value);
   custodianstable ctable(_self, _self.value);
-  hashestable hstore(_self, _self.value);
-  userstable ustore(_self, _self.value);
   
   while (ctable.begin() != ctable.end()) {
       auto itr = ctable.end();
@@ -685,18 +674,6 @@ ACTION delphioracle::clear(name pair) {
       auto itr = pairs.end();
       itr--;
       pairs.erase(itr);
-  }
-
-  while (hstore.begin() != hstore.end()) {
-      auto itr = hstore.end();
-      itr--;
-      hstore.erase(itr);
-  }
-
-  while (ustore.begin() != ustore.end()) {
-      auto itr = ustore.end();
-      itr--;
-      ustore.erase(itr);
   }
 
 }

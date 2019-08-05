@@ -647,7 +647,6 @@ CONTRACT delphioracle : public eosio::contract {
   ACTION addcustodian(name name);
   ACTION delcustodian(name name);
   ACTION reguser(name owner);
-  ACTION deluser(name owner);
   ACTION clear(name pair);
   ACTION updateusers();
   ACTION voteabuser(name owner, name abuser);
@@ -666,7 +665,6 @@ CONTRACT delphioracle : public eosio::contract {
   using addcustodian_action = action_wrapper<"addcustodian"_n, &delphioracle::addcustodian>;
   using delcustodian_action = action_wrapper<"delcustodian"_n, &delphioracle::delcustodian>;
   using reguser_action = action_wrapper<"reguser"_n, &delphioracle::reguser>;
-  using deluser_action = action_wrapper<"deluser"_n, &delphioracle::deluser>;
   using clear_action = action_wrapper<"clear"_n, &delphioracle::clear>;
   using voteabuser_action = action_wrapper<"voteabuser"_n, &delphioracle::voteabuser>;
   using updateusers_action = action_wrapper<"updateusers"_n, &delphioracle::updateusers>;
