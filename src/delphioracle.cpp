@@ -87,6 +87,61 @@ ACTION delphioracle::write(const name owner, const std::vector<quote>& quotes) {
   
 }
 
+ACTION delphioracle::writehash(const name owner, const checksum256 hash, const std::string reveal) {
+
+  require_auth(owner);
+
+  statstable gstore(_self, _self.value);
+  hashestable hstore(_self, _self.value);
+
+  check(check_user(owner), "user not yet registered. call reguser action first.");
+
+  // ensure user hasnt submitted an identical hash
+  auto h_idx = hstore.get_index<"hash"_n>();
+  auto hitr = h_idx.find(hash);
+  check(hitr == h_idx.end(), "user has previously submitted identical hash");
+
+  // verify users previous hash using reveal
+  auto t_idx = hstore.get_index<"timestamp"_n>();
+  auto previous_hash = t_idx.rbegin();
+  if( previous_hash != t_idx.rend() ) {
+    checksum256 hashed = sha256(reveal.c_str(), reveal.length());
+
+    // check(hashed == previous_hash->hash, "unable to verify previous hash using reveal");
+
+    // increment count for user if their hash verified
+    if(hashed == previous_hash->hash) {
+      auto gsitr = gstore.find(owner.value);
+
+      if (gsitr != gstore.end()) {
+        gstore.modify( gsitr, _self, [&]( auto& s ) {
+          s.timestamp = current_time_point().sec_since_epoch();
+          s.count++;
+        });
+      } else {
+        gstore.emplace(_self, [&](auto& s) {
+          s.owner = owner;
+          s.timestamp = current_time_point().sec_since_epoch();
+          s.count = 1;
+          s.balance = asset(0, symbol("EOS", 4));
+          s.last_claim = 0;
+        });
+      }
+
+    }
+  }
+
+  // store users hash in table for future verification
+  hstore.emplace(_self, [&](auto& o) {
+    o.id = hstore.available_primary_key();
+    o.owner = owner;
+    o.hash = hash;
+    o.reveal = reveal;
+    o.timestamp = current_time_point().sec_since_epoch();
+  });
+
+}
+
 //claim rewards
 ACTION delphioracle::claim(name owner) {
   
@@ -597,6 +652,8 @@ ACTION delphioracle::clear(name pair) {
   datapointstable estore(_self,  pair.value);
   pairstable pairs(_self, _self.value);
   custodianstable ctable(_self, _self.value);
+  hashestable hstore(_self, _self.value);
+  userstable ustore(_self, _self.value);
   
   while (ctable.begin() != ctable.end()) {
       auto itr = ctable.end();
@@ -632,6 +689,18 @@ ACTION delphioracle::clear(name pair) {
       auto itr = pairs.end();
       itr--;
       pairs.erase(itr);
+  }
+
+  while (hstore.begin() != hstore.end()) {
+      auto itr = hstore.end();
+      itr--;
+      hstore.erase(itr);
+  }
+
+  while (ustore.begin() != ustore.end()) {
+      auto itr = ustore.end();
+      itr--;
+      ustore.erase(itr);
   }
 
 }

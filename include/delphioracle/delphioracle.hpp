@@ -98,6 +98,19 @@ CONTRACT delphioracle : public eosio::contract {
 
   };
 
+  //Holds the last hashes from qualified oracles
+  TABLE hashes {
+    uint64_t id;
+    name owner;
+    checksum256 hash;
+    std::string reveal;
+    uint64_t timestamp;
+
+    uint64_t primary_key() const {return id;}
+    uint64_t by_timestamp() const {return timestamp;}
+    checksum256 by_hash() const {return hash;}
+  };
+
   //Holds the count and time of last writes for qualified oracles
   TABLE stats {
     name owner; 
@@ -346,6 +359,10 @@ CONTRACT delphioracle : public eosio::contract {
       indexed_by<"value"_n, const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
       indexed_by<"timestamp"_n, const_mem_fun<datapoints, uint64_t, &datapoints::by_timestamp>>> datapointstable;
 
+  typedef eosio::multi_index<"hashes"_n, hashes,
+      indexed_by<"timestamp"_n, const_mem_fun<hashes, uint64_t, &hashes::by_timestamp>>,
+      indexed_by<"hash"_n, const_mem_fun<hashes, checksum256, &hashes::by_hash>>> hashestable;
+
   typedef eosio::multi_index<"voters"_n, voter_info,
       indexed_by<"voter"_n, const_mem_fun<voter_info, uint64_t, &voter_info::primary_key>>> voters_table;
 
@@ -402,6 +419,17 @@ CONTRACT delphioracle : public eosio::contract {
 
   }
 
+  bool check_user(const name owner){
+
+    userstable utable(_self, _self.value);
+
+    auto user = utable.find(owner.value);
+
+    if (user != utable.end()) return true;
+    else return false;
+
+  }
+
   //Ensure account cannot push data more often than every 60 seconds
   void check_last_push(const name owner, const name pair){
 
@@ -452,8 +480,8 @@ CONTRACT delphioracle : public eosio::contract {
         s.owner = owner;
         s.timestamp = current_time_point().sec_since_epoch();
         s.count = 1;
-       s.balance = asset(0, symbol("EOS", 4));
-       s.last_claim = 0;
+        s.balance = asset(0, symbol("EOS", 4));
+        s.last_claim = 0;
       });
 
     }
@@ -578,6 +606,7 @@ CONTRACT delphioracle : public eosio::contract {
 
   //Write datapoint
   ACTION write(const name owner, const std::vector<quote>& quotes);
+  ACTION writehash(const name owner, const checksum256 hash, const std::string reveal);
   ACTION claim(name owner);
   ACTION configure(globalinput g);
 
@@ -624,6 +653,7 @@ CONTRACT delphioracle : public eosio::contract {
   ACTION voteabuser(name owner, name abuser);
 
   using write_action = action_wrapper<"write"_n, &delphioracle::write>;
+  using writehash_action = action_wrapper<"writehash"_n, &delphioracle::writehash>;
   using claim_action = action_wrapper<"claim"_n, &delphioracle::claim>;
   using configure_action = action_wrapper<"configure"_n, &delphioracle::configure>;
   using newbounty_action = action_wrapper<"newbounty"_n, &delphioracle::newbounty>;
