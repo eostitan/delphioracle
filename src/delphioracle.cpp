@@ -91,6 +91,8 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
 
   require_auth(owner);
 
+  check(check_oracle(owner), "user is not a qualified oracle");
+
   statstable gstore(_self, _self.value);
   hashestable hstore(_self, _self.value);
 
