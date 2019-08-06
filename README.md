@@ -61,7 +61,6 @@ Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to d
 cleos push action delphioracle write '{"owner":"acryptotitan", "quotes": [{"value":58500, "symbol":"eosusd"}]}' -p acryptotitan@active
 ```
 
-
 ## Set up and run updater.js
 
 Updater.js is a nodejs module meant to retrieve the EOS/USD price using cryptocompare.com's API, and push the result to the DelphiOracle smart contract automatically and continuously, with the help of CRON.
@@ -144,6 +143,21 @@ Sample output:
   "more": true
 }
 ```
+
+## RNG Data Source
+
+Qualified block producers can call the contract up to once every minute to provide a random source of data for the DelphiOracle RNG.
+
+Example: a source of data pushed by block producer acryptotitan to delphioracle contract would look like this:
+
+```
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd", "reveal":""}' -p acryptotitan@active
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c", "reveal":"A"}' -p acryptotitan@active
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d", "reveal":"B"}' -p acryptotitan@active
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43", "reveal":"C"}' -p acryptotitan@active
+```
+
+- `reveal` parameter ignored on first push.
 
 ## Compile and deploy delphioracle.cpp (using eosio.cdt v.1.6.x)
 

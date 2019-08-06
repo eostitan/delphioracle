@@ -93,6 +93,7 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
 
   check(check_oracle(owner), "user is not a qualified oracle");
 
+  globaltable gtable(_self, _self.value);
   statstable gstore(_self, _self.value);
   hashestable hstore(_self, owner.value);
 
@@ -107,9 +108,12 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
   auto t_idx = hstore.get_index<"timestamp"_n>();
   auto previous_hash = t_idx.rbegin();
   if( previous_hash != t_idx.rend() ) {
-    checksum256 hashed = sha256(reveal.c_str(), reveal.length());
 
-    // check(hashed == previous_hash->hash, "unable to verify previous hash using reveal");
+    auto gitr = gtable.begin();
+    uint64_t ctime = current_time_point().sec_since_epoch();
+    check(previous_hash->timestamp + gitr->write_cooldown <= ctime, "can only call every 60 seconds");
+
+    checksum256 hashed = sha256(reveal.c_str(), reveal.length());
 
     // increment count for user if their hash verified
     if(hashed == previous_hash->hash) {
