@@ -163,9 +163,8 @@ cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"3f39d
 
 ```
 git clone https://github.com/eostitan/delphioracle
-cd delphioracle
-git submodule update --init --recursive
-cd scripts
-./build.sh
+cd delphioracle/build
+cmake ..
+make
 ./deploy.sh <eoscontract>
 ```

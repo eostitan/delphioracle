@@ -13,7 +13,10 @@
 
 */
 
-#include <eosio.system/eosio.system.hpp>
+#include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
+#include <eosio/crypto.hpp>
+#include <eosio/system.hpp>
 #include <math.h>
 
 using namespace eosio;
@@ -27,7 +30,6 @@ CONTRACT delphioracle : public eosio::contract {
  	using contract::contract;
 
   //Types
-
   enum e_asset_type: uint16_t {
       fiat=1,
       cryptocurrency=2,
@@ -57,6 +59,75 @@ CONTRACT delphioracle : public eosio::contract {
     uint64_t paid;
     uint64_t min_bounty_delay;
     uint64_t new_bounty_delay;
+  };
+
+  struct pairinput {
+    name name;
+    symbol base_symbol;
+    asset_type base_type;
+    eosio::name base_contract;
+    symbol quote_symbol;
+    asset_type quote_type;
+    eosio::name quote_contract;
+    uint64_t quoted_precision;
+  };
+
+  //Quote
+  struct quote {
+    uint64_t value;
+    name pair;
+  };
+
+  //eosmechanics::cpu
+  struct event {
+    uint64_t value;
+    name instrument;
+  };
+
+/*   struct blockchain_parameters {
+      uint64_t free_ram()const { return max_ram_size - total_ram_bytes_reserved; }
+
+      uint64_t             max_ram_size = 64ll*1024 * 1024 * 1024;
+      uint64_t             total_ram_bytes_reserved = 0;
+      int64_t              total_ram_stake = 0;
+
+      block_timestamp      last_producer_schedule_update;
+      time_point           last_pervote_bucket_fill;
+      int64_t              pervote_bucket = 0;
+      int64_t              perblock_bucket = 0;
+      uint32_t             total_unpaid_blocks = 0; /// all blocks which have been produced but not paid
+      int64_t              total_activated_stake = 0;
+      time_point           thresh_activated_stake_time;
+      uint16_t             last_producer_schedule_size = 0;
+      double               total_producer_vote_weight = 0; /// the sum of all producer votes
+      block_timestamp      last_name_close;
+
+      uint64_t primary_key()const { return 1;      }
+   };
+*/
+
+  struct producer_info {
+    name                  owner;
+    double                total_votes = 0;
+    eosio::public_key     producer_key; /// a packed public key object
+    bool                  is_active = true;
+    std::string           url;
+    uint32_t              unpaid_blocks = 0;
+    time_point            last_claim_time;
+    uint16_t              location = 0;
+
+    uint64_t primary_key()const { return owner.value;                             }
+    double   by_votes()const    { return is_active ? -total_votes : total_votes;  }
+    bool     active()const      { return is_active;                               }
+    //void     deactivate()       { producer_key = public_key(); is_active = false; }
+
+  };
+
+  struct st_transfer {
+      name  from;
+      name  to;
+      asset         quantity;
+      std::string   memo;
   };
 
   //Global config
@@ -197,17 +268,6 @@ CONTRACT delphioracle : public eosio::contract {
 
   };
 
-  struct pairinput {
-    name name;
-    symbol base_symbol;
-    asset_type base_type;
-    eosio::name base_contract;
-    symbol quote_symbol;
-    asset_type quote_type;
-    eosio::name quote_contract;
-    uint64_t quoted_precision;
-  };
-
   //Holds the list of pairs
   TABLE pairs {
     //uint64_t id;
@@ -250,100 +310,42 @@ CONTRACT delphioracle : public eosio::contract {
 
   };
 
-  //Quote
-  struct quote {
-    uint64_t value;
-    name pair;
+  TABLE voter_info {
+    name                owner;     /// the voter
+    name                proxy;     /// the proxy set by the voter, if any
+    std::vector<name>   producers; /// the producers approved by this voter if no proxy set
+    int64_t             staked = 0;
+
+    /**
+     *  Every time a vote is cast we must first "undo" the last vote weight, before casting the
+     *  new vote weight.  Vote weight is calculated as:
+     *
+     *  stated.amount * 2 ^ ( weeks_since_launch/weeks_per_year)
+     */
+    double              last_vote_weight = 0; /// the vote weight cast the last time the vote was updated
+
+    /**
+     * Total vote weight delegated to this voter.
+     */
+    double              proxied_vote_weight= 0; /// the total vote weight delegated to this voter as a proxy
+    bool                is_proxy = 0; /// whether the voter is a proxy for others
+
+
+    uint32_t            flags1 = 0;
+    uint32_t            reserved2 = 0;
+    eosio::asset        reserved3;
+
+    uint64_t primary_key()const { return owner.value; }
+
+    enum class flags1_fields : uint32_t {
+       ram_managed = 1,
+       net_managed = 2,
+       cpu_managed = 4
+    };
+
+    // explicit serialization macro is not necessary, used here only to improve compilation time
+    EOSLIB_SERIALIZE( voter_info, (owner)(proxy)(producers)(staked)(last_vote_weight)(proxied_vote_weight)(is_proxy)(flags1)(reserved2)(reserved3) )
   };
-
-  //eosmechanics::cpu
-  struct event {
-    uint64_t value;
-    name instrument;
-  };
-
-/*   struct blockchain_parameters {
-      uint64_t free_ram()const { return max_ram_size - total_ram_bytes_reserved; }
-
-      uint64_t             max_ram_size = 64ll*1024 * 1024 * 1024;
-      uint64_t             total_ram_bytes_reserved = 0;
-      int64_t              total_ram_stake = 0;
-
-      block_timestamp      last_producer_schedule_update;
-      time_point           last_pervote_bucket_fill;
-      int64_t              pervote_bucket = 0;
-      int64_t              perblock_bucket = 0;
-      uint32_t             total_unpaid_blocks = 0; /// all blocks which have been produced but not paid
-      int64_t              total_activated_stake = 0;
-      time_point           thresh_activated_stake_time;
-      uint16_t             last_producer_schedule_size = 0;
-      double               total_producer_vote_weight = 0; /// the sum of all producer votes
-      block_timestamp      last_name_close;
-
-      uint64_t primary_key()const { return 1;      }
-   };
-*/
-
-  struct producer_info {
-    name                  owner;
-    double                total_votes = 0;
-    eosio::public_key     producer_key; /// a packed public key object
-    bool                  is_active = true;
-    std::string           url;
-    uint32_t              unpaid_blocks = 0;
-    time_point            last_claim_time;
-    uint16_t              location = 0;
-
-    uint64_t primary_key()const { return owner.value;                             }
-    double   by_votes()const    { return is_active ? -total_votes : total_votes;  }
-    bool     active()const      { return is_active;                               }
-    //void     deactivate()       { producer_key = public_key(); is_active = false; }
-
-  };
-
-  struct st_transfer {
-      name  from;
-      name  to;
-      asset         quantity;
-      std::string   memo;
-  };
-
-   TABLE voter_info {
-      name                owner;     /// the voter
-      name                proxy;     /// the proxy set by the voter, if any
-      std::vector<name>   producers; /// the producers approved by this voter if no proxy set
-      int64_t             staked = 0;
-
-      /**
-       *  Every time a vote is cast we must first "undo" the last vote weight, before casting the
-       *  new vote weight.  Vote weight is calculated as:
-       *
-       *  stated.amount * 2 ^ ( weeks_since_launch/weeks_per_year)
-       */
-      double              last_vote_weight = 0; /// the vote weight cast the last time the vote was updated
-
-      /**
-       * Total vote weight delegated to this voter.
-       */
-      double              proxied_vote_weight= 0; /// the total vote weight delegated to this voter as a proxy
-      bool                is_proxy = 0; /// whether the voter is a proxy for others
-
-
-      uint32_t            flags1 = 0;
-      uint32_t            reserved2 = 0;
-      eosio::asset        reserved3;
-
-      uint64_t primary_key()const { return owner.value; }
-
-      enum class flags1_fields : uint32_t {
-         ram_managed = 1,
-         net_managed = 2,
-         cpu_managed = 4
-      };
-
-      // explicit serialization macro is not necessary, used here only to improve compilation time
-      EOSLIB_SERIALIZE( voter_info, (owner)(proxy)(producers)(staked)(last_vote_weight)(proxied_vote_weight)(is_proxy)(flags1)(reserved2)(reserved3) )
-   };
 
   //Multi index types definition
   typedef eosio::multi_index<"global"_n, global> globaltable;
@@ -379,6 +381,79 @@ CONTRACT delphioracle : public eosio::contract {
       indexed_by<"votes"_n, const_mem_fun<abusers, uint64_t, &abusers::by_votes>>> abuserstable;
 
   //typedef eosio::multi_index<"bounties"_n, bounties> bountiestable;
+
+  //Write datapoint
+  ACTION write(const name owner, const std::vector<quote>& quotes);
+  ACTION writehash(const name owner, const checksum256 hash, const std::string reveal);
+  ACTION claim(name owner);
+  ACTION configure(globalinput g);
+  ACTION newbounty(name proposer, pairinput pair);
+  ACTION cancelbounty(name name, std::string reason);
+  ACTION votebounty(name owner, name bounty);
+  ACTION unvotebounty(name owner, name bounty);
+  ACTION editbounty(name name, pairinput pair);
+  ACTION editpair(pairs pair);
+  ACTION deletepair(name name);
+  ACTION addcustodian(name name);
+  ACTION delcustodian(name name);
+  ACTION reguser(name owner);
+  ACTION clear(name pair);
+  ACTION updateusers();
+  ACTION voteabuser(name owner, name abuser);
+
+  [[eosio::on_notify("eosio.token::transfer")]]
+  void transfer(uint64_t sender, uint64_t receiver) {
+    print("transfer notifier", "\n");
+
+    auto transfer_data = unpack_action_data<delphioracle::st_transfer>();
+
+    print("transfer ", name{transfer_data.from}, " ",  name{transfer_data.to}, " ", transfer_data.quantity, "\n");
+
+    //if incoming transfer
+    if (transfer_data.from != _self && transfer_data.to == _self){
+
+      //check if memo contains the name of an existing pair
+
+      pairstable pairs(_self, _self.value);
+      //bountiestable bounties(_self, _self.value);
+
+      //auto name_index = pairs.get_index<"name"_n>();
+
+      // print("name(transfer_data.memo)", name(transfer_data.memo), "\n");
+      // print("transfer_data.memo", transfer_data.memo, "\n");
+
+      if (transfer_data.memo == system_str ) return; //transfer to system account
+
+      auto itr = pairs.find(name(transfer_data.memo).value);
+
+      //auto bitr = bounties.find(name(transfer_data.memo).value;
+
+      if (itr != pairs.end() && itr->bounty_awarded == true ) process_donation(transfer_data.from, itr->name, transfer_data.quantity);
+      else if (itr != pairs.end() && itr->bounty_awarded == false) process_bounty(transfer_data.from, itr->name, transfer_data.quantity);
+      else process_donation(transfer_data.from, _self, transfer_data.quantity);
+    }
+  }
+
+  using write_action = action_wrapper<"write"_n, &delphioracle::write>;
+  using writehash_action = action_wrapper<"writehash"_n, &delphioracle::writehash>;
+  using claim_action = action_wrapper<"claim"_n, &delphioracle::claim>;
+  using configure_action = action_wrapper<"configure"_n, &delphioracle::configure>;
+  using newbounty_action = action_wrapper<"newbounty"_n, &delphioracle::newbounty>;
+  using cancelbounty_action = action_wrapper<"cancelbounty"_n, &delphioracle::cancelbounty>;
+  using votebounty_action = action_wrapper<"votebounty"_n, &delphioracle::votebounty>;
+  using unvotebounty_action = action_wrapper<"unvotebounty"_n, &delphioracle::unvotebounty>;
+  using editbounty_action = action_wrapper<"editbounty"_n, &delphioracle::editbounty>;
+  using editpair_action = action_wrapper<"editpair"_n, &delphioracle::editpair>;
+  using deletepair_action = action_wrapper<"deletepair"_n, &delphioracle::deletepair>;
+  using addcustodian_action = action_wrapper<"addcustodian"_n, &delphioracle::addcustodian>;
+  using delcustodian_action = action_wrapper<"delcustodian"_n, &delphioracle::delcustodian>;
+  using reguser_action = action_wrapper<"reguser"_n, &delphioracle::reguser>;
+  using clear_action = action_wrapper<"clear"_n, &delphioracle::clear>;
+  using voteabuser_action = action_wrapper<"voteabuser"_n, &delphioracle::voteabuser>;
+  using updateusers_action = action_wrapper<"updateusers"_n, &delphioracle::updateusers>;
+  using transfer_action = action_wrapper<name("transfer"), &delphioracle::transfer>;
+
+ private:
 
   //Check if calling account is a qualified oracle
   bool check_oracle(const name owner){
@@ -604,12 +679,6 @@ CONTRACT delphioracle : public eosio::contract {
 
   }
 
-  //Write datapoint
-  ACTION write(const name owner, const std::vector<quote>& quotes);
-  ACTION writehash(const name owner, const checksum256 hash, const std::string reveal);
-  ACTION claim(name owner);
-  ACTION configure(globalinput g);
-
   //Delphi Oracle - Bounty logic
 
   //Anyone can propose a bounty to add a new pair. This is the only way to add new pairs.
@@ -636,38 +705,6 @@ CONTRACT delphioracle : public eosio::contract {
 
 
   //create a new pair request bounty
-
-  ACTION newbounty(name proposer, pairinput pair);
-  ACTION cancelbounty(name name, std::string reason);
-  ACTION votebounty(name owner, name bounty);
-  ACTION unvotebounty(name owner, name bounty);
-  ACTION editbounty(name name, pairinput pair);
-  ACTION editpair(pairs pair);
-  ACTION deletepair(name name);
-  ACTION addcustodian(name name);
-  ACTION delcustodian(name name);
-  ACTION reguser(name owner);
-  ACTION clear(name pair);
-  ACTION updateusers();
-  ACTION voteabuser(name owner, name abuser);
-
-  using write_action = action_wrapper<"write"_n, &delphioracle::write>;
-  using writehash_action = action_wrapper<"writehash"_n, &delphioracle::writehash>;
-  using claim_action = action_wrapper<"claim"_n, &delphioracle::claim>;
-  using configure_action = action_wrapper<"configure"_n, &delphioracle::configure>;
-  using newbounty_action = action_wrapper<"newbounty"_n, &delphioracle::newbounty>;
-  using cancelbounty_action = action_wrapper<"cancelbounty"_n, &delphioracle::cancelbounty>;
-  using votebounty_action = action_wrapper<"votebounty"_n, &delphioracle::votebounty>;
-  using unvotebounty_action = action_wrapper<"unvotebounty"_n, &delphioracle::unvotebounty>;
-  using editbounty_action = action_wrapper<"editbounty"_n, &delphioracle::editbounty>;
-  using editpair_action = action_wrapper<"editpair"_n, &delphioracle::editpair>;
-  using deletepair_action = action_wrapper<"deletepair"_n, &delphioracle::deletepair>;
-  using addcustodian_action = action_wrapper<"addcustodian"_n, &delphioracle::addcustodian>;
-  using delcustodian_action = action_wrapper<"delcustodian"_n, &delphioracle::delcustodian>;
-  using reguser_action = action_wrapper<"reguser"_n, &delphioracle::reguser>;
-  using clear_action = action_wrapper<"clear"_n, &delphioracle::clear>;
-  using voteabuser_action = action_wrapper<"voteabuser"_n, &delphioracle::voteabuser>;
-  using updateusers_action = action_wrapper<"updateusers"_n, &delphioracle::updateusers>;
 
   void create_user(name owner) {
 
@@ -796,7 +833,6 @@ CONTRACT delphioracle : public eosio::contract {
       } 
     }
 
-
   }
 
   void process_bounty(name from, name pair, asset quantity){
@@ -810,43 +846,5 @@ CONTRACT delphioracle : public eosio::contract {
     });
 
   }
-
-  [[eosio::on_notify("eosio.token::transfer")]]
-  void transfer(uint64_t sender, uint64_t receiver) {
-
-    print("transfer notifier", "\n");
-
-    auto transfer_data = unpack_action_data<delphioracle::st_transfer>();
-
-    print("transfer ", name{transfer_data.from}, " ",  name{transfer_data.to}, " ", transfer_data.quantity, "\n");
-
-    //if incoming transfer
-    if (transfer_data.from != _self && transfer_data.to == _self){
-
-      //check if memo contains the name of an existing pair
-
-      pairstable pairs(_self, _self.value);
-      //bountiestable bounties(_self, _self.value);
-
-      //auto name_index = pairs.get_index<"name"_n>();
-
-      // print("name(transfer_data.memo)", name(transfer_data.memo), "\n");
-      // print("transfer_data.memo", transfer_data.memo, "\n");
-
-      if (transfer_data.memo == system_str ) return; //transfer to system account
-
-      auto itr = pairs.find(name(transfer_data.memo).value);
-
-      //auto bitr = bounties.find(name(transfer_data.memo).value;
-
-      if (itr != pairs.end() && itr->bounty_awarded == true ) process_donation(transfer_data.from, itr->name, transfer_data.quantity);
-      else if (itr != pairs.end() && itr->bounty_awarded == false) process_bounty(transfer_data.from, itr->name, transfer_data.quantity);
-      else process_donation(transfer_data.from, _self, transfer_data.quantity);
-
-    }
-
-  }
-
-  using transfer_action = action_wrapper<name("transfer"), &delphioracle::transfer>;
 
 };
