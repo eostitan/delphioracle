@@ -2,7 +2,9 @@
 
   delphioracle
 
-  Authors: Guillaume "Gnome" Babin-Tremblay - EOS Titan, Andrew "netuoso" Chaney - EOS Titan
+  Authors: 
+    Guillaume "Gnome" Babin-Tremblay - EOS Titan 
+    Andrew "netuoso" Chaney - EOS Titan
 
   Website: https://eostitan.com
   Email: guillaume@eostitan.com
@@ -21,6 +23,8 @@ using namespace eosio;
 static const std::string system_str("system");
 
 static const asset one_larimer = asset(1, symbol("EOS", 4));
+
+const eosio::time_point NULL_TIME_POINT = eosio::time_point(eosio::microseconds(0));
 
 CONTRACT delphioracle : public eosio::contract {
  public:
@@ -90,10 +94,10 @@ CONTRACT delphioracle : public eosio::contract {
     name owner; 
     uint64_t value;
     uint64_t median;
-    uint64_t timestamp;
+    time_point timestamp;
 
     uint64_t primary_key() const {return id;}
-    uint64_t by_timestamp() const {return timestamp;}
+    uint64_t by_timestamp() const {return timestamp.elapsed.to_seconds();}
     uint64_t by_value() const {return value;}
 
   };
@@ -104,19 +108,20 @@ CONTRACT delphioracle : public eosio::contract {
     name owner;
     checksum256 hash;
     std::string reveal;
-    uint64_t timestamp;
+    time_point timestamp;
 
     uint64_t primary_key() const {return id;}
-    uint64_t by_timestamp() const {return timestamp;}
+    uint64_t by_timestamp() const {return timestamp.elapsed.to_seconds();}
+    uint64_t by_owner() const {return owner.value;}
     checksum256 by_hash() const {return hash;}
   };
 
   //Holds the count and time of last writes for qualified oracles
   TABLE stats {
     name owner; 
-    uint64_t timestamp;
+    time_point timestamp;
     uint64_t count;
-    uint64_t last_claim;
+    time_point last_claim;
     asset balance;
 
     uint64_t primary_key() const {return owner.value;}
@@ -131,10 +136,10 @@ CONTRACT delphioracle : public eosio::contract {
     uint64_t high;
     uint64_t low;
     uint64_t median;
-    uint64_t timestamp;
+    time_point timestamp;
 
     uint64_t primary_key() const {return id;}
-    uint64_t by_timestamp() const {return timestamp;}
+    uint64_t by_timestamp() const {return timestamp.elapsed.to_seconds();}
 
   };
 /*
@@ -157,7 +162,7 @@ CONTRACT delphioracle : public eosio::contract {
     name donator;
     name pair;
     //instrument_type type;
-    uint64_t timestamp;
+    time_point timestamp;
     asset amount;
 
     uint64_t primary_key() const {return id;}
@@ -171,7 +176,7 @@ CONTRACT delphioracle : public eosio::contract {
     name name;
     asset contribution;
     uint64_t score;
-    uint64_t creation_timestamp;
+    time_point creation_timestamp;
 
     uint64_t primary_key() const {return name.value;}
     uint64_t by_score() const {return score;}
@@ -361,6 +366,7 @@ CONTRACT delphioracle : public eosio::contract {
 
   typedef eosio::multi_index<"hashes"_n, hashes,
       indexed_by<"timestamp"_n, const_mem_fun<hashes, uint64_t, &hashes::by_timestamp>>,
+      indexed_by<"owner"_n, const_mem_fun<hashes, uint64_t, &hashes::by_owner>>,
       indexed_by<"hash"_n, const_mem_fun<hashes, checksum256, &hashes::by_hash>>> hashestable;
 
   typedef eosio::multi_index<"voters"_n, voter_info,
@@ -442,10 +448,12 @@ CONTRACT delphioracle : public eosio::contract {
 
     if (itr != store.end()) {
 
-      uint64_t ctime = current_time_point().sec_since_epoch();
+      time_point ctime = current_time_point();
       auto last = store.get(owner.value);
 
-      check(last.timestamp + gitr->write_cooldown <= ctime, "can only call every 60 seconds");
+      time_point next_push = eosio::time_point(last.timestamp.elapsed + eosio::microseconds(gitr->write_cooldown));
+
+      check(ctime>=next_push, "can only call every 60 seconds");
 
       store.modify( itr, _self, [&]( auto& s ) {
         s.timestamp = ctime;
@@ -456,10 +464,10 @@ CONTRACT delphioracle : public eosio::contract {
 
       store.emplace(_self, [&](auto& s) {
         s.owner = owner;
-        s.timestamp = current_time_point().sec_since_epoch();
+        s.timestamp = current_time_point();
         s.count = 1;
         s.balance = asset(0, symbol("EOS", 4));
-        s.last_claim = 0;
+        s.last_claim = NULL_TIME_POINT;
       });
 
     }
@@ -467,7 +475,7 @@ CONTRACT delphioracle : public eosio::contract {
     auto gsitr = gstore.find(owner.value);
     if (gsitr != gstore.end()) {
 
-      uint64_t ctime = current_time_point().sec_since_epoch();
+      time_point ctime = current_time_point();
 
       gstore.modify( gsitr, _self, [&]( auto& s ) {
         s.timestamp = ctime;
@@ -478,10 +486,10 @@ CONTRACT delphioracle : public eosio::contract {
 
       gstore.emplace(_self, [&](auto& s) {
         s.owner = owner;
-        s.timestamp = current_time_point().sec_since_epoch();
+        s.timestamp = current_time_point();
         s.count = 1;
         s.balance = asset(0, symbol("EOS", 4));
-        s.last_claim = 0;
+        s.last_claim = NULL_TIME_POINT;
       });
 
     }
@@ -565,7 +573,7 @@ CONTRACT delphioracle : public eosio::contract {
      // s.id = primary_key;
       s.owner = owner;
       s.value = value;
-      s.timestamp = current_time_point().sec_since_epoch();
+      s.timestamp = current_time_point();
     });
 
     //Get index sorted by value
@@ -679,7 +687,7 @@ CONTRACT delphioracle : public eosio::contract {
       users.emplace(_self, [&](auto& o) {
         o.name = owner;
         o.score = 0;
-        o.creation_timestamp = current_time_point().sec_since_epoch();
+        o.creation_timestamp = current_time_point();
       });
     }
 
@@ -707,7 +715,7 @@ CONTRACT delphioracle : public eosio::contract {
       o.id = donations.available_primary_key();
       o.donator = from;
       o.pair = scope;
-      o.timestamp = current_time_point().sec_since_epoch();
+      o.timestamp = current_time_point();
       o.amount = quantity;
     });
 

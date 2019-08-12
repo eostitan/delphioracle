@@ -95,14 +95,18 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
 
   globaltable gtable(_self, _self.value);
   statstable gstore(_self, _self.value);
-  hashestable hstore(_self, owner.value);
+  hashestable hstore(_self, _self.value);
 
-  check(check_user(owner), "user not yet registered. call reguser action first.");
+  //check(check_user(owner), "user not yet registered. call reguser action first.");
 
   // ensure user hasnt submitted an identical hash
   auto h_idx = hstore.get_index<"hash"_n>();
+  auto o_idx = hstore.get_index<"owner"_n>();
   auto hitr = h_idx.find(hash);
-  check(hitr == h_idx.end(), "user has previously submitted identical hash");
+  auto oitr = o_idx.find(owner.value);
+  check(hitr == h_idx.end(), "oracle has previously submitted identical hash");
+
+  //check(reveal != "" || hstore.begin() == hstore.end(), "");
 
   // verify users previous hash using reveal
   auto t_idx = hstore.get_index<"timestamp"_n>();
@@ -110,40 +114,46 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
   if( previous_hash != t_idx.rend() ) {
 
     auto gitr = gtable.begin();
-    uint64_t ctime = current_time_point().sec_since_epoch();
-    check(previous_hash->timestamp + gitr->write_cooldown <= ctime, "can only call every 60 seconds");
+    time_point ctime = current_time_point();
+    print("previous_hash->timestamp", previous_hash->timestamp.elapsed.to_seconds(), "\n");
+    print("gitr->write_cooldown", gitr->write_cooldown, "\n");
+    print("ctime", ctime.elapsed.to_seconds(), "\n");
+    
+    time_point next_push = eosio::time_point(previous_hash->timestamp.elapsed + eosio::microseconds(gitr->write_cooldown));
+    
+    check(ctime>=next_push, "can only call every 60 seconds");
 
     checksum256 hashed = sha256(reveal.c_str(), reveal.length());
 
     // increment count for user if their hash verified
-    if(hashed == previous_hash->hash) {
-      auto gsitr = gstore.find(owner.value);
+    check(hashed == previous_hash->hash, "hash mismatch");
+    //if(hashed == previous_hash->hash) {
+    auto gsitr = gstore.find(owner.value);
 
-      if (gsitr != gstore.end()) {
-        gstore.modify( gsitr, _self, [&]( auto& s ) {
-          s.timestamp = current_time_point().sec_since_epoch();
-          s.count++;
-        });
-      } else {
-        gstore.emplace(_self, [&](auto& s) {
-          s.owner = owner;
-          s.timestamp = current_time_point().sec_since_epoch();
-          s.count = 1;
-          s.balance = asset(0, symbol("EOS", 4));
-          s.last_claim = 0;
-        });
-      }
-
+    if (gsitr != gstore.end()) {
+      gstore.modify( gsitr, owner, [&]( auto& s ) {
+        s.timestamp = current_time_point();
+        s.count++;
+      });
+    } else {
+      gstore.emplace(owner, [&](auto& s) {
+        s.owner = owner;
+        s.timestamp = current_time_point();
+        s.count = 1;
+        s.balance = asset(0, symbol("EOS", 4));
+        s.last_claim = NULL_TIME_POINT;
+      });
     }
+
   }
 
   // store users hash in table for future verification
-  hstore.emplace(_self, [&](auto& o) {
+  hstore.emplace(owner, [&](auto& o) {
     o.id = hstore.available_primary_key();
     o.owner = owner;
     o.hash = hash;
     o.reveal = reveal;
-    o.timestamp = current_time_point().sec_since_epoch();
+    o.timestamp = current_time_point();
   });
 
 }
@@ -169,7 +179,7 @@ ACTION delphioracle::claim(name owner) {
   //} else {
   sstore.modify( *itr, _self, [&]( auto& a ) {
       a.balance = asset(0, symbol("EOS", 4));
-      a.last_claim = current_time_point().sec_since_epoch();
+      a.last_claim = current_time_point();
   });
 
   gtable.modify( *gitr, _self, [&]( auto& a ) {
@@ -269,7 +279,7 @@ ACTION delphioracle::configure(globalinput g) {
         auto c_itr = dstore.emplace(_self, [&](auto& s) {
           s.id = primary_key;
           s.value = 0;
-          s.timestamp = 0;
+          s.timestamp = NULL_TIME_POINT;
         });
 
         primary_key++;
@@ -341,7 +351,7 @@ ACTION delphioracle::newbounty(name proposer, pairinput pair) {
     auto c_itr = dstore.emplace(proposer, [&](auto& s) {
       s.id = primary_key;
       s.value = 0;
-      s.timestamp = 0;
+      s.timestamp = NULL_TIME_POINT;
     });
 
     primary_key++;
@@ -643,6 +653,8 @@ ACTION delphioracle::clear(name pair) {
   datapointstable estore(_self,  pair.value);
   pairstable pairs(_self, _self.value);
   custodianstable ctable(_self, _self.value);
+  hashestable htable(_self, "producer1"_n.value);
+  hashestable htable2(_self, _self.value);
   
   while (ctable.begin() != ctable.end()) {
       auto itr = ctable.end();
@@ -678,6 +690,18 @@ ACTION delphioracle::clear(name pair) {
       auto itr = pairs.end();
       itr--;
       pairs.erase(itr);
+  }
+  
+  while (htable.begin() != htable.end()) {
+      auto itr = htable.end();
+      itr--;
+      htable.erase(itr);
+  }
+
+  while (htable2.begin() != htable2.end()) {
+      auto itr = htable2.end();
+      itr--;
+      htable2.erase(itr);
   }
 
 }
