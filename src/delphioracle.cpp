@@ -54,7 +54,7 @@ ACTION delphioracle::write(const name owner, const std::vector<quote>& quotes) {
         s.balance += one_larimer;
       });
 
-      //global donation to the contract, split between top oracles across all pairs
+      //gl  obal donation to the contract, split between top oracles across all pairs
       pairs.modify(*itr, _self, [&]( auto& s ) {
         s.bounty_amount -= one_larimer;
       });
@@ -97,23 +97,17 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
   statstable gstore(_self, _self.value);
   hashestable hstore(_self, _self.value);
 
-  //check(check_user(owner), "user not yet registered. call reguser action first.");
-
+  auto gitr = gtable.begin();
   // ensure user hasnt submitted an identical hash
-  auto h_idx = hstore.get_index<"hash"_n>();
+  //auto h_idx = hstore.get_index<"hash"_n>();
+  //auto hitr = h_idx.find(hash);
+ // check(hitr == h_idx.end(), "oracle has previously submitted identical hash");
+
   auto o_idx = hstore.get_index<"owner"_n>();
-  auto hitr = h_idx.find(hash);
-  auto oitr = o_idx.find(owner.value);
-  check(hitr == h_idx.end(), "oracle has previously submitted identical hash");
 
-  //check(reveal != "" || hstore.begin() == hstore.end(), "");
+  auto previous_hash = o_idx.find(owner.value);
+  if( previous_hash != o_idx.end() ) {
 
-  // verify users previous hash using reveal
-  auto t_idx = hstore.get_index<"timestamp"_n>();
-  auto previous_hash = t_idx.rbegin();
-  if( previous_hash != t_idx.rend() ) {
-
-    auto gitr = gtable.begin();
     time_point ctime = current_time_point();
     print("previous_hash->timestamp", previous_hash->timestamp.elapsed.to_seconds(), "\n");
     print("gitr->write_cooldown", gitr->write_cooldown, "\n");
@@ -145,6 +139,8 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
       });
     }
 
+     o_idx.erase(previous_hash);
+
   }
 
   // store users hash in table for future verification
@@ -155,6 +151,21 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
     o.reveal = reveal;
     o.timestamp = current_time_point();
   });
+
+}
+
+
+ACTION delphioracle::forfeithash(name owner) {
+
+  require_auth(owner);
+
+  hashestable hstore(_self, _self.value);
+
+  auto o_idx = hstore.get_index<"owner"_n>();
+
+  auto previous_hash = o_idx.find(owner.value);
+
+  o_idx.erase(previous_hash);
 
 }
 

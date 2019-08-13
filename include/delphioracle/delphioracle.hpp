@@ -386,6 +386,10 @@ CONTRACT delphioracle : public eosio::contract {
 
   //typedef eosio::multi_index<"bounties"_n, bounties> bountiestable;
 
+  static uint128_t composite_key(const uint64_t &x, const uint64_t &y) {
+      return (uint128_t{x} << 64) | y;
+  }
+
   //Check if calling account is a qualified oracle
   bool check_oracle(const name owner){
 
@@ -401,7 +405,7 @@ CONTRACT delphioracle : public eosio::contract {
     uint64_t count = 0;
 
     while (p_itr != p_idx.end()) {
-      print(p_itr->owner, "\n");
+      //print(p_itr->owner, "\n");
       if (p_itr->owner==owner) return true;
       p_itr++;
       count++;
@@ -615,6 +619,7 @@ CONTRACT delphioracle : public eosio::contract {
   //Write datapoint
   ACTION write(const name owner, const std::vector<quote>& quotes);
   ACTION writehash(const name owner, const checksum256 hash, const std::string reveal);
+  ACTION forfeithash(const name owner);
   ACTION claim(name owner);
   ACTION configure(globalinput g);
 
