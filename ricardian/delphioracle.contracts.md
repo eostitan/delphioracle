@@ -10,6 +10,12 @@ Stub for writehash action's ricardian contract
 
 ---
 
+<h1 class="contract"> forfeithash </h1>
+
+Stub for forfeithash action's ricardian contract
+
+---
+
 <h1 class="contract"> claim </h1>
 
 Stub for claim action's ricardian contract

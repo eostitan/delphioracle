@@ -165,7 +165,7 @@ ACTION delphioracle::forfeithash(name owner) {
 
   auto previous_hash = o_idx.find(owner.value);
 
-  o_idx.erase(previous_hash);
+  if( previous_hash != o_idx.end() ) o_idx.erase(previous_hash);
 
 }
 
