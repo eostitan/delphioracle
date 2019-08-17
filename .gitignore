@@ -1,5 +1,4 @@
-build/*wasm
-build/*abi
+build/
 contract/oracle.wasm
 contract/*.sh
 src/*.sh
