@@ -24,6 +24,7 @@ static const std::string system_str("system");
 
 static const asset one_larimer = asset(1, symbol("EOS", 4));
 
+const checksum256 NULL_HASH;
 const eosio::time_point NULL_TIME_POINT = eosio::time_point(eosio::microseconds(0));
 
 CONTRACT delphioracle : public eosio::contract {
@@ -106,6 +107,7 @@ CONTRACT delphioracle : public eosio::contract {
   TABLE hashes {
     uint64_t id;
     name owner;
+    checksum256 multiparty;
     checksum256 hash;
     std::string reveal;
     time_point timestamp;
@@ -386,6 +388,16 @@ CONTRACT delphioracle : public eosio::contract {
 
   //typedef eosio::multi_index<"bounties"_n, bounties> bountiestable;
 
+  std::string to_hex( const char* d, uint32_t s ) 
+  {
+      std::string r;
+      const char* to_hex="0123456789abcdef";
+      uint8_t* c = (uint8_t*)d;
+      for( uint32_t i = 0; i < s; ++i )
+          (r += to_hex[(c[i]>>4)]) += to_hex[(c[i] &0x0f)];
+      return r;
+  }
+
   static uint128_t composite_key(const uint64_t &x, const uint64_t &y) {
       return (uint128_t{x} << 64) | y;
   }
@@ -413,6 +425,40 @@ CONTRACT delphioracle : public eosio::contract {
     }
 
     return false;
+  }
+
+  checksum256 get_multiparty_hash(const name owner, const std::string reveal){
+
+    hashestable htable(_self, _self.value);
+
+    auto itr = htable.rbegin();
+
+    while (itr != htable.rend()){
+      if(itr->owner != owner && itr->reveal!=""){
+        
+
+        std::string prev_multiparty = to_hex((char*)itr->multiparty.extract_as_byte_array().data(), sizeof(itr->multiparty));
+
+        print("reveal:", reveal, "\n");
+        print("prev_multiparty:", prev_multiparty, "\n");
+
+        std::string to_hash(prev_multiparty);
+
+        to_hash+= reveal;
+
+        print("to_hash:", to_hash, "\n");
+
+        checksum256 h = sha256(to_hash.c_str(), to_hash.length());
+
+        print("h:", h, "\n");
+
+        return h;
+      }
+      itr++;
+    }
+    
+    return NULL_HASH;
+
   }
 
   //Check if calling account is can vote on bounties

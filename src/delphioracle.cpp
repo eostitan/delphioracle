@@ -104,6 +104,9 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
  // check(hitr == h_idx.end(), "oracle has previously submitted identical hash");
 
   auto o_idx = hstore.get_index<"owner"_n>();
+  auto h_idx = hstore.get_index<"timestamp"_n>();
+
+  checksum256 multiparty = NULL_HASH;
 
   auto previous_hash = o_idx.find(owner.value);
   if( previous_hash != o_idx.end() ) {
@@ -121,6 +124,9 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
 
     // increment count for user if their hash verified
     check(hashed == previous_hash->hash, "hash mismatch");
+
+    multiparty = get_multiparty_hash(owner, reveal);
+    
     //if(hashed == previous_hash->hash) {
     auto gsitr = gstore.find(owner.value);
 
@@ -142,11 +148,15 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
      o_idx.erase(previous_hash);
 
   }
+  else {
+    check(reveal=="", "reveal must be empty string on first writehash call");
+  }
 
   // store users hash in table for future verification
   hstore.emplace(owner, [&](auto& o) {
     o.id = hstore.available_primary_key();
     o.owner = owner;
+    o.multiparty = multiparty;
     o.hash = hash;
     o.reveal = reveal;
     o.timestamp = current_time_point();
