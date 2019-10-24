@@ -93,59 +93,25 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
 
   check(check_oracle(owner), "user is not a qualified oracle");
 
-  globaltable gtable(_self, _self.value);
-  statstable gstore(_self, _self.value);
   hashestable hstore(_self, _self.value);
 
-  auto gitr = gtable.begin();
-  // ensure user hasnt submitted an identical hash
-  //auto h_idx = hstore.get_index<"hash"_n>();
-  //auto hitr = h_idx.find(hash);
- // check(hitr == h_idx.end(), "oracle has previously submitted identical hash");
-
   auto o_idx = hstore.get_index<"owner"_n>();
-  auto h_idx = hstore.get_index<"timestamp"_n>();
 
   checksum256 multiparty = NULL_HASH;
 
   auto previous_hash = o_idx.find(owner.value);
   if( previous_hash != o_idx.end() ) {
 
-    time_point ctime = current_time_point();
-    print("previous_hash->timestamp", previous_hash->timestamp.elapsed.to_seconds(), "\n");
-    print("gitr->write_cooldown", gitr->write_cooldown, "\n");
-    print("ctime", ctime.elapsed.to_seconds(), "\n");
-    
-    time_point next_push = eosio::time_point(previous_hash->timestamp.elapsed + eosio::microseconds(gitr->write_cooldown));
-    
-    check(ctime>=next_push, "can only call every 60 seconds");
-
     checksum256 hashed = sha256(reveal.c_str(), reveal.length());
 
     // increment count for user if their hash verified
     check(hashed == previous_hash->hash, "hash mismatch");
 
+    check_last_push(owner, "random"_n);
+
     multiparty = get_multiparty_hash(owner, reveal);
-    
-    //if(hashed == previous_hash->hash) {
-    auto gsitr = gstore.find(owner.value);
 
-    if (gsitr != gstore.end()) {
-      gstore.modify( gsitr, owner, [&]( auto& s ) {
-        s.timestamp = current_time_point();
-        s.count++;
-      });
-    } else {
-      gstore.emplace(owner, [&](auto& s) {
-        s.owner = owner;
-        s.timestamp = current_time_point();
-        s.count = 1;
-        s.balance = asset(0, symbol("EOS", 4));
-        s.last_claim = NULL_TIME_POINT;
-      });
-    }
-
-     o_idx.erase(previous_hash);
+    o_idx.erase(previous_hash);
 
   }
   else {
