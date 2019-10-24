@@ -32,12 +32,6 @@ ACTION delphioracle::write(const name owner, const std::vector<quote>& quotes) {
 
   auto oitr = stable.find(owner.value);
 
-  
-
-  //auto name_idx = pairs.find<"name"_n>();
-  //auto itr = sorted_idx.begin();
-
-
   for (int i=0; i<length;i++){
     print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
     
@@ -54,7 +48,7 @@ ACTION delphioracle::write(const name owner, const std::vector<quote>& quotes) {
         s.balance += one_larimer;
       });
 
-      //gl  obal donation to the contract, split between top oracles across all pairs
+      //global donation to the contract, split between top oracles across all pairs
       pairs.modify(*itr, _self, [&]( auto& s ) {
         s.bounty_amount -= one_larimer;
       });
@@ -73,18 +67,6 @@ ACTION delphioracle::write(const name owner, const std::vector<quote>& quotes) {
 
   }
 
-  //for (int i=0; i<length;i++){
-    //print("quote ", i, " ", quotes[i].value, " ",  quotes[i].pair, "\n");
-    //check(quotes[i].value >= val_min && quotes[i].value <= val_max, "value outside of allowed range");
-  //}
-
-/*    for (int i=0; i<length;i++){    
-  }
-*/
-  print("done \n");
-  //TODO: check if symbol exists
-  //require_recipient("eosusdcom111"_n);
-  
 }
 
 ACTION delphioracle::writehash(const name owner, const checksum256 hash, const std::string reveal) {
@@ -177,8 +159,6 @@ ACTION delphioracle::claim(name owner) {
 
   //if quantity symbol == EOS -> token_contract
 
- // SEND_INLINE_ACTION(token_contract, transfer, {"eostitancore"_,"active"_n}, {"eostitancore"_, from, quantity, std::string("")} );
-    
   action act(
     permission_level{_self, "active"_n},
     "eosio.token"_n, "transfer"_n,

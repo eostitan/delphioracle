@@ -48,11 +48,6 @@ CONTRACT delphioracle : public eosio::contract {
 
   typedef uint16_t asset_type;
 
-  // enum instrument_type: uint16_t {
-  //     pair=1,
-  //     value=2
-  // };
-
   struct globalinput {
     uint64_t datapoints_per_instrument;
     uint64_t bars_per_instrument;
@@ -237,7 +232,6 @@ CONTRACT delphioracle : public eosio::contract {
 
     name donator;
     name pair;
-    //instrument_type type;
     time_point timestamp;
     asset amount;
 
@@ -280,7 +274,6 @@ CONTRACT delphioracle : public eosio::contract {
 
   //Holds the list of pairs
   TABLE pairs {
-    //uint64_t id;
 
     bool active = false;
     bool bounty_awarded = false;
@@ -305,18 +298,15 @@ CONTRACT delphioracle : public eosio::contract {
     uint64_t quoted_precision;
 
     uint64_t primary_key() const {return name.value;}
-    //name by_name() const {return name;}
 
   };
 
   //Holds the list of pairs
   TABLE networks {
-    //uint64_t id;
 
     name name;
 
     uint64_t primary_key() const {return name.value;}
-    //name by_name() const {return name;}
 
   };
 
@@ -499,7 +489,6 @@ private:
     uint64_t count = 0;
 
     while (p_itr != p_idx.end()) {
-      //print(p_itr->owner, "\n");
       if (p_itr->owner==owner) return true;
       p_itr++;
       count++;
