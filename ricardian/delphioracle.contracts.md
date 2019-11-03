@@ -103,3 +103,9 @@ Stub for updateusers action's ricardian contract
 <h1 class="contract"> voteabuser </h1>
 
 Stub for voteabuser action's ricardian contract
+
+---
+
+<h1 class="contract"> migratedata </h1>
+
+Stub for migratedata action's ricardian contract

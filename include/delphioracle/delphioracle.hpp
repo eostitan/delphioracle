@@ -366,6 +366,7 @@ CONTRACT delphioracle : public eosio::contract {
       indexed_by<"count"_n, const_mem_fun<stats, uint64_t, &stats::by_count>>> statstable;
 
   typedef eosio::multi_index<"pairs"_n, pairs> pairstable;
+  typedef eosio::multi_index<"npairs"_n, pairs> npairstable;
 
   typedef eosio::multi_index<"datapoints"_n, datapoints,
       indexed_by<"value"_n, const_mem_fun<datapoints, uint64_t, &datapoints::by_value>>, 
@@ -422,7 +423,7 @@ CONTRACT delphioracle : public eosio::contract {
   ACTION clear(name pair);
   ACTION updateusers();
   ACTION voteabuser(name owner, name abuser);
-  ACTION migrate();
+  ACTION migratedata();
 
   [[eosio::on_notify("eosio.token::transfer")]]
   void transfer(uint64_t sender, uint64_t receiver) {
@@ -477,7 +478,7 @@ CONTRACT delphioracle : public eosio::contract {
   using clear_action = action_wrapper<"clear"_n, &delphioracle::clear>;
   using voteabuser_action = action_wrapper<"voteabuser"_n, &delphioracle::voteabuser>;
   using updateusers_action = action_wrapper<"updateusers"_n, &delphioracle::updateusers>;
-  using migrate_action = action_wrapper<"migrate"_n, &delphioracle::migrate>;
+  using migratedata_action = action_wrapper<"migratedata"_n, &delphioracle::migratedata>;
   using transfer_action = action_wrapper<name("transfer"), &delphioracle::transfer>;
 
 private:

@@ -764,7 +764,7 @@ ACTION delphioracle::voteabuser(const name owner, const name abuser) {
 
 }
 
-ACTION delphioracle::migrate() {
+ACTION delphioracle::migratedata() {
 
   require_auth(_self);
 
@@ -785,76 +785,26 @@ ACTION delphioracle::migrate() {
     gitr++;
   }
 
-  pairstable pairs(name("delphibackup"), name("delphibackup").value);
+  npairstable pairs(name("delphibackup"), name("delphibackup").value);
   pairstable _pairs(_self, _self.value);
   auto pitr = pairs.begin();
   while (pitr != pairs.end()) {
-    if (pitr->name == "eosusd"_n) {
-      _pairs.emplace(_self, [&](auto& p){
-        p.active = true;
-        p.bounty_awarded = true;
-        p.bounty_edited_by_custodians = true;
-        p.proposer = _self;
-        p.name = "eosusd"_n;
-        p.bounty_amount = asset(0, symbol("EOS", 4));
-        p.base_symbol =  symbol("EOS", 4);
-        p.base_type = e_asset_type::eosio_token;
-        p.base_contract = "eosio.token"_n;
-        p.quote_symbol = symbol("USD", 2);
-        p.quote_type = e_asset_type::fiat;
-        p.quote_contract = ""_n;
-        p.quoted_precision = 4;
-      });
-    } else if (pitr->name == "eosbtc"_n) {
-      _pairs.emplace(_self, [&](auto& p){
-        p.active = true;
-        p.bounty_awarded = true;
-        p.bounty_edited_by_custodians = true;
-        p.proposer = _self;
-        p.name = "eosbtc"_n;
-        p.bounty_amount = asset(0, symbol("EOS", 4));
-        p.base_symbol =  symbol("EOS", 4);
-        p.base_type = e_asset_type::eosio_token;
-        p.base_contract = "eosio.token"_n;
-        p.quote_symbol = symbol("BTC", 8);
-        p.quote_type = e_asset_type::cryptocurrency;
-        p.quote_contract = ""_n;
-        p.quoted_precision = 8;
-      });
-    } else if (pitr->name == "btccny"_n) {
-      _pairs.emplace(_self, [&](auto& p){
-        p.active = true;
-        p.bounty_awarded = true;
-        p.bounty_edited_by_custodians = true;
-        p.proposer = _self;
-        p.name = "btccny"_n;
-        p.bounty_amount = asset(0, symbol("EOS", 4));
-        p.base_symbol =  symbol("BTC", 8);
-        p.base_type = e_asset_type::cryptocurrency;
-        p.base_contract = ""_n;
-        p.quote_symbol = symbol("CNY", 2);
-        p.quote_type = e_asset_type::fiat;
-        p.quote_contract = ""_n;
-        p.quoted_precision = 4;
-      });
-    } else if (pitr->name == "btcusd"_n) {
-      _pairs.emplace(_self, [&](auto& p){
-        p.active = true;
-        p.bounty_awarded = true;
-        p.bounty_edited_by_custodians = true;
-        p.proposer = _self;
-        p.name = "btcusd"_n;
-        p.bounty_amount = asset(0, symbol("EOS", 4));
-        p.base_symbol =  symbol("BTC", 8);
-        p.base_type = e_asset_type::cryptocurrency;
-        p.base_contract = ""_n;
-        p.quote_symbol = symbol("USD", 2);
-        p.quote_type = e_asset_type::fiat;
-        p.quote_contract = ""_n;
-        p.quoted_precision = 4;
-      });
-    }
-  
+    _pairs.emplace(_self, [&](auto& p){
+      p.active = pitr->active;
+      p.bounty_awarded = pitr->bounty_awarded;
+      p.bounty_edited_by_custodians = pitr->bounty_edited_by_custodians;
+      p.proposer = pitr->proposer;
+      p.name = pitr->name;
+      p.bounty_amount = pitr->bounty_amount;
+      p.base_symbol =  pitr->base_symbol;
+      p.base_type = pitr->base_type;
+      p.base_contract = pitr->base_contract;
+      p.quote_symbol = pitr->quote_symbol;
+      p.quote_type = pitr->quote_type;
+      p.quote_contract = pitr->quote_contract;
+      p.quoted_precision = pitr->quoted_precision;
+    });
+
     statstable pstats(name("delphibackup"), pitr->name.value);
     statstable _pstats(_self, pitr->name.value);
     auto sitr = pstats.begin();
