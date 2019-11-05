@@ -674,8 +674,7 @@ ACTION delphioracle::clear(name pair) {
   datapointstable estore(_self,  pair.value);
   pairstable pairs(_self, _self.value);
   custodianstable ctable(_self, _self.value);
-  hashestable htable(_self, "producer1"_n.value);
-  hashestable htable2(_self, _self.value);
+  hashestable htable(_self, _self.value);
   
   while (ctable.begin() != ctable.end()) {
       auto itr = ctable.end();
@@ -717,12 +716,6 @@ ACTION delphioracle::clear(name pair) {
       auto itr = htable.end();
       itr--;
       htable.erase(itr);
-  }
-
-  while (htable2.begin() != htable2.end()) {
-      auto itr = htable2.end();
-      itr--;
-      htable2.erase(itr);
   }
 
 }
