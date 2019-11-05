@@ -818,6 +818,21 @@ ACTION delphioracle::migratedata() {
       });
       sitr++;
     }
+
+    datapointstable datapoints(name("delphibackup"), pitr->name.value);
+    datapointstable _datapoints(_self, pitr->name.value);
+    auto ditr = datapoints.begin();
+    while (ditr != datapoints.end()) {
+      _datapoints.emplace(_self, [&](auto& d){
+        d.id = ditr->id;
+        d.owner = ditr->owner;
+        d.value = ditr->value;
+        d.median = ditr->median;
+        d.timestamp = ditr->timestamp;
+      });
+      ditr++;
+    }
+
     pitr++;
   }
 
