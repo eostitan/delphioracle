@@ -123,7 +123,11 @@ cleos set action permission eostitantest delphioracle write oracle
 
 ## Retrieve the last data point
 
-**Note:** *Use average / 10000 to get the actual value.*
+**Note:** *Use average / 10^quote_precision to get the actual value. `quote_precision` can be found in the `pairs` table*
+
+```
+cleos get table <eoscontract> <eoscontract> pairs
+```
 
 ```
 cleos get table <eoscontract> eosusd datapoints --limit 1
