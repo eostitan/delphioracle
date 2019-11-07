@@ -767,6 +767,27 @@ ACTION delphioracle::migratedata() {
 
   check(_stats.begin() == _stats.end(), "stats info already exists; call clear first");
 
+  oglobaltable global(name("delphibackup"), name("delphibackup").value);
+  globaltable _global(_self, _self.value);
+
+  auto glitr = global.begin();
+
+  _global.emplace(_self, [&](auto& g){
+    g.id = glitr->id;
+    g.total_datapoints_count = glitr->total_datapoints_count;
+    g.datapoints_per_instrument = 21;
+    g.bars_per_instrument = 30;
+    g.vote_interval = 10000;
+    g.write_cooldown = 55000000;
+    g.approver_threshold = 1;
+    g.approving_oracles_threshold = 2;
+    g.approving_custodians_threshold = 1;
+    g.minimum_rank = 105;
+    g.paid = 21;
+    g.min_bounty_delay = 604800;
+    g.new_bounty_delay = 259200;
+  });
+
   auto gitr = stats.begin();
   while (gitr != stats.end()) {
     _stats.emplace(_self, [&](auto& s){

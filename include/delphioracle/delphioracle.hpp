@@ -163,6 +163,14 @@ CONTRACT delphioracle : public eosio::contract {
 
   };
 
+  TABLE oglobal {
+    uint64_t id;
+    uint64_t total_datapoints_count;
+    //asset total_claimed;
+
+    uint64_t primary_key() const {return id;}
+  };
+
   //Holds the last datapoints_count datapoints from qualified oracles
   TABLE datapoints {
     uint64_t id;
@@ -359,6 +367,7 @@ CONTRACT delphioracle : public eosio::contract {
 
   //Multi index types definition
   typedef eosio::multi_index<"global"_n, global> globaltable;
+  typedef eosio::multi_index<"global"_n, oglobal> oglobaltable;
 
   typedef eosio::multi_index<"custodians"_n, custodians> custodianstable;
 
