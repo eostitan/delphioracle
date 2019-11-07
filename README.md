@@ -58,9 +58,8 @@ Qualified block producers can call the contract up to once every minute to provi
 Example: a value for EOS/USD of $5.85 pushed by block producer acryptotitan to delphioracle contract would look like this:
 
 ```
-cleos push action delphioracle write '{"owner":"acryptotitan", "value":58500, "symbol":"eosusd"}' -p acryptotitan@active
+cleos push action delphioracle write '{"owner":"acryptotitan", "quotes": [{"value":58500, "symbol":"eosusd"}]}' -p acryptotitan@active
 ```
-
 
 ## Set up and run updater.js
 
@@ -124,7 +123,11 @@ cleos set action permission eostitantest delphioracle write oracle
 
 ## Retrieve the last data point
 
-**Note:** *Use average / 10000 to get the actual value.*
+**Note:** *Use average / 10^quote_precision to get the actual value. `quote_precision` can be found in the `pairs` table*
+
+```
+cleos get table <eoscontract> <eoscontract> pairs
+```
 
 ```
 cleos get table <eoscontract> eosusd datapoints --limit 1
@@ -134,25 +137,38 @@ Sample output:
 ```
 {
   "rows": [{
-      "id": "18446744073709551508",
+      "id": "0",
       "owner": "acryptotitan",
       "value": 56800,
       "median": 56863,
-      "timestamp": "1538937978500000"
+      "timestamp": "1564096083"
     }
   ],
   "more": true
 }
 ```
 
-## Compile and deploy oracle.cpp (using eosio.cdt v.1.2.x)
+## RNG Data Source
 
-Clone repository
+Qualified block producers can call the contract up to once every minute to provide a random source of data for the DelphiOracle RNG.
+
+Example: a source of data pushed by block producer acryptotitan to delphioracle contract would look like this:
 
 ```
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd", "reveal":""}' -p acryptotitan@active
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c", "reveal":"A"}' -p acryptotitan@active
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d", "reveal":"B"}' -p acryptotitan@active
+cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43", "reveal":"C"}' -p acryptotitan@active
+```
+
+- `reveal` parameter ignored on first push.
+
+## Compile and deploy delphioracle.cpp (using eosio.cdt v.1.6.x)
+
+```
+git clone https://github.com/eostitan/delphioracle
 cd delphioracle
-cd contract
-eosio-cpp oracle.cpp -o oracle.wasm #need to incluse path to eosio.system.hpp file
-cleos set code <eoscontract> oracle.wasm
-cleos set abi <eoscontract> oracle.abi
+cd build
+cmake .. && make
+./deploy.sh <eoscontract>
 ```
