@@ -564,7 +564,8 @@ private:
     auto gitr = gtable.begin();
     auto itr = stats.find(owner.value);
 
-    if (itr != stats.end() && itr->count >= gitr->approver_threshold) return true;
+    if (gitr->approver_threshold == 0) return true;
+    else if (itr != stats.end() && itr->count >= gitr->approver_threshold) return true;
     else return false;
 
   }
