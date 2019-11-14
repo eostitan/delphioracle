@@ -161,7 +161,7 @@ cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"6b23c
 cleos push action delphioracle writehash '{"owner":"acryptotitan", "hash":"3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43", "reveal":"C"}' -p acryptotitan@active
 ```
 
-- `reveal` parameter ignored on first push.
+- `reveal` parameter must be empty string on first push.
 
 ## Compile and deploy delphioracle.cpp (using eosio.cdt v.1.6.x)
 
