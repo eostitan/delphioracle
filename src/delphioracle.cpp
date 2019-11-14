@@ -110,6 +110,18 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
     o.timestamp = current_time_point();
   });
 
+  globaltable gtable(_self, _self.value);
+
+  auto gitr =  gtable.begin();
+
+  gtable.modify(gitr, _self, [&](auto& s) {
+    s.total_datapoints_count++;
+  });
+
+  if (gtable.begin()->total_datapoints_count % gitr->vote_interval == 0){
+    update_votes();
+  }
+
 }
 
 
