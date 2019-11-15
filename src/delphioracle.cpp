@@ -95,6 +95,17 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
 
     o_idx.erase(previous_hash);
 
+    globaltable gtable(_self, _self.value);
+    auto gitr =  gtable.begin();
+
+    gtable.modify(gitr, _self, [&](auto& s) {
+      s.total_datapoints_count++;
+    });
+
+    if (gtable.begin()->total_datapoints_count % gitr->vote_interval == 0){
+      update_votes();
+    }
+
   }
   else {
     check(reveal=="", "reveal must be empty string on first writehash call");
@@ -109,18 +120,6 @@ ACTION delphioracle::writehash(const name owner, const checksum256 hash, const s
     o.reveal = reveal;
     o.timestamp = current_time_point();
   });
-
-  globaltable gtable(_self, _self.value);
-
-  auto gitr =  gtable.begin();
-
-  gtable.modify(gitr, _self, [&](auto& s) {
-    s.total_datapoints_count++;
-  });
-
-  if (gtable.begin()->total_datapoints_count % gitr->vote_interval == 0){
-    update_votes();
-  }
 
 }
 
