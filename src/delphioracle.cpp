@@ -158,7 +158,7 @@ ACTION delphioracle::claim(name owner) {
   //   bt.erase( *existing );
   //} else {
   sstore.modify( *itr, _self, [&]( auto& a ) {
-      a.balance = asset(0, symbol("EOS", 4));
+      a.balance = asset(0, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
       a.last_claim = current_time_point();
   });
 
@@ -195,7 +195,7 @@ ACTION delphioracle::configure(globalinput g) {
     gtable.emplace(_self, [&](auto& o) {
       o.id = 1;
       o.total_datapoints_count = 0;
-      o.total_claimed = asset(0, symbol("EOS", 4));
+      o.total_claimed = asset(0, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
       o.datapoints_per_instrument = g.datapoints_per_instrument;
       o.bars_per_instrument = g.bars_per_instrument;
       o.vote_interval = g.vote_interval;
@@ -235,18 +235,18 @@ ACTION delphioracle::configure(globalinput g) {
         o.bounty_awarded = true;
         o.bounty_edited_by_custodians = true;
         o.proposer = _self;
-        o.name = "eosusd"_n;
-        o.bounty_amount = asset(0, symbol("EOS", 4));
-        o.base_symbol =  symbol("EOS", 4);
+        o.name = SYSTEM_PAIR_NAME;
+        o.bounty_amount = asset(0, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
+        o.base_symbol =  symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION);
         o.base_type = e_asset_type::eosio_token;
         o.base_contract = "eosio.token"_n;
         o.quote_symbol = symbol("USD", 2);
         o.quote_type = e_asset_type::fiat;
         o.quote_contract = ""_n;
-        o.quoted_precision = 4;
+        o.quoted_precision = SYSTEM_PRECISION;
       });
 
-      datapointstable dstore(_self, name("eosusd"_n).value);
+      datapointstable dstore(_self, name(SYSTEM_PAIR_NAME).value);
 
       //First data point starts at uint64 max
       uint64_t primary_key = 0;
