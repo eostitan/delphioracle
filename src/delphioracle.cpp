@@ -808,3 +808,48 @@ ACTION delphioracle::migratedata() {
   }
 
 }
+
+ACTION delphioracle::updatestats(const std::vector<statsinput>& s) {
+
+  require_auth(_self);
+
+  auto length = s.size();
+
+  check(length>0, "must supply non-empty array of stats to adjust");
+
+  int64_t total_count_change = 0;
+
+  for (int i=0; i<length;i++){
+
+    statstable pstats(_self, s[i].pair.value);
+    auto pitr = pstats.find(s[i].owner.value);
+
+    check(pitr != pstats.end(), "Oracle not found in statstable");
+    check(s[i].count >= 0, "New statcount must be greater than or equal to 0");
+
+    int64_t diff = s[i].count - pitr->count;
+
+    pstats.modify(*pitr, _self, [&](auto& p){
+      p.count += diff;
+    });
+
+    total_count_change += diff;
+
+    statstable stats(_self, _self.value);
+    auto sitr = stats.find(s[i].owner.value);
+    check(sitr != stats.end(), "Oracle not found in statstable");
+    stats.modify(*sitr, _self, [&](auto& o){
+      o.count += diff;
+    });
+
+  }
+
+  globaltable global(_self, _self.value);
+  auto gitr = global.begin();
+  uint64_t current_total = gitr->total_datapoints_count;
+  uint64_t new_total = std::max(current_total += total_count_change, 0ull);
+  global.modify(*gitr, _self, [&](auto& g){
+    g.total_datapoints_count += total_count_change;
+  });
+
+}

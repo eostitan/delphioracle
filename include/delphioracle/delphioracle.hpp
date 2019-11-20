@@ -132,6 +132,12 @@ CONTRACT delphioracle : public eosio::contract {
       std::string   memo;
   };
 
+  struct statsinput {
+    name      owner;
+    name      pair;
+    int64_t   count;
+  };
+
 
   //Global config
   TABLE global {
@@ -423,6 +429,7 @@ CONTRACT delphioracle : public eosio::contract {
   ACTION updateusers();
   ACTION voteabuser(name owner, name abuser);
   ACTION migratedata();
+  ACTION updatestats(const std::vector<statsinput>& s);
 
   [[eosio::on_notify("eosio.token::transfer")]]
   void transfer(uint64_t sender, uint64_t receiver) {
@@ -454,6 +461,7 @@ CONTRACT delphioracle : public eosio::contract {
 
       if (itr != pairs.end() && itr->bounty_awarded == true ) process_donation(transfer_data.from, itr->name, transfer_data.quantity);
       else if (itr != pairs.end() && itr->bounty_awarded == false) process_bounty(transfer_data.from, itr->name, transfer_data.quantity);
+      else if (itr == pairs.end() && itr->name == "random"_n) process_donation(transfer_data.from, itr->name, transfer_data.quantity);
       else process_donation(transfer_data.from, _self, transfer_data.quantity);
 
     }
@@ -478,6 +486,7 @@ CONTRACT delphioracle : public eosio::contract {
   using voteabuser_action = action_wrapper<"voteabuser"_n, &delphioracle::voteabuser>;
   using updateusers_action = action_wrapper<"updateusers"_n, &delphioracle::updateusers>;
   using migratedata_action = action_wrapper<"migratedata"_n, &delphioracle::migratedata>;
+  using updatestats_action = action_wrapper<"updatestats"_n, &delphioracle::updatestats>;
   using transfer_action = action_wrapper<name("transfer"), &delphioracle::transfer>;
 
 private:
