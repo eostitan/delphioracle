@@ -845,8 +845,6 @@ ACTION delphioracle::updatestats(const std::vector<statsinput>& s) {
 
   globaltable global(_self, _self.value);
   auto gitr = global.begin();
-  uint64_t current_total = gitr->total_datapoints_count;
-  uint64_t new_total = std::max(current_total += total_count_change, 0ull);
   global.modify(*gitr, _self, [&](auto& g){
     g.total_datapoints_count += total_count_change;
   });
