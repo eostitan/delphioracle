@@ -825,7 +825,6 @@ ACTION delphioracle::updatestats(const std::vector<statsinput>& s) {
     auto pitr = pstats.find(s[i].owner.value);
 
     check(pitr != pstats.end(), "Oracle not found in statstable");
-    check(s[i].count >= 0, "New statcount must be greater than or equal to 0");
 
     int64_t diff = s[i].count - pitr->count;
 

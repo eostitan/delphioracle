@@ -135,7 +135,7 @@ CONTRACT delphioracle : public eosio::contract {
   struct statsinput {
     name      owner;
     name      pair;
-    int64_t   count;
+    uint64_t  count;
   };
 
 
