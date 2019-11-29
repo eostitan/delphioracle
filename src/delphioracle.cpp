@@ -821,25 +821,32 @@ ACTION delphioracle::updatestats(const std::vector<statsinput>& s) {
 
   for (int i=0; i<length;i++){
 
-    statstable pstats(_self, s[i].pair.value);
-    auto pitr = pstats.find(s[i].owner.value);
-
-    check(pitr != pstats.end(), "Oracle not found in statstable");
-
-    int64_t diff = s[i].count - pitr->count;
-
-    pstats.modify(*pitr, _self, [&](auto& p){
-      p.count += diff;
-    });
-
-    total_count_change += diff;
-
     statstable stats(_self, _self.value);
     auto sitr = stats.find(s[i].owner.value);
-    check(sitr != stats.end(), "Oracle not found in statstable");
-    stats.modify(*sitr, _self, [&](auto& o){
-      o.count += diff;
-    });
+
+    check(sitr != stats.end(), "Oracle not found in global statstable");
+    check(s[i].pair == "random"_n, "Can only adjust accounting for 'random' table");
+
+    statstable pstats(_self, "random"_n.value);
+    auto pitr = pstats.find(s[i].owner.value);
+
+    int64_t diff;
+
+    if( pitr != pstats.end() ) {
+      diff = s[i].count - pitr->count;;
+      pstats.modify(*pitr, _self, [&](auto& p){
+        p.count += diff;
+      });
+    } else {
+      diff = s[i].count;
+      pstats.emplace(_self, [&](auto& p){
+        p.count = diff;
+        p.owner = s[1].owner;
+        p.timestamp = current_time_point();
+      });
+    }
+
+    total_count_change += diff;
 
   }
 
