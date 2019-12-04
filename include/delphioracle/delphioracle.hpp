@@ -27,12 +27,10 @@ using namespace eosio;
 #ifdef WAX
     const std::string SYSTEM_SYMBOL = "WAX";
     const uint64_t SYSTEM_PRECISION = 8;
-    const name SYSTEM_PAIR_NAME = "waxusd"_n;
     static const asset one_larimer = asset(1000000, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
 #else
     const std::string SYSTEM_SYMBOL = "EOS";
     const uint64_t SYSTEM_PRECISION = 4;
-    const name SYSTEM_PAIR_NAME = "eosusd"_n;
     static const asset one_larimer = asset(1, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
 #endif
 

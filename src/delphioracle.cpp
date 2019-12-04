@@ -228,25 +228,26 @@ ACTION delphioracle::configure(globalinput g) {
 
   }
 
-  if (pitr == pairs.end()){
+  // Add default pair if not on WAX
+  if (pitr == pairs.end() && SYSTEM_SYMBOL != "WAX"){
 
       pairs.emplace(_self, [&](auto& o) {
         o.active = true;
         o.bounty_awarded = true;
         o.bounty_edited_by_custodians = true;
         o.proposer = _self;
-        o.name = SYSTEM_PAIR_NAME;
-        o.bounty_amount = asset(0, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
-        o.base_symbol =  symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION);
+        o.name = "eosusd"_n;
+        o.bounty_amount = asset(0, symbol("EOS", 4));
+        o.base_symbol =  symbol("EOS", 4);
         o.base_type = e_asset_type::eosio_token;
         o.base_contract = "eosio.token"_n;
         o.quote_symbol = symbol("USD", 2);
         o.quote_type = e_asset_type::fiat;
         o.quote_contract = ""_n;
-        o.quoted_precision = SYSTEM_PRECISION;
+        o.quoted_precision = 4;
       });
 
-      datapointstable dstore(_self, name(SYSTEM_PAIR_NAME).value);
+      datapointstable dstore(_self, name("eosusd"_n).value);
 
       //First data point starts at uint64 max
       uint64_t primary_key = 0;
