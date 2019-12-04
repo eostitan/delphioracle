@@ -836,6 +836,7 @@ ACTION delphioracle::updatestats(const std::vector<statsinput>& s) {
       diff = s[i].count - pitr->count;;
       pstats.modify(*pitr, _self, [&](auto& p){
         p.count += diff;
+        p.balance = asset(pitr->balance.amount, symbol("EOS", 4));
       });
     } else {
       diff = s[i].count;
@@ -843,6 +844,7 @@ ACTION delphioracle::updatestats(const std::vector<statsinput>& s) {
         p.count = diff;
         p.owner = s[1].owner;
         p.timestamp = current_time_point();
+        p.balance = asset(0, symbol("EOS", 4));
       });
     }
 
