@@ -172,3 +172,35 @@ cd build
 cmake .. && make
 ./deploy.sh <eoscontract>
 ```
+
+## Running the contract locally
+
+If you're querying the contract from your own and need it to run on the local node for testing purposes, you'll need to first create the required account, compile the contract and deploy it.  However, before compiling you'll need to edit the source to comment out a line that checks for your account to be a "qualified oracle".  This will prevent you from posting prices.  The line, in the `src/delphioracle.cpp`, within the `delphioracle::write` method is this:
+```
+check(check_oracle(owner), "account is not a qualified oracle");
+```
+comment it out by prepending the line with `//`.  Next run the following ($PK below should contain the value of your private key):
+
+```
+cleos create account eosio delphioracle $PK $PK -p eosio@active
+cd delphioracle
+eosio-cpp  -I include/delphioracle/ src/delphioracle.cpp -o delphioracle.wasm --abigen
+cleos set contract delphioracle . delphioracle.wasm delphioracle.abi -p delphioracle@active
+```
+Once running, the contract needs to be configured:
+```
+cd scripts
+cleos push action delphioracle configure  "$(cat configure.json)" -p delphioracle
+```
+and finally, a price can be pushed up for the EOS/USD pair:
+```
+cleos push action delphioracle write '{"owner":"MyAccount", "quotes": [{"value":58500,"pair":"eosusd"}]}' -p MyAccount@active
+```
+You can now check the table to make sure your price is there:
+```
+cleos get table --limit 100 delphioracle eosusd datapoints
+```
+if you have `jq` installed, you can show the first record, which should contain your price, like this:
+```
+cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
+```
