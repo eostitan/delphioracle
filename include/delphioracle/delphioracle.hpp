@@ -645,11 +645,12 @@ private:
 
     while(itr != sorted_idx.end() && count<30){
       print(itr->owner, "\n");
-      bps.push_back(itr->owner);
+      if(check_oracle(itr->owner) == true) {
+        bps.push_back(itr->owner);
+        count++;
+      }
 
       itr++;
-      count++;
-
     }
 
     sort(bps.begin(), bps.end());
