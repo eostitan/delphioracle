@@ -158,7 +158,7 @@ ACTION delphioracle::claim(name owner) {
   //   bt.erase( *existing );
   //} else {
   sstore.modify( *itr, _self, [&]( auto& a ) {
-      a.balance = asset(0, symbol("EOS", 4));
+      a.balance = asset(0, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
       a.last_claim = current_time_point();
   });
 
@@ -195,7 +195,7 @@ ACTION delphioracle::configure(globalinput g) {
     gtable.emplace(_self, [&](auto& o) {
       o.id = 1;
       o.total_datapoints_count = 0;
-      o.total_claimed = asset(0, symbol("EOS", 4));
+      o.total_claimed = asset(0, symbol(SYSTEM_SYMBOL, SYSTEM_PRECISION));
       o.datapoints_per_instrument = g.datapoints_per_instrument;
       o.bars_per_instrument = g.bars_per_instrument;
       o.vote_interval = g.vote_interval;
@@ -228,7 +228,8 @@ ACTION delphioracle::configure(globalinput g) {
 
   }
 
-  if (pitr == pairs.end()){
+  // Add default pair if not on WAX
+  if (pitr == pairs.end() && SYSTEM_SYMBOL != "WAX"){
 
       pairs.emplace(_self, [&](auto& o) {
         o.active = true;
