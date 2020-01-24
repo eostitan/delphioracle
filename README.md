@@ -196,6 +196,10 @@ and finally, a price can be pushed up for the EOS/USD pair:
 ```
 cleos push action delphioracle write '{"owner":"MyAccount", "quotes": [{"value":58500,"pair":"eosusd"}]}' -p MyAccount@active
 ```
+However, as developers are likely to prefer the "median" field over the "value" field, the above needs to be run 20 times before median gets populated.  Of course, the contract throttles traffic so only 1 write per minute is allowed.  The developer can run this:
+```
+for i in {1..21}; do cleos push action delphioracle write '{"owner":"MyAccont", "quotes": [{"value":56000,"pair":"eosusd"}]}' -p MyAccount@active; sleep 60; done
+```
 You can now check the table to make sure your price is there:
 ```
 cleos get table --limit 100 delphioracle eosusd datapoints
