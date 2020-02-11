@@ -548,11 +548,29 @@ ACTION delphioracle::editpair(pairs pair) {
 }
 
 //delete pair 
-ACTION delphioracle::deletepair(name name) {
+ACTION delphioracle::deletepair(name name, std::string reason) {
   
-  require_auth(_self); //controlled by msig over active key
-  
-  //delete pair, post reason to chain for reference
+  pairstable pairs(_self, _self.value);
+
+  auto pitr = pairs.find(name.value);
+
+  check(pitr != pairs.end(), "Unable to find pair");
+
+  check(has_auth(pitr->proposer) || has_auth(_self),
+    "missing authority of pair proposer or _self");
+
+  check(!pitr->active, "Unable to delete active pair.");
+  check(reason != "", "Must supply a reason when deleting a pair");
+
+  datapointstable estore(_self, name.value);
+
+  while (estore.begin() != estore.end()) {
+      auto itr = estore.end();
+      itr--;
+      estore.erase(itr);
+  }
+
+  pairs.erase(pitr);
 
 }
 

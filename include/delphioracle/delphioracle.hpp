@@ -424,7 +424,7 @@ CONTRACT delphioracle : public eosio::contract {
   ACTION unvotebounty(name owner, name bounty);
   ACTION editbounty(name name, pairinput pair);
   ACTION editpair(pairs pair);
-  ACTION deletepair(name name);
+  ACTION deletepair(name name, std::string reason);
   ACTION addcustodian(name name);
   ACTION delcustodian(name name);
   ACTION reguser(name owner);
