@@ -1,0 +1,911 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [
+        {
+            "new_type_name": "asset_type",
+            "type": "uint16"
+        }
+    ],
+    "structs": [
+        {
+            "name": "abusers",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "votes",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "addcustodian",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "bars",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "high",
+                    "type": "uint64"
+                },
+                {
+                    "name": "low",
+                    "type": "uint64"
+                },
+                {
+                    "name": "median",
+                    "type": "uint64"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
+                }
+            ]
+        },
+        {
+            "name": "cancelbounty",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "reason",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "claim",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "clear",
+            "base": "",
+            "fields": [
+                {
+                    "name": "pair",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "configure",
+            "base": "",
+            "fields": [
+                {
+                    "name": "g",
+                    "type": "globalinput"
+                }
+            ]
+        },
+        {
+            "name": "custodians",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "datapoints",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "value",
+                    "type": "uint64"
+                },
+                {
+                    "name": "median",
+                    "type": "uint64"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
+                }
+            ]
+        },
+        {
+            "name": "delcustodian",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "deletepair",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "reason",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "donations",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "donator",
+                    "type": "name"
+                },
+                {
+                    "name": "pair",
+                    "type": "name"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "editbounty",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "pair",
+                    "type": "pairinput"
+                }
+            ]
+        },
+        {
+            "name": "editpair",
+            "base": "",
+            "fields": [
+                {
+                    "name": "pair",
+                    "type": "pairs"
+                }
+            ]
+        },
+        {
+            "name": "forfeithash",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "global",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "total_datapoints_count",
+                    "type": "uint64"
+                },
+                {
+                    "name": "total_claimed",
+                    "type": "asset"
+                },
+                {
+                    "name": "datapoints_per_instrument",
+                    "type": "uint64"
+                },
+                {
+                    "name": "bars_per_instrument",
+                    "type": "uint64"
+                },
+                {
+                    "name": "vote_interval",
+                    "type": "uint64"
+                },
+                {
+                    "name": "write_cooldown",
+                    "type": "uint64"
+                },
+                {
+                    "name": "approver_threshold",
+                    "type": "uint64"
+                },
+                {
+                    "name": "approving_oracles_threshold",
+                    "type": "uint64"
+                },
+                {
+                    "name": "approving_custodians_threshold",
+                    "type": "uint64"
+                },
+                {
+                    "name": "minimum_rank",
+                    "type": "uint64"
+                },
+                {
+                    "name": "paid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "min_bounty_delay",
+                    "type": "uint64"
+                },
+                {
+                    "name": "new_bounty_delay",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "globalinput",
+            "base": "",
+            "fields": [
+                {
+                    "name": "datapoints_per_instrument",
+                    "type": "uint64"
+                },
+                {
+                    "name": "bars_per_instrument",
+                    "type": "uint64"
+                },
+                {
+                    "name": "vote_interval",
+                    "type": "uint64"
+                },
+                {
+                    "name": "write_cooldown",
+                    "type": "uint64"
+                },
+                {
+                    "name": "approver_threshold",
+                    "type": "uint64"
+                },
+                {
+                    "name": "approving_oracles_threshold",
+                    "type": "uint64"
+                },
+                {
+                    "name": "approving_custodians_threshold",
+                    "type": "uint64"
+                },
+                {
+                    "name": "minimum_rank",
+                    "type": "uint64"
+                },
+                {
+                    "name": "paid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "min_bounty_delay",
+                    "type": "uint64"
+                },
+                {
+                    "name": "new_bounty_delay",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "hashes",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "multiparty",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "hash",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "reveal",
+                    "type": "string"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
+                }
+            ]
+        },
+        {
+            "name": "migratedata",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "networks",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "newbounty",
+            "base": "",
+            "fields": [
+                {
+                    "name": "proposer",
+                    "type": "name"
+                },
+                {
+                    "name": "pair",
+                    "type": "pairinput"
+                }
+            ]
+        },
+        {
+            "name": "oglobal",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "total_datapoints_count",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "pairinput",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "base_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "base_type",
+                    "type": "asset_type"
+                },
+                {
+                    "name": "base_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quote_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "quote_type",
+                    "type": "asset_type"
+                },
+                {
+                    "name": "quote_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quoted_precision",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "pairs",
+            "base": "",
+            "fields": [
+                {
+                    "name": "active",
+                    "type": "bool"
+                },
+                {
+                    "name": "bounty_awarded",
+                    "type": "bool"
+                },
+                {
+                    "name": "bounty_edited_by_custodians",
+                    "type": "bool"
+                },
+                {
+                    "name": "proposer",
+                    "type": "name"
+                },
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "bounty_amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "approving_custodians",
+                    "type": "name[]"
+                },
+                {
+                    "name": "approving_oracles",
+                    "type": "name[]"
+                },
+                {
+                    "name": "base_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "base_type",
+                    "type": "asset_type"
+                },
+                {
+                    "name": "base_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quote_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "quote_type",
+                    "type": "asset_type"
+                },
+                {
+                    "name": "quote_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quoted_precision",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "quote",
+            "base": "",
+            "fields": [
+                {
+                    "name": "value",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pair",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "reguser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "stats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
+                },
+                {
+                    "name": "count",
+                    "type": "uint64"
+                },
+                {
+                    "name": "last_claim",
+                    "type": "time_point"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "unvotebounty",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "bounty",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "updateusers",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "users",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "contribution",
+                    "type": "asset"
+                },
+                {
+                    "name": "score",
+                    "type": "uint64"
+                },
+                {
+                    "name": "creation_timestamp",
+                    "type": "time_point"
+                }
+            ]
+        },
+        {
+            "name": "voteabuser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "abuser",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "votebounty",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "bounty",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "voter_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "proxy",
+                    "type": "name"
+                },
+                {
+                    "name": "producers",
+                    "type": "name[]"
+                },
+                {
+                    "name": "staked",
+                    "type": "int64"
+                },
+                {
+                    "name": "last_vote_weight",
+                    "type": "float64"
+                },
+                {
+                    "name": "proxied_vote_weight",
+                    "type": "float64"
+                },
+                {
+                    "name": "is_proxy",
+                    "type": "bool"
+                },
+                {
+                    "name": "flags1",
+                    "type": "uint32"
+                },
+                {
+                    "name": "reserved2",
+                    "type": "uint32"
+                },
+                {
+                    "name": "reserved3",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "write",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quotes",
+                    "type": "quote[]"
+                }
+            ]
+        },
+        {
+            "name": "writehash",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "hash",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "reveal",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "addcustodian",
+            "type": "addcustodian",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "cancelbounty",
+            "type": "cancelbounty",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "claim",
+            "type": "claim",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "clear",
+            "type": "clear",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "configure",
+            "type": "configure",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "delcustodian",
+            "type": "delcustodian",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "deletepair",
+            "type": "deletepair",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "editbounty",
+            "type": "editbounty",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "editpair",
+            "type": "editpair",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "forfeithash",
+            "type": "forfeithash",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "migratedata",
+            "type": "migratedata",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\""
+        },
+        {
+            "name": "newbounty",
+            "type": "newbounty",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "reguser",
+            "type": "reguser",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "unvotebounty",
+            "type": "unvotebounty",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "updateusers",
+            "type": "updateusers",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "voteabuser",
+            "type": "voteabuser",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "votebounty",
+            "type": "votebounty",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "write",
+            "type": "write",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        },
+        {
+            "name": "writehash",
+            "type": "writehash",
+            "ricardian_contract": "\"BY USING THIS SOFTWARE, YOU ACKNOWLEDGE AND AGREE THAT THE SOFTWARE IS PROVIDED AS-IS, AND THAT THE AUTHOR OR COPYRIGHT HOLDER HAS NOT GRANTED AND DOES NOT GRANT ANY WARRANTY, EITHER EXPRESS OR IMPLIED, LEGAL OR CONVENTIONAL, INCLUDING FOR LATENT DEFECTS, WITH RESPECT TO THE SOFTWARE AND THE SPECIFICATIONS, AND THE AUTHOR OR COPYRIGHT HOLDER DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE INCLUDING, WITHOUT LIMITATION, ANY LEGAL WARRANTY.\\nIN NO EVENT WHATSOEVER SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE TO YOU OR TO ANY OTHER PERSON OR ENTITY FOR ANY AND ALL DAMAGES OF WHATSOEVER NATURE, CHARACTER OR KIND INCLUDING, BUT NOT LIMITED TO, DIRECT, INCIDENTAL, CONSEQUENTIAL OR INDIRECT DAMAGES OR LOSSES (INCLUDING, BUT NOT LIMITED TO, LOSS OF PROFITS OR LOSS OF DATA) ARISING OUT OF THE INSTALLATION, USE OR MISUSE OF THE SOFTWARE OR THE SPECIFICATIONS, EVEN IF THE AUTHOR OR COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR LOSSES. ANY STATEMENTS BY THE AUTHOR, COPYRIGHT HOLDER OR OTHERS DO NOT CONSTITUTE WARRANTIES HEREUNDER AND DO NOT FORM PART OF THIS DISCLAIMER OF LIABILITY AND SHALL NOT BE RELIED UPON BY YOU.\\nSUBJECT TO THE FOREGOING DISCLAIMERS OF LIABILITY AND WARRANTY AND THE TERMS OF THE MIT LICENSE, THE SOFTWARE MAY BE USED TO PERFORM THE TASKS DESCRIBED IN THE README.MD DOCUMENT THAT ACCOMPANIES THE SOFTWARE SOURCE CODE, AS AMENDED BY THE AUTHOR OR COPYRIGHT HOLDER FROM TIME TO TIME.\"\n\n---"
+        }
+    ],
+    "tables": [
+        {
+            "name": "abusers",
+            "type": "abusers",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "bars",
+            "type": "bars",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "custodians",
+            "type": "custodians",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "datapoints",
+            "type": "datapoints",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "donations",
+            "type": "donations",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "global",
+            "type": "global",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "hashes",
+            "type": "hashes",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "networks",
+            "type": "networks",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "npairs",
+            "type": "pairs",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "oglobal",
+            "type": "oglobal",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "pairs",
+            "type": "pairs",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stats",
+            "type": "stats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "users",
+            "type": "users",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "voters",
+            "type": "voter_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
