@@ -556,16 +556,10 @@ ACTION delphioracle::deletepair(name name, std::string reason) {
 
   check(pitr != pairs.end(), "Unable to find pair");
 
-  if (has_auth(_self)) {
-    // only _self can delete active pair
-    require_auth(_self);
-  } else if (has_auth(pitr->proposer)) {
-    // proposer can delete inactive pairs
+  check(has_auth(_self) || has_auth(pitr->proposer), "Missing required auth of proposer or _self");
+
+  if (!has_auth(_self)) {
     check(!pitr->active, "Unable to delete active pair.");
-  } else {
-    // missing required auths of proposer or _self
-    check(has_auth(pitr->proposer) || has_auth(_self),
-      "missing authority of pair proposer or _self");
   }
 
   check(reason != "", "Must supply a reason when deleting a pair");
