@@ -8,8 +8,8 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY scripts/package.json ./
 COPY scripts/package-lock.json ./
-COPY scripts/updater.js ./
-COPY scripts/sample.env .env
+COPY scripts/docker-updater.js ./updater.js
+COPY scripts/docker.env .env
 
 
 RUN npm ci --silent

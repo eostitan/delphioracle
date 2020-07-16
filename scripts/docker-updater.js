@@ -26,12 +26,6 @@ switch (chain) {
 	
 }
 
-const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,CAD";
-const btccnyUrl = "https://blockchain.info/ticker";
-
-console.log(usdpair, btcpair, priceUrl);
-
-
 const interval = process.env.FREQ;
 const owner = process.env.ORACLE;
 const oracleContract = process.env.CONTRACT;
@@ -51,47 +45,31 @@ function write(){
 
 
 	request.get(priceUrl, function (err, res, priceRes){
-		request.get(btcUrl, function (err, res, btcRes){
-			request.get(btccnyUrl, function (err, res, btccnyRes){
-					console.log("BTCUSD:", JSON.parse(btcRes).USD);
-					console.log("BTCUSD:", JSON.parse(btcRes).CAD);
-					console.log("BTCCNY:", JSON.parse(btccnyRes).CNY.last);
+		var quotes = [{"value": parseInt(Math.round(JSON.parse(priceRes).USD * 10000)), pair: usdpair }, {"value": parseInt(Math.round(JSON.parse(priceRes).BTC * 100000000)), pair: btcpair }];
+		console.log("quotes:", quotes);
 
+		eos.contract(oracleContract)
+			.then((contract) => {
+				contract.write({
+						owner: owner,
+						quotes: quotes
+					},
+					{
+						scope: oracleContract,
+						authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`] 
+					})
+					.then(results=>{
+						console.log("results:", results);
+					})
+					.catch(error=>{
+						console.log("error:", error);
+					});
 
-					/* var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
-									{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}, 
-									{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"}, 
-									{"value": parseInt(Math.round(JSON.parse(btccnyRes).CNY.last * 10000)), pair:"btccny"}];
-					*/
-                    
-					var quotes = [{"value": parseInt(Math.round(JSON.parse(priceRes).USD * 10000)), pair: usdpair }, {"value": parseInt(Math.round(JSON.parse(priceRes).BTC * 100000000)), pair: btcpair }];
-					console.log("quotes:", quotes);
-
-					eos.contract(oracleContract)
-						.then((contract) => {
-							contract.write({
-									owner: owner,
-									quotes: quotes
-								},
-								{
-									scope: oracleContract,
-									authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`] 
-								})
-								.then(results=>{
-									console.log("results:", results);
-								})
-								.catch(error=>{
-									console.log("error:", error);
-								});
-
-						})
-						.catch(error=>{
-							console.log("error:", error);
-						});
+			})
+			.catch(error=>{
+				console.log("error:", error);
 			});
-		});
 	});
-
 }
 
 write();
