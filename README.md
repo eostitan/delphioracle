@@ -237,7 +237,7 @@ docker build https://github.com/eostitan/delphioracle.git -t delphioracle
 - **API** - The API endpoint you wish to use.
 - **CHAIN** - The EOSIO Chain that hosts the delphioracle. :exclamation: Currently only WAX and EOS is supported.
 
-```
+```Dockerfile:
 docker run  --name delphioracle.wax \
 -d -e "PRIVATE_KEY=xxxxxxxxxxxxx" \
 -e "BPNAME=sentnlagents" \
