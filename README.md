@@ -227,7 +227,15 @@ cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
 docker build https://github.com/eostitan/delphioracle.git -t delphioracle
 ```
 
-## Run the containeer passing required ENV variables
+## Run the container passing required ENV variables
+
+
+### The following ENV variables need to be passed:
+
+- **BPNAME** - The name of your bp account
+- **PERM** - The permissions to sign the transaction with. Defaults to active.
+- **API** - The API endpoint you wish to use.
+- **CHAIN** - The EOSIO Chain that hosts the delphioracle. :exclamation: Currently only WAX and EOS is supported.
 
 ```
 docker run  --name delphioracle.wax \
@@ -239,6 +247,3 @@ docker run  --name delphioracle.wax \
 delphioracle
 ```
 
-## TO DO:
-
-- Update updater.js to support multichain
