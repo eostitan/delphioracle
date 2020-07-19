@@ -1,15 +1,19 @@
-const Eos = require('eosjs');
+// EOSJS version 2 used
+const { Api, JsonRpc, RpcError } = require('eosjs');
+const fetch = require('node-fetch'); 
+const { TextEncoder, TextDecoder } = require('util');  
+const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig'); 
+const axios = require('axios');
 const dotenv = require('dotenv');
-//const axios = require('axios');
-const request = require('request');
 
 dotenv.load();
 
 var chain = process.env.CHAIN;
-console.log(chain)
 var priceUrl = "";
 var usdpair = "";
 var btcpair = "";
+
+// Switch priceURL depending on EOSIO Chain provided via .env
 switch (chain) {
   case "wax":
 	priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD";
@@ -26,51 +30,55 @@ switch (chain) {
 	
 }
 
-const interval = process.env.FREQ;
 const owner = process.env.ORACLE;
 const oracleContract = process.env.CONTRACT;
+const defaultPrivateKey = process.env.EOS_KEY;
+const permission = process.env.ORACLE_PERMISSION;
+const httpEndpoint =  process.env.EOS_PROTOCOL + "://" +  process.env.EOS_HOST + ":" + process.env.EOS_PORT;
 
-const eos = Eos({ 
-  httpEndpoint: process.env.EOS_PROTOCOL + "://" +  process.env.EOS_HOST + ":" + process.env.EOS_PORT,
-  keyProvider: process.env.EOS_KEY,
-  chainId: process.env.EOS_CHAIN,
-  verbose:false,
-  logger: {
-    log: null,
-    error: null
+console.log(owner,oracleContract,permission)
+const rpc = new JsonRpc(httpEndpoint, { fetch });
+const signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
+const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
+
+
+const eosmain = async (quotes2) => {
+    try {
+    const result = await api.transact({
+        actions: [{
+            account: oracleContract,
+            name: 'write',
+            authorization: [{
+                actor: owner,
+                permission: permission,
+            }],
+            data: {
+                owner: owner,
+                quotes: quotes2
+            },
+        }]
+        }, {
+            blocksBehind: 3,
+            expireSeconds: 30,
+        });
+        console.dir(result);
+    } catch (e) {
+        console.log('\nCaught exception: ' + e);
+        if (e instanceof RpcError)
+          console.log(JSON.stringify(e.json, null, 2));
+      }
   }
-});
 
-function write(){
-
-
-	request.get(priceUrl, function (err, res, priceRes){
-		var quotes = [{"value": parseInt(Math.round(JSON.parse(priceRes).USD * 10000)), pair: usdpair }, {"value": parseInt(Math.round(JSON.parse(priceRes).BTC * 100000000)), pair: btcpair }];
-		console.log("quotes:", quotes);
-
-		eos.contract(oracleContract)
-			.then((contract) => {
-				contract.write({
-						owner: owner,
-						quotes: quotes
-					},
-					{
-						scope: oracleContract,
-						authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`] 
-					})
-					.then(results=>{
-						console.log("results:", results);
-					})
-					.catch(error=>{
-						console.log("error:", error);
-					});
-
-			})
-			.catch(error=>{
-				console.log("error:", error);
-			});
-	});
+function writequotes(){
+	axios
+	.get(priceUrl)
+	.then(response => {
+		//Assign repsonse to quotes
+		const quotes2 = [{"value": Math.round((response.data.BTC)* 100000000), pair: btcpair }, {"value": Math.round((response.data.USD)* 10000), pair: usdpair }]
+		console.log(quotes2)
+        //Call eos.contracts method 
+        eosmain(quotes2)
+	})
 }
 
-write();
-
+writequotes();
