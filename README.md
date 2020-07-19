@@ -209,7 +209,8 @@ if you have `jq` installed, you can show the first record, which should contain 
 cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
 ```
 
-# Running the updater.js using Docker
+# Running the updater.js using Docker 
+## :exclamation: Updater in docker uses EOSJS v2
 
 ## ENV Variables
 
