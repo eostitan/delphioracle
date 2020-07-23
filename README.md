@@ -221,11 +221,12 @@ cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
 |**PERM**                  |`oracle`                       | If using Custom permission; defaults to active|
 |**API**                   |`waxapi.sentnl.io`             | Wax API endpoint                              |
 |**CHAIN**                 |`wax`                          | The EOSIO Chain that hosts the delphioracle   |
+|**APIPORT**               |`443`                          | The port of API endpoint                      |
 
 ## Build the production container
 
 ```
-docker build https://github.com/eostitan/delphioracle.git -t delphioracle
+docker build https://github.com/ankh2054/delphioracle.git -t delphioracle
 ```
 
 ## Run the container passing required ENV variables
@@ -244,6 +245,7 @@ docker run  --name delphioracle.wax \
 -e "BPNAME=sentnlagents" \
 -e "PERM=oracle" \
 -e "API=waxapi.sentnl.io" \
+-e "APIPORT=4343" \
 -e "CHAIN=wax" \
 delphioracle
 ```
