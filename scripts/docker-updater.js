@@ -1,8 +1,8 @@
 // EOSJS version 2 used
 const { Api, JsonRpc, RpcError } = require('eosjs');
-const fetch = require('node-fetch'); 
-const { TextEncoder, TextDecoder } = require('util');  
-const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig'); 
+const fetch = require('node-fetch');
+const { TextEncoder, TextDecoder } = require('util');
+const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 const axios = require('axios');
 const dotenv = require('dotenv');
 
@@ -12,13 +12,17 @@ var chain = process.env.CHAIN;
 var priceUrl = "";
 var usdpair = "";
 var btcpair = "";
+var eospair = "";
+var ethpair = "";
 
 // Switch priceURL depending on EOSIO Chain provided via .env
 switch (chain) {
   case "wax":
-	priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD";
+	priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS";
 	usdpair = "waxpusd";
 	btcpair = "waxpbtc";
+  eospair = "waxpeos";
+  ethpair = "waxpeth";
     break;
   case "eos":
 	priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD";
@@ -26,8 +30,8 @@ switch (chain) {
 	btcpair = "eosbtc";
     break;
   default:
-	var priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD";
-	
+	var priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS";
+
 }
 
 const owner = process.env.ORACLE;
@@ -74,9 +78,9 @@ function writequotes(){
 	.get(priceUrl)
 	.then(response => {
 		//Assign repsonse to quotes
-		const quotes2 = [{"value": Math.round((response.data.BTC)* 100000000), pair: btcpair }, {"value": Math.round((response.data.USD)* 10000), pair: usdpair }]
+		const quotes2 = [{"value": Math.round((response.data.BTC)* 100000000), pair: btcpair }, {"value": Math.round((response.data.USD)* 10000), pair: usdpair }, {"value": Math.round((response.data.ETH)* 100000000), pair: ethpair }, {"value": Math.round((response.data.EOS)* 1000000), pair: eospair }]
 		console.log(quotes2)
-        //Call eos.contracts method 
+        //Call eos.contracts method
         eosmain(quotes2)
 	})
 }
