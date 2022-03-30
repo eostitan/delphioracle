@@ -9,6 +9,7 @@ const dotenv = require('dotenv');
 dotenv.load();
 
 var chain = process.env.CHAIN;
+var cryptocompareKey = process.env.CRYPTOCOMPARE;
 var priceUrl = "";
 var usdpair = "";
 var btcpair = "";
@@ -18,19 +19,19 @@ var ethpair = "";
 // Switch priceURL depending on EOSIO Chain provided via .env
 switch (chain) {
   case "wax":
-	priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS";
+	priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS,&api_key=${cryptocompareKey}`;
 	usdpair = "waxpusd";
 	btcpair = "waxpbtc";
   eospair = "waxpeos";
   ethpair = "waxpeth";
     break;
   case "eos":
-	priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD";
+	priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD,&api_key=${cryptocompareKey}`;
 	usdpair = "eosusd";
 	btcpair = "eosbtc";
     break;
   default:
-	var priceUrl = "https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS";
+	var priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS,&api_key=${cryptocompareKey}`;
 
 }
 

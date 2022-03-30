@@ -13,6 +13,8 @@ echo "Setting API"
 sed -i "s/<replace with api endpoint>/$API/" .env
 echo "Setting API PORT"
 sed -i "s/<replace with api port>/$APIPORT/" .env
+echo "Setting CRYPTOCOMPARE API key"
+sed -i "s/<replace with api key>/$CRYPTOCOMPARE/" .env
 
 # Setting chain ID
 waxid_mainnet="1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4"
