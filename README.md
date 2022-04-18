@@ -222,11 +222,19 @@ cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
 |**API**                   |`waxapi.sentnl.io`             | Wax API endpoint                              |
 |**CHAIN**                 |`wax`                          | The EOSIO Chain that hosts the delphioracle   |
 |**APIPORT**               |`443`                          | The port of API endpoint                      |
+|**APIKEY**                |`XXXXXXXXXXXXX`                | API key to min-api.cryptocompare.com          |
 
-## Build the production container
+## Build the production container for Javascript version 
 
 ```
 docker build https://github.com/ankh2054/delphioracle.git -t delphioracle
+```
+
+## Build the production container for Python version 
+
+```
+git pull https://github.com/ankh2054/delphioracle.git
+docker build -f Dockerfile.python -t delphioracle
 ```
 
 ## Run the container passing required ENV variables
@@ -234,8 +242,11 @@ docker build https://github.com/ankh2054/delphioracle.git -t delphioracle
 
 ### The following ENV variables need to be passed:
 
+
+- **APIKEY** - The API key for min-api.cryptocompare.com 
 - **BPNAME** - The name of your bp account
 - **PERM** - The permissions to sign the transaction with. Defaults to active.
+- **PRIVATE_KEY** - The private associated with your EOSIO account
 - **API** - The API endpoint you wish to use.
 - **CHAIN** - The EOSIO Chain that hosts the delphioracle. :exclamation: Currently only WAX and EOS is supported.
 
@@ -247,6 +258,7 @@ docker run  --name delphioracle.wax \
 -e "API=waxapi.sentnl.io" \
 -e "APIPORT=4343" \
 -e "CHAIN=wax" \
+-e "APIKEY=XXXXXXXXXXX" \
 delphioracle
 ```
 

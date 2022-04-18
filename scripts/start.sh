@@ -13,6 +13,9 @@ echo "Setting API"
 sed -i "s/<replace with api endpoint>/$API/" .env
 echo "Setting API PORT"
 sed -i "s/<replace with api port>/$APIPORT/" .env
+echo "Setting API KEY"
+sed -i "s/<replace with APIkey>/$APIKEY/" .env
+
 
 # Setting chain ID
 waxid="1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4"

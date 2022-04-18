@@ -26,8 +26,6 @@ auth = eospyo.Authorization(
 
 
 def getPrice():
-    data_final = []
-    datadict = {}
     response = requests.get("https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD&api_key="+APIKEY)
     json_response = response.json()
     BTC = round(json_response['BTC']*100000000)
@@ -65,6 +63,6 @@ signed_transaction = linked_transaction.sign(key=key)
 print("Send")
 resp = signed_transaction.send()
 
-print("Printing the response")
-resp_fmt = json.dumps(resp, indent=4)
-print(f"Response:\n{resp_fmt}")
+#print("Printing the response")
+#resp_fmt = json.dumps(resp, indent=4)
+#print(f"Response:\n{resp_fmt}")

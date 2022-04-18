@@ -1,0 +1,24 @@
+# build environment
+FROM node:14.5.0-alpine 
+
+## ENV variables
+ENV PERM=active
+
+RUN apk add --update-cache \
+    python3 \
+    py3-pip \ 
+  && pip3 install eospyo preprocessing \
+  && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY scripts/docker-updater.py ./updater.py
+COPY scripts/docker-python.conf oracleconf.py
+
+
+
+
+# Entrypoint
+ADD scripts/python-start.sh /
+RUN chmod +x /python-start.sh
+CMD /python-start.sh
