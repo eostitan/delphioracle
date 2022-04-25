@@ -234,7 +234,7 @@ docker build https://github.com/ankh2054/delphioracle.git -t delphioracle
 
 ```
 git pull https://github.com/ankh2054/delphioracle.git
-docker build -f Dockerfile.python -t delphioracle
+docker build -f Dockerfile-python -t delphioracle.python .
 ```
 
 ## Run the container passing required ENV variables

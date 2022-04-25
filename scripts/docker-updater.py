@@ -26,11 +26,14 @@ auth = eospyo.Authorization(
 
 
 def getPrice():
-    response = requests.get("https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD&api_key="+APIKEY)
+    response = requests.get("https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,EOS,ETH&api_key="+APIKEY)
     json_response = response.json()
     BTC = round(json_response['BTC']*100000000)
-    USD = round(json_response['USD']*1000)
-    data = [{'value': BTC, 'pair': 'waxpbtc' }, {'value': USD, 'pair': 'waxpusd' }]
+    USD = round(json_response['USD']*10000)
+    EOS = round(json_response['EOS']*1000000)
+    ETH = round(json_response['ETH']*100000000)
+    data = [{'value': BTC, 'pair': 'waxpbtc' }, {'value': USD, 'pair': 'waxpusd' },{'value': EOS, 'pair': 'waxpeos' },{'value': ETH, 'pair': 'waxpeth' }]
+    print(data)
     return data
 
 
@@ -63,6 +66,6 @@ signed_transaction = linked_transaction.sign(key=key)
 print("Send")
 resp = signed_transaction.send()
 
-#print("Printing the response")
-#resp_fmt = json.dumps(resp, indent=4)
-#print(f"Response:\n{resp_fmt}")
+print("Printing the response")
+resp_fmt = json.dumps(resp, indent=4)
+print(f"Response:\n{resp_fmt}")
