@@ -2,7 +2,7 @@ import json
 import requests
 import eospyo
 import oracleconf as cfg
-
+from pydantic import HttpUrl
 
 EOS_PROTOCOL = cfg.main["EOS_PROTOCOL"]
 EOS_HOST = cfg.main["EOS_HOST"]
@@ -15,6 +15,10 @@ ORACLE_PERMISSION = cfg.main["ORACLE_PERMISSION"]
 FREQ = cfg.main["FREQ"]
 CHAIN = cfg.main["CHAIN"]
 APIKEY = cfg.main["APIKEY"]
+
+
+class MyNetwork(eospyo.Net):
+    host: HttpUrl = "http://172.16.0.76:8890"
 
 
 #data = '[ 
@@ -53,7 +57,8 @@ raw_transaction = eospyo.Transaction(actions=[action])
 
 
 print("Link transaction to the network")
-net = eospyo.WaxMainnet()
+#net = eospyo.WaxMainnet()
+net = MyNetwork()
 # notice that eospyo returns a new object instead of change in place
 linked_transaction = raw_transaction.link(net=net)
 
