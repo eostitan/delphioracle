@@ -79,7 +79,12 @@ function writequotes(){
 	.get(priceUrl)
 	.then(response => {
 		//Assign repsonse to quotes
-		const quotes2 = [{"value": Math.round((response.data.BTC)* 100000000), pair: btcpair }, {"value": Math.round((response.data.USD)* 10000), pair: usdpair }, {"value": Math.round((response.data.ETH)* 100000000), pair: ethpair }, {"value": Math.round((response.data.EOS)* 1000000), pair: eospair }]
+		const quotes2 = [
+      {"value": Math.round((response.data.BTC)* 100000000), pair: btcpair },
+      {"value": Math.round((response.data.USD)* 10000), pair: usdpair },
+      {"value": Math.round((response.data.ETH)* 100000000), pair: ethpair },
+      {"value": Math.round((response.data.EOS)* 1000000), pair: eospair }
+    ]
 		console.log(quotes2)
         //Call eos.contracts method
         eosmain(quotes2)
