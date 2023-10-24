@@ -12,8 +12,8 @@ COPY scripts/docker-updater.js ./updater.js
 COPY scripts/docker.env .env
 
 
-RUN npm ci --silent
-RUN npm install react-scripts@3.4.1 -g --silent
+RUN npm ci
+RUN npm install react-scripts@3.4.1 -g
 
 
 # Entrypoint

@@ -13,6 +13,8 @@ echo "Setting API"
 sed -i "s/<replace with api endpoint>/$API/" .env
 echo "Setting API PORT"
 sed -i "s/<replace with api port>/$APIPORT/" .env
+echo "Setting API PROTOCOL"
+sed -i "s/<replace with api protocol>/$APIPROTOCOL/" .env
 echo "Setting CRYPTOCOMPARE API key"
 sed -i "s/<replace with api key>/$CRYPTOCOMPARE/" .env
 
