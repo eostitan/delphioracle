@@ -15,15 +15,19 @@ var usdpair = "";
 var btcpair = "";
 var eospair = "";
 var ethpair = "";
+var usdcpair = "";
+var usdtpair = "";
 
 // Switch priceURL depending on EOSIO Chain provided via .env
 switch (chain) {
   case "wax":
-	priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS,&api_key=${cryptocompareKey}`;
+  priceUrl = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=WAXP,USDC,USDT&tsyms=BTC,USD,ETH,EOS&api_key=${cryptocompareKey}`;
 	usdpair = "waxpusd";
 	btcpair = "waxpbtc";
   eospair = "waxpeos";
   ethpair = "waxpeth";
+  usdcpair = "usdcusd";
+  usdtpair = "usdtusd";
     break;
   case "eos":
 	priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD,&api_key=${cryptocompareKey}`;
@@ -74,21 +78,23 @@ const eosmain = async (quotes2) => {
       }
   }
 
-function writequotes(){
-	axios
-	.get(priceUrl)
-	.then(response => {
-		//Assign repsonse to quotes
-		const quotes2 = [
-      {"value": Math.round((response.data.BTC)* 100000000), pair: btcpair },
-      {"value": Math.round((response.data.USD)* 10000), pair: usdpair },
-      {"value": Math.round((response.data.ETH)* 100000000), pair: ethpair },
-      {"value": Math.round((response.data.EOS)* 1000000), pair: eospair }
-    ]
-		console.log(quotes2)
-        //Call eos.contracts method
-        eosmain(quotes2)
-	})
+function writequotes() {
+  axios
+    .get(priceUrl)
+    .then(response => {
+      const data = response.data;
+
+      const quotes2 = [
+        { "value": Math.round(data.WAXP.BTC * 100000000), pair: btcpair },
+        { "value": Math.round(data.WAXP.USD * 10000), pair: usdpair },
+        { "value": Math.round(data.WAXP.ETH * 100000000), pair: ethpair },
+        { "value": Math.round(data.WAXP.EOS * 1000000), pair: eospair },
+        { "value": Math.round(data.USDC.USD * 10000), pair: usdcpair },
+        { "value": Math.round(data.USDT.USD * 10000), pair: usdtpair }
+      ];
+      console.log(quotes2);
+      eosmain(quotes2);
+    })
 }
 
 writequotes();
