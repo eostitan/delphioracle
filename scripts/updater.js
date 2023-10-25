@@ -14,7 +14,7 @@ const interval = process.env.FREQ;
 const owner = process.env.ORACLE;
 const oracleContract = process.env.CONTRACT;
 
-const eos = Eos({ 
+const eos = Eos({
   httpEndpoint: process.env.EOS_PROTOCOL + "://" +  process.env.EOS_HOST + ":" + process.env.EOS_PORT,
   keyProvider: process.env.EOS_KEY,
   chainId: process.env.EOS_CHAIN,
@@ -35,13 +35,13 @@ function write(){
 				console.log("EOSUSD:", JSON.parse(eosRes).USD);
 				console.log("EOSBTC:", JSON.parse(eosRes).BTC);
 				console.log("BTCUSD:", JSON.parse(btcRes).USD);
-                                console.log("BTCUSD:", JSON.parse(btcRes).CAD);
+        console.log("BTCUSD:", JSON.parse(btcRes).CAD);
 				console.log("BTCCNY:", JSON.parse(btccnyRes).CNY.last);
 
 
-				/* var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"}, 
-											{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"}, 
-											{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"}, 
+				/* var quotes = [{"value": parseInt(Math.round(JSON.parse(eosRes).BTC * 100000000)), pair:"eosbtc"},
+											{"value": parseInt(Math.round(JSON.parse(eosRes).USD * 10000)), pair:"eosusd"},
+											{"value": parseInt(Math.round(JSON.parse(btcRes).USD * 10000)), pair:"btcusd"},
 											{"value": parseInt(Math.round(JSON.parse(btccnyRes).CNY.last * 10000)), pair:"btccny"}];
 
 						*/
@@ -57,7 +57,7 @@ function write(){
 							},
 							{
 								scope: oracleContract,
-								authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`] 
+								authorization: [`${owner}@${process.env.ORACLE_PERMISSION || 'active'}`]
 							})
 							.then(results=>{
 								console.log("results:", results);
@@ -79,4 +79,3 @@ function write(){
 
 
 write();
-
