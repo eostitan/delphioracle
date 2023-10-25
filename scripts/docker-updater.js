@@ -10,34 +10,13 @@ dotenv.load();
 
 var chain = process.env.CHAIN;
 var cryptocompareKey = process.env.CRYPTOCOMPARE;
-var priceUrl = "";
-var usdpair = "";
-var btcpair = "";
-var eospair = "";
-var ethpair = "";
-var usdcpair = "";
-var usdtpair = "";
-
-// Switch priceURL depending on EOSIO Chain provided via .env
-switch (chain) {
-  case "wax":
-  priceUrl = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=WAXP,USDC,USDT&tsyms=BTC,USD,ETH,EOS&api_key=${cryptocompareKey}`;
-	usdpair = "waxpusd";
-	btcpair = "waxpbtc";
-  eospair = "waxpeos";
-  ethpair = "waxpeth";
-  usdcpair = "usdcusd";
-  usdtpair = "usdtusd";
-    break;
-  case "eos":
-	priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD,&api_key=${cryptocompareKey}`;
-	usdpair = "eosusd";
-	btcpair = "eosbtc";
-    break;
-  default:
-	var priceUrl = `https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,ETH,EOS,&api_key=${cryptocompareKey}`;
-
-}
+priceUrl = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=WAXP,USDC,USDT&tsyms=BTC,USD,ETH,EOS&api_key=${cryptocompareKey}`;
+usdpair = "waxpusd";
+btcpair = "waxpbtc";
+eospair = "waxpeos";
+ethpair = "waxpeth";
+usdcpair = "usdcusd";
+usdtpair = "usdtusd";
 
 const owner = process.env.ORACLE;
 const oracleContract = process.env.CONTRACT;
@@ -78,23 +57,35 @@ const eosmain = async (quotes2) => {
       }
   }
 
-function writequotes() {
-  axios
-    .get(priceUrl)
-    .then(response => {
-      const data = response.data;
+async function writequotes() {
+  try {
+    const waxpResponse = await axios.get(priceUrl);
+    const [usdcResponse, usdtResponse] = await Promise.all([
+      axios.get('https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd'),
+      axios.get('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=usd')
+    ]);
 
-      const quotes2 = [
-        { "value": Math.round(data.WAXP.BTC * 100000000), pair: btcpair },
-        { "value": Math.round(data.WAXP.USD * 10000), pair: usdpair },
-        { "value": Math.round(data.WAXP.ETH * 100000000), pair: ethpair },
-        { "value": Math.round(data.WAXP.EOS * 1000000), pair: eospair },
-        { "value": Math.round(data.USDC.USD * 10000), pair: usdcpair },
-        { "value": Math.round(data.USDT.USD * 10000), pair: usdtpair }
-      ];
-      console.log(quotes2);
-      eosmain(quotes2);
-    })
+    const waxpData = waxpResponse.data;
+    const usdcPrice = usdcResponse.data['usd-coin'].usd;
+    const usdtPrice = usdtResponse.data.tether.usd;
+
+    const quotes2 = [
+      { "value": Math.round(waxpData.WAXP.BTC * 100000000), pair: btcpair },
+      { "value": Math.round(waxpData.WAXP.USD * 10000), pair: usdpair },
+      { "value": Math.round(waxpData.WAXP.ETH * 100000000), pair: ethpair },
+      { "value": Math.round(waxpData.WAXP.EOS * 1000000), pair: eospair },
+      { "value": Math.round(usdcPrice * 10000), pair: usdcpair },
+      { "value": Math.round(usdtPrice * 10000), pair: usdtpair }
+    ];
+
+    console.log(quotes2);
+    await eosmain(quotes2);
+  } catch (error) {
+    console.log('\nCaught exception: ' + error);
+    if (error instanceof RpcError) {
+      console.log(JSON.stringify(error.json, null, 2));
+    }
+  }
 }
 
 writequotes();
