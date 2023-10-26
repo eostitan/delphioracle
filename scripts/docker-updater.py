@@ -30,13 +30,22 @@ auth = eospyo.Authorization(
 
 
 def getPrice():
-    response = requests.get("https://min-api.cryptocompare.com/data/price?fsym=WAXP&tsyms=BTC,USD,EOS,ETH&api_key="+APIKEY)
+    response = requests.get("https://min-api.cryptocompare.com/data/pricemulti?fsyms=USD,WAXP&tsyms=USDT,USDC,BTC,USD,ETH,EOS&api_key="+APIKEY)
     json_response = response.json()
-    BTC = round(json_response['BTC']*100000000)
-    USD = round(json_response['USD']*10000)
-    EOS = round(json_response['EOS']*1000000)
-    ETH = round(json_response['ETH']*100000000)
-    data = [{'value': BTC, 'pair': 'waxpbtc' }, {'value': USD, 'pair': 'waxpusd' },{'value': EOS, 'pair': 'waxpeos' },{'value': ETH, 'pair': 'waxpeth' }]
+    BTC = round(json_response['WAXP']['BTC']*100000000)
+    USD = round(json_response['WAXP']['USD']*10000)
+    EOS = round(json_response['WAXP']['EOS']*1000000)
+    ETH = round(json_response['WAXP']['ETH']*100000000)
+    USDUSDT = round(json_response['USD']['USDT']* 10000)
+    USDUSDC = round(json_response['USD']['USDC']* 10000)
+    data = [
+        {'value': BTC, 'pair': 'waxpbtc' }, 
+        {'value': USD, 'pair': 'waxpusd' },
+        {'value': EOS, 'pair': 'waxpeos' },
+        {'value': ETH, 'pair': 'waxpeth' }, 
+        {'value': USDUSDT, 'pair': 'usdtusd' },
+        {'value': USDUSDC, 'pair': 'usdcusd' }
+    ]
     print(data)
     return data
 
