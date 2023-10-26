@@ -18,7 +18,7 @@ APIKEY = cfg.main["APIKEY"]
 
 
 class MyNetwork(eospyo.Net):
-    host: HttpUrl = "http://hyperion6.sentnl.io"
+    host: HttpUrl = EOS_HOST 
 
 
 #data = '[ 
