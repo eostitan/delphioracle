@@ -3,3 +3,4 @@ contract/oracle.wasm
 contract/*.sh
 src/*.sh
 oracleconf.py
+lib/
