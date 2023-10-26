@@ -219,7 +219,7 @@ cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
 |**PRIVATE_KEY**           |`5xxxxxxxxxxxx`                | The prviate key of your permission            |
 |**BPNAME**                |`sentnlagents`                 | Your BP account                               |
 |**PERM**                  |`oracle`                       | If using Custom permission; defaults to active|
-|**API**                   |`waxapi.sentnl.io`             | Wax API endpoint                              |
+|**API**                   |`https://hyperion6.sentnl.io"`  | Wax API endpoint                              |
 |**CHAIN**                 |`wax`                          | The EOSIO Chain that hosts the delphioracle   |
 |**APIPORT**               |`443`                          | The port of API endpoint                      |
 |**APIKEY**                |`XXXXXXXXXXXXX`                | API key to min-api.cryptocompare.com          |
@@ -255,7 +255,7 @@ docker run  --name delphioracle.wax \
 -d -e "PRIVATE_KEY=xxxxxxxxxxxxx" \
 -e "BPNAME=sentnlagents" \
 -e "PERM=oracle" \
--e "API=http://hyperion6.sentnl.io" \
+-e "API=https://hyperion6.sentnl.io" \
 -e "APIPORT=4343" \
 -e "CHAIN=wax" \
 -e "APIKEY=XXXXXXXXXXX" \
