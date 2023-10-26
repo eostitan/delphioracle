@@ -255,7 +255,7 @@ docker run  --name delphioracle.wax \
 -d -e "PRIVATE_KEY=xxxxxxxxxxxxx" \
 -e "BPNAME=sentnlagents" \
 -e "PERM=oracle" \
--e "API=waxapi.sentnl.io" \
+-e "API=http://hyperion6.sentnl.io" \
 -e "APIPORT=4343" \
 -e "CHAIN=wax" \
 -e "APIKEY=XXXXXXXXXXX" \
