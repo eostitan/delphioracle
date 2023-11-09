@@ -208,3 +208,57 @@ if you have `jq` installed, you can show the first record, which should contain 
 ```
 cleos get table --limit 100 delphioracle eosusd datapoints |jq .rows[0]
 ```
+
+# Running the updater.js using Docker 
+## :exclamation: Updater in docker uses EOSJS v2
+
+## ENV Variables
+
+|ENV & ARG                 |Value                          |Description                                    |
+|--------------------------|-------------------------------|-----------------------------------------------|
+|**PRIVATE_KEY**           |`5xxxxxxxxxxxx`                | The prviate key of your permission            |
+|**BPNAME**                |`sentnlagents`                 | Your BP account                               |
+|**PERM**                  |`oracle`                       | If using Custom permission; defaults to active|
+|**API**                   |`https://hyperion6.sentnl.io"`  | Wax API endpoint                              |
+|**CHAIN**                 |`wax`                          | The EOSIO Chain that hosts the delphioracle   |
+|**APIPORT**               |`443`                          | The port of API endpoint                      |
+|**APIKEY**                |`XXXXXXXXXXXXX`                | API key to min-api.cryptocompare.com          |
+
+## Build the production container for Javascript version 
+
+```
+docker build https://github.com/ankh2054/delphioracle.git -t delphioracle
+```
+
+## Build the production container for Python version 
+
+```
+git pull https://github.com/ankh2054/delphioracle.git
+docker build -f Dockerfile-python -t delphioracle.python .
+```
+
+## Run the container passing required ENV variables
+
+
+### The following ENV variables need to be passed:
+
+
+- **APIKEY** - The API key for min-api.cryptocompare.com 
+- **BPNAME** - The name of your bp account
+- **PERM** - The permissions to sign the transaction with. Defaults to active.
+- **PRIVATE_KEY** - The private associated with your EOSIO account
+- **API** - The API endpoint you wish to use.
+- **CHAIN** - The EOSIO Chain that hosts the delphioracle. :exclamation: Currently only WAX and EOS is supported.
+
+```Dockerfile:
+docker run  --name delphioracle.wax \
+-d -e "PRIVATE_KEY=xxxxxxxxxxxxx" \
+-e "BPNAME=sentnlagents" \
+-e "PERM=oracle" \
+-e "API=https://hyperion6.sentnl.io" \
+-e "APIPORT=4343" \
+-e "CHAIN=wax" \
+-e "APIKEY=XXXXXXXXXXX" \
+delphioracle
+```
+
